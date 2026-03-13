@@ -36,6 +36,7 @@ export function ScoreSignalCard(props: ScoreSignalCardProps) {
   }
 
   const { score, label, horizon_signals } = props.result;
+  const latestNews = props.result.latest_news ?? [];
   return (
     <View style={styles.card}>
       <Text style={styles.title}>评分仪表盘</Text>
@@ -48,6 +49,22 @@ export function ScoreSignalCard(props: ScoreSignalCardProps) {
         <TrafficLight title="短期" signal={horizon_signals.short} />
         <TrafficLight title="中期" signal={horizon_signals.mid} />
         <TrafficLight title="长期" signal={horizon_signals.long} />
+      </View>
+
+      <View style={styles.newsBox}>
+        <Text style={styles.newsTitle}>最新资讯</Text>
+        {latestNews.length === 0 ? (
+          <Text style={styles.newsEmpty}>暂无资讯</Text>
+        ) : (
+          latestNews.slice(0, 3).map((item, index) => (
+            <View key={`${item.title}-${index}`} style={styles.newsItem}>
+              <Text style={styles.newsItemTitle} numberOfLines={2}>
+                {index + 1}. {item.title}
+              </Text>
+              <Text style={styles.newsMeta}>{item.source} · {item.time}</Text>
+            </View>
+          ))
+        )}
       </View>
     </View>
   );
@@ -143,5 +160,38 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "#666",
     fontSize: 14,
+  },
+  newsBox: {
+    marginTop: 14,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#efd8bb",
+    padding: 10,
+  },
+  newsTitle: {
+    color: "#6d4300",
+    fontWeight: "700",
+    fontSize: 13,
+    marginBottom: 6,
+  },
+  newsItem: {
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f4e8d5",
+  },
+  newsItemTitle: {
+    color: "#5f3b00",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  newsMeta: {
+    marginTop: 4,
+    color: "#8a7352",
+    fontSize: 11,
+  },
+  newsEmpty: {
+    color: "#8b8b8b",
+    fontSize: 12,
   },
 });

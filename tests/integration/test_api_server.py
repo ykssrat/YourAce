@@ -26,6 +26,20 @@ def test_analyze_endpoint_returns_score_and_signals() -> None:
     assert "score" in payload
     assert "label" in payload
     assert set(payload["horizon_signals"].keys()) == {"short", "mid", "long"}
+    assert "latest_news" in payload
+    assert isinstance(payload["latest_news"], list)
+    assert len(payload["latest_news"]) <= 3
+
+
+def test_news_endpoint_returns_items() -> None:
+    """news 接口应返回资讯列表。"""
+    response = client.get("/news", params={"code": "000001", "limit": 3})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["code"] == "000001"
+    assert "items" in payload
+    assert isinstance(payload["items"], list)
+    assert len(payload["items"]) <= 3
 
 
 def test_health_endpoint_ok() -> None:
