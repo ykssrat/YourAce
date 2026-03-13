@@ -1,0 +1,7 @@
+﻿market:
+  timezone: Asia/Shanghai
+  start_date: 2015-01-01
+  end_date: null
+storage:
+  raw_data_dir: datas/raw
+  format: parquet
