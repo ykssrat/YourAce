@@ -16,6 +16,7 @@ from scripts.features.calc_features import compute_feature_frame
 from scripts.strategy.scoring import aggregate_signal_score
 from scripts.strategy.signal_generator import generate_multi_horizon_signal
 from scripts.utils.asset_loader import load_assets
+from scripts.utils.news_fetcher import fetch_latest_news
 
 
 app = FastAPI(title="YourAce API", version="0.1.0")
@@ -56,6 +57,7 @@ def analyze_asset(payload: AnalyzeRequest) -> Dict[str, object]:
     score_result = aggregate_signal_score(horizon_signals)
 
     selected_features = _run_bic_pruning(close_series)
+    latest_news = fetch_latest_news(code, limit=3)
     return {
         "code": code,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
@@ -63,6 +65,21 @@ def analyze_asset(payload: AnalyzeRequest) -> Dict[str, object]:
         "label": score_result.label,
         "horizon_signals": horizon_signals,
         "selected_features": selected_features,
+        "latest_news": latest_news,
+    }
+
+
+@app.get("/news")
+def get_latest_news(
+    code: str = Query(..., min_length=1, max_length=20),
+    limit: int = Query(default=3, ge=1, le=10),
+) -> Dict[str, object]:
+    """返回指定标的最新资讯。"""
+    items = fetch_latest_news(code=code, limit=limit)
+    return {
+        "code": code,
+        "count": len(items),
+        "items": items,
     }
 
 
