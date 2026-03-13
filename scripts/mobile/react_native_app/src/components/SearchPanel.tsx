@@ -1,3 +1,4 @@
+/// <reference path="../react_native_shims.d.ts" />
 import React from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
