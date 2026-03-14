@@ -1,0 +1,3242 @@
+{
+  "1": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:05"
+  },
+  "2": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "4": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "6": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "7": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "8": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "9": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "10": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "11": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "12": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "14": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "16": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "17": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "19": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "20": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "21": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "25": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "26": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "27": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "28": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "29": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "30": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "31": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "32": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "34": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "35": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "36": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "37": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "39": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "42": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "45": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "48": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "49": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "50": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "55": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:06"
+  },
+  "56": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:07"
+  },
+  "58": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:07"
+  },
+  "59": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:07"
+  },
+  "60": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:07"
+  },
+  "61": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:07"
+  },
+  "62": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:47"
+  },
+  "63": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "65": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "66": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "68": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "69": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "70": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "78": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "88": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "89": {
+    "score": 17.5,
+    "label": "STRONG_SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "90": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "96": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "99": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "100": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "151": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "153": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "155": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "156": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "157": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "158": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "159": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "166": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "301": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "333": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "338": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "400": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "401": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "402": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "403": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "404": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "407": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "408": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "409": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "410": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:48"
+  },
+  "411": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "415": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "417": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "419": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "420": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "421": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "422": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "423": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "425": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "426": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "428": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "429": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "430": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "488": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "498": {
+    "score": 32.5,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "501": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "503": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "504": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "505": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "506": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "507": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "509": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "510": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "513": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "514": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "516": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:46:49"
+  },
+  "517": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "518": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "519": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "520": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "521": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "523": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "524": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "525": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "526": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "528": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "529": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "530": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "531": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "532": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "533": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:21"
+  },
+  "534": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "536": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "537": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "538": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "539": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "541": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "543": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "544": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "545": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "546": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "547": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "548": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "550": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "551": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "552": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "553": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "554": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "555": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "557": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "558": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "559": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "560": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "561": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "563": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "564": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "565": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "566": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "567": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "568": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "570": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "571": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "572": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "573": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "576": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "581": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "582": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:22"
+  },
+  "586": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "589": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "590": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "591": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "592": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "593": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "595": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "596": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "597": {
+    "score": 32.5,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "598": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "599": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T00:47:23"
+  },
+  "000001": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000002": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000004": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000006": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000007": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000008": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000009": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000010": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000011": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000012": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000014": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000016": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000017": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000019": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000020": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000021": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000025": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000026": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000027": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000028": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:19:20"
+  },
+  "000029": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000030": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000031": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000032": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000034": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000035": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000036": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000037": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000039": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000042": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000045": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000048": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000049": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000050": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000055": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000056": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000058": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000059": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000060": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000061": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000062": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000063": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000065": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000066": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000068": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000069": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000070": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000078": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000088": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000089": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000090": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000096": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000099": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000100": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:05"
+  },
+  "000151": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000153": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000155": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000156": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000157": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000158": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000159": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000166": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000301": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000333": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000338": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000400": {
+    "score": 50.0,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000401": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000402": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000403": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000404": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000407": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000408": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000409": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000410": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000411": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000415": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000417": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000419": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000420": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000421": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000422": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000423": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:24:06"
+  },
+  "000425": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000426": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000428": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000429": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000430": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000488": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000498": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000501": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000503": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000504": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000505": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000506": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000507": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000509": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000510": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000513": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000514": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000516": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T01:32:05"
+  },
+  "000517": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000518": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000519": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000520": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000521": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000523": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000524": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000525": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000526": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000528": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000529": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:23"
+  },
+  "000530": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000531": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000532": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000533": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000534": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000536": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000537": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000538": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000539": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000541": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000543": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000544": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000545": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000546": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000547": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000548": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000550": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000551": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000552": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000553": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000554": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000555": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000557": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000558": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000559": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000560": {
+    "score": 52.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000561": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000563": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000564": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000565": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000566": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000567": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000568": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000570": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000571": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000572": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:24"
+  },
+  "000573": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000576": {
+    "score": 67.5,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000581": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000582": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000586": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000589": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000590": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000591": {
+    "score": 47.5,
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000592": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000593": {
+    "score": 82.5,
+    "label": "STRONG_BUY",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000595": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000596": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000597": {
+    "score": 35.0,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "BUY",
+      "mid": "SELL",
+      "long": "SELL"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000598": {
+    "score": 65.0,
+    "label": "BUY",
+    "horizon_signals": {
+      "short": "SELL",
+      "mid": "BUY",
+      "long": "BUY"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  },
+  "000599": {
+    "score": 32.5,
+    "label": "SELL",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "SELL",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-15T02:00:25"
+  }
+}

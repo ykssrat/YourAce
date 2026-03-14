@@ -32,6 +32,7 @@ def load_assets(
         .dropna()
         .astype(str)
     )
+    assets["code"] = assets["code"].map(_normalize_code)
 
     keyword = keyword.strip()
     if keyword:
@@ -52,7 +53,7 @@ def _load_stock_table(raw_dir: Path) -> pd.DataFrame:
     if parquet.exists():
         return pd.read_parquet(parquet)
     if csv.exists():
-        return pd.read_csv(csv)
+        return pd.read_csv(csv, dtype=str)
     return pd.DataFrame()
 
 
@@ -84,3 +85,15 @@ def _fallback_assets(keyword: str, limit: int) -> List[Dict[str, str]]:
         if keyword in item["code"] or keyword in item["name"]
     ]
     return filtered[:limit]
+
+
+def _normalize_code(code: str) -> str:
+    """统一证券代码格式，保留前导零。"""
+    value = str(code).strip()
+    if value.endswith(".0"):
+        value = value[:-2]
+
+    digits = "".join(ch for ch in value if ch.isdigit())
+    if digits and len(digits) <= 6:
+        return digits.zfill(6)
+    return value

@@ -31,6 +31,19 @@ def test_analyze_endpoint_returns_score_and_signals() -> None:
     assert len(payload["latest_news"]) <= 3
 
 
+def test_analyze_endpoint_can_disable_news() -> None:
+    """include_news 关闭时应跳过新闻抓取。"""
+    response = client.post(
+        "/analyze",
+        json={"code": "000001", "long_fund_trend": 0.02, "include_news": False},
+    )
+    assert response.status_code == 200
+
+    payload = response.json()
+    assert payload["news_enabled"] is False
+    assert payload["latest_news"] == []
+
+
 def test_news_endpoint_returns_items() -> None:
     """news 接口应返回资讯列表。"""
     response = client.get("/news", params={"code": "000001", "limit": 3})

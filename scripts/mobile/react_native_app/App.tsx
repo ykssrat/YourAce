@@ -1,212 +1,118 @@
-/// <reference path="./src/react_native_shims.d.ts" />
-import React, { useEffect, useRef, useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+﻿/// <reference path="./src/react_native_shims.d.ts" />
+import React, { useState } from "react";
+import { Pressable, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { ScoreSignalCard } from "./src/components/ScoreSignalCard";
-import { SearchPanel } from "./src/components/SearchPanel";
-import { WatchlistPanel } from "./src/components/WatchlistPanel";
-import { analyzeAsset, searchAssets } from "./src/services/api";
-import { AnalyzeResponse, SearchItem } from "./src/types";
+import { DiagnoseTab } from "./src/components/DiagnoseTab";
+import { ScreenTab } from "./src/components/ScreenTab";
+
+type ActiveTab = "screen" | "diagnose";
 
 export default function App() {
-  const [query, setQuery] = useState("000001");
-  const [watchlist, setWatchlist] = useState(["000001", "600519", "510300", "159915"]);
-  const [loading, setLoading] = useState(false);
-  const [searching, setSearching] = useState(false);
-  const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
-  const [error, setError] = useState("");
-  const [result, setResult] = useState<AnalyzeResponse | null>(null);
-  const analyzingRef = useRef(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("screen");
+  const [apiBaseUrl, setApiBaseUrl] = useState("192.168.1.100:8000");
+  const [newsEnabled, setNewsEnabled] = useState(true);
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [diagnoseCode, setDiagnoseCode] = useState<string | undefined>(undefined);
 
-  async function handleAnalyze(inputCode?: string) {
-    const finalCode = (inputCode ?? query).trim();
-    if (!finalCode) {
-      setError("请输入代码或名称");
-      return;
-    }
-
-    if (analyzingRef.current) {
-      return;
-    }
-
-    try {
-      analyzingRef.current = true;
-      setLoading(true);
-      setError("");
-      const data = await analyzeAsset(finalCode);
-      setResult(data);
-      setQuery(finalCode);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "请求失败");
-    } finally {
-      analyzingRef.current = false;
-      setLoading(false);
-    }
+  function handleGoToDiagnose(code: string) {
+    setDiagnoseCode(code);
+    setActiveTab("diagnose");
   }
 
-  function handleAddWatchItem(codeInput: string) {
-    const code = normalizeCode(codeInput);
-    if (!isCodeLike(code)) {
-      setError("代码格式无效，请输入股票/ETF/基金代码");
-      return;
+  function handleTabChange(tab: ActiveTab) {
+    if (tab !== "diagnose") {
+      setDiagnoseCode(undefined);
     }
-
-    setWatchlist((prev) => {
-      if (prev.includes(code)) {
-        return prev;
-      }
-      return [code, ...prev];
-    });
-    setQuery(code);
-    setError("");
+    setActiveTab(tab);
   }
-
-  function handleRemoveWatchItem(code: string) {
-    setWatchlist((prev) => prev.filter((item) => item !== code));
-  }
-
-  useEffect(() => {
-    const keyword = query.trim();
-    if (!keyword) {
-      setSuggestions([]);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        setSearching(true);
-        const items = await searchAssets(keyword, 8);
-        setSuggestions(items);
-      } catch {
-        setSuggestions([]);
-      } finally {
-        setSearching(false);
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query]);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#dfe9db" />
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.header}>YourAce 移动端原型</Text>
 
-        <SearchPanel
-          query={query}
-          onQueryChange={setQuery}
-          onSubmit={handleAnalyze}
-          loading={loading}
-        />
+      <View style={styles.settingsBar}>
+        <Pressable style={styles.settingsToggle} onPress={() => setSettingsExpanded(!settingsExpanded)}>
+          <Text style={styles.settingsToggleText}>
+            {settingsExpanded ? "▲ 收起设置" : "▼ 服务器设置"}
+          </Text>
+          <View style={styles.settingsStatusDot} />
+        </Pressable>
 
-        <WatchlistPanel
-          items={watchlist}
-          draftCode={query}
-          onAdd={handleAddWatchItem}
-          onRemove={handleRemoveWatchItem}
-          onPick={(code) => {
-            setQuery(code);
-            void handleAnalyze(code);
-          }}
-        />
-
-        {suggestions.length > 0 ? (
-          <View style={styles.suggestionBox}>
-            <Text style={styles.suggestionTitle}>{searching ? "检索中..." : "搜索建议"}</Text>
-            {suggestions.map((item: SearchItem) => (
+        {settingsExpanded ? (
+          <View style={styles.settingsPanel}>
+            <Text style={styles.settingsLabel}>后端地址</Text>
+            <TextInput
+              value={apiBaseUrl}
+              onChangeText={setApiBaseUrl}
+              placeholder="例如 192.168.1.100:8000"
+              placeholderTextColor="#7c8b7a"
+              autoCapitalize="none"
+              autoCorrect={false}
+              style={styles.settingsInput}
+            />
+            <Text style={styles.settingsHint}>真机：填电脑局域网 IP；模拟器：可留空或用 10.0.2.2:8000</Text>
+            <View style={styles.settingsRow}>
+              <Text style={styles.settingsLabel}>新闻系统</Text>
               <Pressable
-                key={`${item.code}-${item.name}`}
-                style={styles.suggestionItem}
-                onPress={() => {
-                  setQuery(item.code);
-                  void handleAnalyze(item.code);
-                }}
+                style={[styles.switchButton, newsEnabled ? styles.switchOn : styles.switchOff]}
+                onPress={() => setNewsEnabled(!newsEnabled)}
               >
-                <Text style={styles.suggestionCode}>{item.code}</Text>
-                <Text style={styles.suggestionName}>{item.name}</Text>
+                <Text style={styles.switchText}>{newsEnabled ? "已开启" : "已关闭"}</Text>
               </Pressable>
-            ))}
+            </View>
           </View>
         ) : null}
+      </View>
 
-        {error ? (
-          <View style={styles.errorBox}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        ) : null}
+      <View style={styles.content}>
+        {activeTab === "screen" ? (
+          <ScreenTab apiBaseUrl={apiBaseUrl} onGoToDiagnose={handleGoToDiagnose} />
+        ) : (
+          <DiagnoseTab
+            apiBaseUrl={apiBaseUrl}
+            newsEnabled={newsEnabled}
+            initialCode={diagnoseCode}
+          />
+        )}
+      </View>
 
-        <ScoreSignalCard result={result} />
-      </ScrollView>
+      <View style={styles.tabBar}>
+        <TabBarItem label="选股" icon="🔍" active={activeTab === "screen"} onPress={() => handleTabChange("screen")} />
+        <TabBarItem label="诊股" icon="📊" active={activeTab === "diagnose"} onPress={() => handleTabChange("diagnose")} />
+      </View>
     </SafeAreaView>
   );
 }
 
+function TabBarItem({ label, icon, active, onPress }: { label: string; icon: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable style={[styles.tabItem, active && styles.tabItemActive]} onPress={onPress}>
+      <Text style={styles.tabIcon}>{icon}</Text>
+      <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#dfe9db",
-  },
-  container: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  header: {
-    fontSize: 28,
-    fontFamily: "Georgia",
-    fontWeight: "700",
-    color: "#203627",
-    marginBottom: 12,
-  },
-  errorBox: {
-    marginTop: 12,
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: "#ffe3e3",
-    borderWidth: 1,
-    borderColor: "#ffa8a8",
-  },
-  errorText: {
-    color: "#a61e4d",
-    fontWeight: "600",
-  },
-  suggestionBox: {
-    marginTop: 12,
-    backgroundColor: "#f4f8ef",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#d7e4cf",
-    padding: 10,
-  },
-  suggestionTitle: {
-    fontSize: 13,
-    color: "#335240",
-    fontWeight: "700",
-    marginBottom: 6,
-  },
-  suggestionItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e3edda",
-  },
-  suggestionCode: {
-    color: "#234130",
-    fontWeight: "700",
-  },
-  suggestionName: {
-    color: "#4f6b5a",
-    marginLeft: 12,
-    flex: 1,
-    textAlign: "right",
-  },
+  safeArea: { flex: 1, backgroundColor: "#dfe9db" },
+  settingsBar: { backgroundColor: "#eef6ea", borderBottomWidth: 1, borderBottomColor: "#d8e7d2", paddingHorizontal: 16, paddingVertical: 6 },
+  settingsToggle: { flexDirection: "row", alignItems: "center", gap: 8 },
+  settingsToggleText: { fontSize: 12, color: "#2a4a37", fontWeight: "600" },
+  settingsStatusDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#2f9e44" },
+  settingsPanel: { marginTop: 8, gap: 6 },
+  settingsLabel: { fontSize: 12, fontWeight: "700", color: "#2a4a37" },
+  settingsInput: { height: 38, borderRadius: 10, borderWidth: 1, borderColor: "#c6d9c0", backgroundColor: "#ffffff", color: "#1f3a2a", paddingHorizontal: 10, fontSize: 13 },
+  settingsHint: { fontSize: 11, color: "#5b7160" },
+  settingsRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  switchButton: { borderRadius: 999, paddingVertical: 4, paddingHorizontal: 10 },
+  switchOn: { backgroundColor: "#2f9e44" },
+  switchOff: { backgroundColor: "#868e96" },
+  switchText: { color: "#ffffff", fontSize: 12, fontWeight: "700" },
+  content: { flex: 1, backgroundColor: "#dfe9db" },
+  tabBar: { flexDirection: "row", backgroundColor: "#f4f8ef", borderTopWidth: 1, borderTopColor: "#d8e7d2", paddingBottom: 4 },
+  tabItem: { flex: 1, alignItems: "center", paddingVertical: 10, gap: 2 },
+  tabItemActive: { borderTopWidth: 2, borderTopColor: "#2a4a37" },
+  tabIcon: { fontSize: 20 },
+  tabLabel: { fontSize: 12, color: "#7c8b7a", fontWeight: "600" },
+  tabLabelActive: { color: "#2a4a37", fontWeight: "700" },
 });
-
-function normalizeCode(value: string): string {
-  return value.trim().toUpperCase();
-}
-
-function isCodeLike(code: string): boolean {
-  return /^[0-9A-Z]{4,10}$/.test(code);
-}

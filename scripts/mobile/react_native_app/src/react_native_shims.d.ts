@@ -1,7 +1,9 @@
 declare module "react" {
   const React: any;
   export default React;
-  export function useState<T>(initial: T): [T, (value: T) => void];
+  export type SetStateAction<T> = T | ((prevState: T) => T);
+  export type Dispatch<A> = (value: A) => void;
+  export function useState<T>(initial: T): [T, Dispatch<SetStateAction<T>>];
   export function useMemo<T>(factory: () => T, deps: unknown[]): T;
   export function useRef<T>(initial: T): { current: T };
   export function useEffect(effect: () => void | (() => void), deps?: unknown[]): void;
@@ -14,6 +16,7 @@ declare module "react/jsx-runtime" {
 }
 
 declare module "react-native" {
+  export const ActivityIndicator: any;
   export const SafeAreaView: any;
   export const ScrollView: any;
   export const StatusBar: any;
