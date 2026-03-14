@@ -1,5 +1,5 @@
 /// <reference path="./src/react_native_shims.d.ts" />
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 
 import { ScoreSignalCard } from "./src/components/ScoreSignalCard";
@@ -10,14 +10,13 @@ import { AnalyzeResponse, SearchItem } from "./src/types";
 
 export default function App() {
   const [query, setQuery] = useState("000001");
+  const [watchlist, setWatchlist] = useState(["000001", "600519", "510300", "159915"]);
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
   const [error, setError] = useState("");
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
   const analyzingRef = useRef(false);
-
-  const watchlist = useMemo(() => ["000001", "600519", "510300", "159915"], []);
 
   async function handleAnalyze(inputCode?: string) {
     const finalCode = (inputCode ?? query).trim();
@@ -43,6 +42,27 @@ export default function App() {
       analyzingRef.current = false;
       setLoading(false);
     }
+  }
+
+  function handleAddWatchItem(codeInput: string) {
+    const code = normalizeCode(codeInput);
+    if (!isCodeLike(code)) {
+      setError("代码格式无效，请输入股票/ETF/基金代码");
+      return;
+    }
+
+    setWatchlist((prev) => {
+      if (prev.includes(code)) {
+        return prev;
+      }
+      return [code, ...prev];
+    });
+    setQuery(code);
+    setError("");
+  }
+
+  function handleRemoveWatchItem(code: string) {
+    setWatchlist((prev) => prev.filter((item) => item !== code));
   }
 
   useEffect(() => {
@@ -82,6 +102,9 @@ export default function App() {
 
         <WatchlistPanel
           items={watchlist}
+          draftCode={query}
+          onAdd={handleAddWatchItem}
+          onRemove={handleRemoveWatchItem}
           onPick={(code) => {
             setQuery(code);
             void handleAnalyze(code);
@@ -179,3 +202,11 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
 });
+
+function normalizeCode(value: string): string {
+  return value.trim().toUpperCase();
+}
+
+function isCodeLike(code: string): boolean {
+  return /^[0-9A-Z]{4,10}$/.test(code);
+}

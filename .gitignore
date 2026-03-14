@@ -3,3 +3,21 @@ __pycache__/
 *.py[cod]
 .venv/
 
+# Node / React Native
+scripts/mobile/react_native_app/node_modules/
+scripts/mobile/react_native_app/npm-debug.log*
+scripts/mobile/react_native_app/yarn-debug.log*
+scripts/mobile/react_native_app/yarn-error.log*
+
+# Android build artifacts
+scripts/mobile/react_native_app/android/.gradle/
+scripts/mobile/react_native_app/android/build/
+scripts/mobile/react_native_app/android/app/build/
+scripts/mobile/react_native_app/android/local.properties
+
+# Temporary scaffold project
+scripts/mobile/rn_seed/
+
+# Local build logs
+*.log
+
