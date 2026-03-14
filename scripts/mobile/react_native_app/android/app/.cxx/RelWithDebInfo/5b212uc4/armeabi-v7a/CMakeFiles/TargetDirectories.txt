@@ -1,0 +1,3 @@
+D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/armeabi-v7a/CMakeFiles/appmodules.dir
+D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,31 @@
+{
+  "buildFiles": [
+    "D:\\QMT\\YourAce\\scripts\\mobile\\react_native_app\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "d:\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "D:\\QMT\\YourAce\\scripts\\mobile\\react_native_app\\android\\app\\.cxx\\RelWithDebInfo\\5b212uc4\\armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "d:\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "D:\\QMT\\YourAce\\scripts\\mobile\\react_native_app\\android\\app\\.cxx\\RelWithDebInfo\\5b212uc4\\armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "appmodules::@6890427a1f51a3e7e1df": {
+      "artifactName": "appmodules",
+      "abi": "armeabi-v7a",
+      "output": "D:\\QMT\\YourAce\\scripts\\mobile\\react_native_app\\android\\app\\build\\intermediates\\cxx\\RelWithDebInfo\\5b212uc4\\obj\\armeabi-v7a\\libappmodules.so",
+      "runtimeFiles": [
+        "C:\\Users\\asus\\.gradle\\caches\\8.10.2\\transforms\\eb4b98dea289284ca2b26e9265bd49ab\\transformed\\fbjni-0.6.0\\prefab\\modules\\fbjni\\libs\\android.armeabi-v7a\\libfbjni.so",
+        "C:\\Users\\asus\\.gradle\\caches\\8.10.2\\transforms\\335e806144778f46a943d799acdead8b\\transformed\\react-android-0.76.1-release\\prefab\\modules\\jsi\\libs\\android.armeabi-v7a\\libjsi.so",
+        "C:\\Users\\asus\\.gradle\\caches\\8.10.2\\transforms\\335e806144778f46a943d799acdead8b\\transformed\\react-android-0.76.1-release\\prefab\\modules\\reactnative\\libs\\android.armeabi-v7a\\libreactnative.so"
+      ]
+    }
+  }
+}

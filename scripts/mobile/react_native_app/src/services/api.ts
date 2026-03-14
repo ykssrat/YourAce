@@ -1,21 +1,23 @@
 import { AnalyzeResponse, SearchItem } from "../types";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URLS = [
+  "http://10.0.2.2:8000",
+  "http://127.0.0.1:8000",
+  "http://localhost:8000",
+];
 const REQUEST_TIMEOUT_MS = 10000;
 const RETRY_COUNT = 1;
 
 export async function searchAssets(query: string, limit: number = 20): Promise<SearchItem[]> {
-  const url = `${API_BASE_URL}/search?query=${encodeURIComponent(query)}&limit=${limit}`;
-  const response = await requestWithRetry(url, {
-    method: "GET",
-  });
+  const path = `/search?query=${encodeURIComponent(query)}&limit=${limit}`;
+  const response = await requestWithBaseFallback(path, { method: "GET" });
 
   const payload = await response.json();
   return (payload.items ?? []) as SearchItem[];
 }
 
 export async function analyzeAsset(code: string): Promise<AnalyzeResponse> {
-  const response = await requestWithRetry(`${API_BASE_URL}/analyze`, {
+  const response = await requestWithBaseFallback("/analyze", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -27,6 +29,21 @@ export async function analyzeAsset(code: string): Promise<AnalyzeResponse> {
   });
 
   return (await response.json()) as AnalyzeResponse;
+}
+
+async function requestWithBaseFallback(path: string, init: RequestInit): Promise<Response> {
+  const errors: string[] = [];
+  for (const baseUrl of API_BASE_URLS) {
+    const url = `${baseUrl}${path}`;
+    try {
+      return await requestWithRetry(url, init);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "未知错误";
+      errors.push(`${baseUrl}: ${msg}`);
+    }
+  }
+
+  throw new Error(`network request failed: ${errors.join(" | ")}`);
 }
 
 async function requestWithRetry(url: string, init: RequestInit): Promise<Response> {
@@ -41,7 +58,11 @@ async function requestWithRetry(url: string, init: RequestInit): Promise<Respons
       }
       return response;
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error("未知错误");
+      if (error instanceof Error && error.message.includes("network request failed")) {
+        lastError = error;
+      } else {
+        lastError = error instanceof Error ? error : new Error("未知错误");
+      }
       attempt += 1;
       if (attempt > RETRY_COUNT) {
         throw lastError;
