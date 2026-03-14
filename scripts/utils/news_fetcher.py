@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, TimeoutError
 from datetime import datetime
 from typing import Callable, Dict, Iterable, List, Optional
 
@@ -9,7 +10,7 @@ import akshare as ak
 import pandas as pd
 
 
-def fetch_latest_news(code: str, limit: int = 3) -> List[Dict[str, str]]:
+def fetch_latest_news(code: str, limit: int = 3, timeout_seconds: float = 2.5) -> List[Dict[str, str]]:
     """抓取指定标的的最新新闻，失败时返回兜底数据。"""
     clean_code = code.strip()
     if not clean_code:
@@ -18,7 +19,7 @@ def fetch_latest_news(code: str, limit: int = 3) -> List[Dict[str, str]]:
         raise ValueError("limit 必须为正整数")
 
     try:
-        raw_df = _call_news_source(clean_code)
+        raw_df = _call_news_source(clean_code, timeout_seconds=timeout_seconds)
         normalized = _normalize_news_frame(raw_df)
         if normalized.empty:
             return _fallback_news(clean_code, limit)
@@ -27,7 +28,7 @@ def fetch_latest_news(code: str, limit: int = 3) -> List[Dict[str, str]]:
         return _fallback_news(clean_code, limit)
 
 
-def _call_news_source(code: str) -> pd.DataFrame:
+def _call_news_source(code: str, timeout_seconds: float) -> pd.DataFrame:
     """按候选接口顺序拉取新闻。"""
     sources: Iterable[Callable[[], pd.DataFrame]] = [
         lambda: ak.stock_news_em(symbol=code),
@@ -37,9 +38,14 @@ def _call_news_source(code: str) -> pd.DataFrame:
     last_error: Optional[Exception] = None
     for fn in sources:
         try:
-            df = fn()
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(fn)
+                df = future.result(timeout=timeout_seconds)
             if isinstance(df, pd.DataFrame) and not df.empty:
                 return df
+        except TimeoutError as exc:
+            last_error = RuntimeError("新闻接口超时")
+            _ = exc
         except Exception as exc:  # noqa: BLE001
             last_error = exc
 

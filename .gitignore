@@ -13,6 +13,7 @@ scripts/mobile/react_native_app/yarn-error.log*
 scripts/mobile/react_native_app/android/.gradle/
 scripts/mobile/react_native_app/android/build/
 scripts/mobile/react_native_app/android/app/build/
+scripts/mobile/react_native_app/android/app/.cxx/
 scripts/mobile/react_native_app/android/local.properties
 
 # Temporary scaffold project
