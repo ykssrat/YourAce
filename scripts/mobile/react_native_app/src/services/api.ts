@@ -1,6 +1,6 @@
-import { AnalyzeResponse, SearchItem } from "../types";
+import { AnalyzeResponse, DiagnoseResponse, ScreenResponse, SearchItem } from "../types";
 
-const API_BASE_URLS = [
+const DEFAULT_API_BASE_URLS = [
   "http://10.0.2.2:8000",
   "http://127.0.0.1:8000",
   "http://localhost:8000",
@@ -8,15 +8,23 @@ const API_BASE_URLS = [
 const REQUEST_TIMEOUT_MS = 10000;
 const RETRY_COUNT = 1;
 
-export async function searchAssets(query: string, limit: number = 20): Promise<SearchItem[]> {
+export async function searchAssets(
+  query: string,
+  limit: number = 20,
+  preferredBaseUrl: string = "",
+): Promise<SearchItem[]> {
   const path = `/search?query=${encodeURIComponent(query)}&limit=${limit}`;
-  const response = await requestWithBaseFallback(path, { method: "GET" });
+  const response = await requestWithBaseFallback(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
 
   const payload = await response.json();
   return (payload.items ?? []) as SearchItem[];
 }
 
-export async function analyzeAsset(code: string): Promise<AnalyzeResponse> {
+export async function analyzeAsset(
+  code: string,
+  preferredBaseUrl: string = "",
+  includeNews: boolean = true,
+): Promise<AnalyzeResponse> {
   const response = await requestWithBaseFallback("/analyze", {
     method: "POST",
     headers: {
@@ -25,15 +33,51 @@ export async function analyzeAsset(code: string): Promise<AnalyzeResponse> {
     body: JSON.stringify({
       code,
       long_fund_trend: 0,
+      include_news: includeNews,
     }),
-  });
+  }, buildBaseUrls(preferredBaseUrl));
 
   return (await response.json()) as AnalyzeResponse;
 }
 
-async function requestWithBaseFallback(path: string, init: RequestInit): Promise<Response> {
+export async function diagnoseAsset(
+  code: string,
+  preferredBaseUrl: string = "",
+  includeNews: boolean = true,
+): Promise<DiagnoseResponse> {
+  const response = await requestWithBaseFallback("/diagnose", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code, include_news: includeNews }),
+  }, buildBaseUrls(preferredBaseUrl));
+
+  return (await response.json()) as DiagnoseResponse;
+}
+
+export async function screenAssets(
+  request: {
+    asset_type?: string;
+    horizon?: string;
+    score_operator?: string;
+    score_threshold?: number;
+    opinion?: string;
+    round_size?: number;
+    offset?: number;
+  },
+  preferredBaseUrl: string = "",
+): Promise<ScreenResponse> {
+  const response = await requestWithBaseFallback("/screen", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  }, buildBaseUrls(preferredBaseUrl));
+
+  return (await response.json()) as ScreenResponse;
+}
+
+async function requestWithBaseFallback(path: string, init: RequestInit, baseUrls: string[]): Promise<Response> {
   const errors: string[] = [];
-  for (const baseUrl of API_BASE_URLS) {
+  for (const baseUrl of baseUrls) {
     const url = `${baseUrl}${path}`;
     try {
       return await requestWithRetry(url, init);
@@ -44,6 +88,27 @@ async function requestWithBaseFallback(path: string, init: RequestInit): Promise
   }
 
   throw new Error(`network request failed: ${errors.join(" | ")}`);
+}
+
+function buildBaseUrls(preferredBaseUrl: string): string[] {
+  const normalizedPreferred = normalizeBaseUrl(preferredBaseUrl);
+  if (!normalizedPreferred) {
+    return DEFAULT_API_BASE_URLS;
+  }
+
+  const result = [normalizedPreferred, ...DEFAULT_API_BASE_URLS];
+  return Array.from(new Set(result));
+}
+
+function normalizeBaseUrl(input: string): string {
+  const value = input.trim();
+  if (!value) {
+    return "";
+  }
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value.replace(/\/$/, "");
+  }
+  return `http://${value.replace(/\/$/, "")}`;
 }
 
 async function requestWithRetry(url: string, init: RequestInit): Promise<Response> {

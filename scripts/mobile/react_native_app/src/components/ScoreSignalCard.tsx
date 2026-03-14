@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { AnalyzeResponse } from "../types";
 
 type ScoreSignalCardProps = {
+  // DiagnoseResponse 是 AnalyzeResponse 的超集，两者均可传入
   result: AnalyzeResponse | null;
 };
 

@@ -105,6 +105,13 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+
+    // 统一输出文件名
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "YourAce.apk"
+        }
+    }
 }
 
 dependencies {
