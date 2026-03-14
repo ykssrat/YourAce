@@ -1,5 +1,6 @@
 {
   "buildFiles": [
+    "D:\\QMT\\YourAce\\scripts\\mobile\\react_native_app\\node_modules\\@react-native-async-storage\\async-storage\\android\\build\\generated\\source\\codegen\\jni\\CMakeLists.txt",
     "D:\\QMT\\YourAce\\scripts\\mobile\\react_native_app\\node_modules\\react-native\\ReactAndroid\\cmake-utils\\default-app-setup\\CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
@@ -27,6 +28,11 @@
         "C:\\Users\\asus\\.gradle\\caches\\8.10.2\\transforms\\335e806144778f46a943d799acdead8b\\transformed\\react-android-0.76.1-release\\prefab\\modules\\jsi\\libs\\android.arm64-v8a\\libjsi.so",
         "C:\\Users\\asus\\.gradle\\caches\\8.10.2\\transforms\\335e806144778f46a943d799acdead8b\\transformed\\react-android-0.76.1-release\\prefab\\modules\\reactnative\\libs\\android.arm64-v8a\\libreactnative.so"
       ]
+    },
+    "react_codegen_rnasyncstorage::@1596841e19ec5b9eeffe": {
+      "toolchain": "toolchain",
+      "abi": "arm64-v8a",
+      "artifactName": "react_codegen_rnasyncstorage"
     }
   },
   "toolchains": {

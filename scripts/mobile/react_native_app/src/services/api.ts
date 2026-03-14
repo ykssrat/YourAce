@@ -75,6 +75,31 @@ export async function screenAssets(
   return (await response.json()) as ScreenResponse;
 }
 
+export async function checkServerHealth(
+  preferredBaseUrl: string,
+): Promise<{ ok: boolean; message: string }> {
+  const baseUrl = normalizeBaseUrl(preferredBaseUrl);
+  if (!baseUrl) {
+    return { ok: false, message: "地址为空，请填写后端地址" };
+  }
+
+  const url = `${baseUrl}/health`;
+  try {
+    const response = await requestWithTimeout(url, { method: "GET" }, REQUEST_TIMEOUT_MS);
+    if (!response.ok) {
+      return { ok: false, message: `HTTP ${response.status}` };
+    }
+    const payload = await response.json();
+    if (payload?.status === "ok") {
+      return { ok: true, message: "连接成功" };
+    }
+    return { ok: false, message: "接口返回异常" };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "未知错误";
+    return { ok: false, message: msg };
+  }
+}
+
 async function requestWithBaseFallback(path: string, init: RequestInit, baseUrls: string[]): Promise<Response> {
   const errors: string[] = [];
   for (const baseUrl of baseUrls) {

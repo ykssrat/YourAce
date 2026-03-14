@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from collections import deque
 from typing import Dict, List
 
 import numpy as np
@@ -27,6 +28,10 @@ _VALID_SCORE_OPERATORS = {"gte", "lte"}
 _VALID_OPINIONS = {"STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL", ""}
 _VALID_ASSET_TYPES = {"stock", "etf", "fund"}
 
+# 兼容前端“不限”筛选
+_VALID_HORIZONS_WITH_ALL = _VALID_HORIZONS | {""}
+_VALID_ASSET_TYPES_WITH_ALL = _VALID_ASSET_TYPES | {""}
+
 
 class AnalyzeRequest(BaseModel):
     """分析请求体。"""
@@ -39,8 +44,8 @@ class AnalyzeRequest(BaseModel):
 class ScreenRequest(BaseModel):
     """选股请求体。"""
 
-    asset_type: str = Field(default="stock")
-    horizon: str = Field(default="short")
+    asset_type: str = Field(default="")
+    horizon: str = Field(default="")
     score_operator: str = Field(default="gte")
     score_threshold: float = Field(default=60.0, ge=0.0, le=100.0)
     opinion: str = Field(default="")
@@ -119,16 +124,19 @@ def health() -> Dict[str, str]:
 @app.post("/screen")
 def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
     """批量筛选资产，返回当前分页内符合条件的标的。"""
-    if payload.horizon not in _VALID_HORIZONS:
-        raise HTTPException(status_code=400, detail=f"horizon 非法，合法值: {_VALID_HORIZONS}")
+    if payload.horizon not in _VALID_HORIZONS_WITH_ALL:
+        raise HTTPException(status_code=400, detail=f"horizon 非法，合法值: {_VALID_HORIZONS_WITH_ALL}")
     if payload.score_operator not in _VALID_SCORE_OPERATORS:
         raise HTTPException(status_code=400, detail=f"score_operator 非法，合法值: {_VALID_SCORE_OPERATORS}")
     if payload.opinion not in _VALID_OPINIONS:
         raise HTTPException(status_code=400, detail=f"opinion 非法，合法值: {_VALID_OPINIONS}")
-    if payload.asset_type not in _VALID_ASSET_TYPES:
-        raise HTTPException(status_code=400, detail=f"asset_type 非法，合法值: {_VALID_ASSET_TYPES}")
+    if payload.asset_type not in _VALID_ASSET_TYPES_WITH_ALL:
+        raise HTTPException(status_code=400, detail=f"asset_type 非法，合法值: {_VALID_ASSET_TYPES_WITH_ALL}")
 
     all_assets = load_assets(keyword="", limit=10000)
+    if payload.asset_type:
+        all_assets = [asset for asset in all_assets if _match_asset_type(str(asset.get("code", "")), payload.asset_type)]
+    all_assets = _rebalance_assets_for_screen(all_assets)
     total = len(all_assets)
 
     start = payload.offset
@@ -160,8 +168,16 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
 
         # 看法过滤（空字符串表示不过滤）
         if payload.opinion:
-            derived = _derive_opinion(horizon_signals[payload.horizon], score_result.label)
-            if derived != payload.opinion:
+            if payload.horizon:
+                derived = _derive_opinion(horizon_signals[payload.horizon], score_result.label)
+                matched = derived == payload.opinion
+            else:
+                # 窗口期不限时，任一窗口匹配即通过
+                matched = any(
+                    _derive_opinion(horizon_signals[h], score_result.label) == payload.opinion
+                    for h in ("short", "mid", "long")
+                )
+            if not matched:
                 signal_miss_count += 1
                 continue
 
@@ -229,6 +245,118 @@ def _run_bic_pruning(close_series: pd.Series) -> List[str]:
         return result.selected_features
     except Exception:
         return []
+
+
+def _match_asset_type(code: str, asset_type: str) -> bool:
+    """根据代码前缀粗分产品类型。"""
+    digits = "".join(ch for ch in str(code) if ch.isdigit())
+    if len(digits) < 6:
+        return False
+
+    if asset_type == "stock":
+        return digits.startswith(("000", "001", "002", "003", "300", "301", "600", "601", "603", "605", "688", "689"))
+    if asset_type == "etf":
+        return digits.startswith(("159", "510", "511", "512", "513", "515", "516", "517", "518", "588"))
+    if asset_type == "fund":
+        return digits.startswith(("160", "161", "162", "163", "164", "165", "166", "167", "168", "169"))
+    return True
+
+
+def _rebalance_assets_for_screen(assets: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    """通过轻量聚类对候选重排，提升前缀与行业关键词分布均匀性。"""
+    if len(assets) <= 16:
+        return assets
+
+    labels = _cluster_assets(assets)
+    buckets: Dict[int, deque] = {}
+    for asset, label in zip(assets, labels):
+        buckets.setdefault(int(label), deque()).append(asset)
+
+    # 轮询抽样：避免单一簇连续出现
+    cluster_order = sorted(buckets.keys(), key=lambda k: len(buckets[k]), reverse=True)
+    result: List[Dict[str, str]] = []
+    while any(buckets[k] for k in cluster_order):
+        for k in cluster_order:
+            if buckets[k]:
+                result.append(buckets[k].popleft())
+    return result
+
+
+def _cluster_assets(assets: List[Dict[str, str]]) -> np.ndarray:
+    """基于代码前缀+名称关键词进行轻量 KMeans 聚类。"""
+    feats = np.array([_asset_feature_vector(a) for a in assets], dtype=float)
+    n = len(feats)
+    if n == 0:
+        return np.array([], dtype=int)
+
+    # 按样本数自适应簇数，避免过拟合
+    k = min(12, max(4, n // 120), n)
+    if k == n:
+        return np.arange(n, dtype=int)
+
+    # 标准化
+    mean = feats.mean(axis=0, keepdims=True)
+    std = feats.std(axis=0, keepdims=True)
+    std[std == 0] = 1.0
+    x = (feats - mean) / std
+
+    init_idx = np.linspace(0, n - 1, num=k, dtype=int)
+    centers = x[init_idx].copy()
+    labels = np.zeros(n, dtype=int)
+
+    for _ in range(15):
+        d2 = ((x[:, None, :] - centers[None, :, :]) ** 2).sum(axis=2)
+        new_labels = d2.argmin(axis=1)
+        if np.array_equal(new_labels, labels):
+            break
+        labels = new_labels
+
+        for ci in range(k):
+            members = x[labels == ci]
+            if len(members) == 0:
+                # 空簇重置到当前最离散点
+                farthest = d2.min(axis=1).argmax()
+                centers[ci] = x[farthest]
+            else:
+                centers[ci] = members.mean(axis=0)
+
+    return labels
+
+
+def _asset_feature_vector(asset: Dict[str, str]) -> List[float]:
+    """构造聚类特征：代码前缀、行业关键词、代码区段。"""
+    code = str(asset.get("code", ""))
+    name = str(asset.get("name", ""))
+    digits = "".join(ch for ch in code if ch.isdigit()).zfill(6)
+
+    prefix_map = {"0": 0.0, "3": 1.0, "6": 2.0, "5": 3.0, "1": 4.0, "9": 5.0}
+    prefix_feature = prefix_map.get(digits[:1], 6.0)
+    board_feature = float(int(digits[:3])) / 999.0
+    industry_feature = float(_infer_industry_group(name))
+    hash_feature = float(sum(ord(ch) for ch in name) % 97) / 97.0
+
+    return [prefix_feature, industry_feature, board_feature, hash_feature]
+
+
+def _infer_industry_group(name: str) -> int:
+    """基于名称关键词推断行业组（无行业字段时的近似做法）。"""
+    text = str(name)
+    rules = [
+        (0, ("银行", "证券", "保险", "金融")),
+        (1, ("医药", "医疗", "生物", "疫苗")),
+        (2, ("半导体", "芯片", "电子", "通信")),
+        (3, ("新能源", "光伏", "锂", "电池", "储能")),
+        (4, ("白酒", "酒", "食品", "消费")),
+        (5, ("军工", "航天", "国防")),
+        (6, ("煤炭", "有色", "钢铁", "化工")),
+        (7, ("地产", "基建", "建筑", "建材")),
+        (8, ("汽车", "机械", "制造")),
+        (9, ("ETF", "基金", "指数")),
+    ]
+    for group_id, keywords in rules:
+        if any(word in text for word in keywords):
+            return group_id
+    return 10
 
 
 def _load_close_series(code: str, raw_dir: str = "datas/raw") -> pd.Series:

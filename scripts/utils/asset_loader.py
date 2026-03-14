@@ -8,6 +8,25 @@ from typing import Dict, List
 import pandas as pd
 
 
+# 兜底补充资产池：用于增强不同前缀与行业分布
+_EXTRA_ASSETS = [
+    {"code": "510300", "name": "沪深300ETF"},
+    {"code": "510500", "name": "中证500ETF"},
+    {"code": "159915", "name": "创业板ETF"},
+    {"code": "588000", "name": "科创50ETF"},
+    {"code": "512690", "name": "酒ETF"},
+    {"code": "512660", "name": "军工ETF"},
+    {"code": "515170", "name": "食品饮料ETF"},
+    {"code": "512010", "name": "医药ETF"},
+    {"code": "512480", "name": "半导体ETF"},
+    {"code": "512000", "name": "券商ETF"},
+    {"code": "516160", "name": "新能源ETF"},
+    {"code": "516220", "name": "煤炭ETF"},
+    {"code": "515790", "name": "光伏ETF"},
+    {"code": "516950", "name": "基建ETF"},
+]
+
+
 def load_assets(
     keyword: str = "",
     limit: int = 20,
@@ -33,6 +52,11 @@ def load_assets(
         .astype(str)
     )
     assets["code"] = assets["code"].map(_normalize_code)
+
+    # 合并补充资产，提升前缀与行业覆盖面
+    extra_df = pd.DataFrame(_EXTRA_ASSETS, columns=["code", "name"]).astype(str)
+    extra_df["code"] = extra_df["code"].map(_normalize_code)
+    assets = pd.concat([extra_df, assets], ignore_index=True)
 
     keyword = keyword.strip()
     if keyword:
@@ -72,9 +96,7 @@ def _fallback_assets(keyword: str, limit: int) -> List[Dict[str, str]]:
     defaults = [
         {"code": "000001", "name": "平安银行"},
         {"code": "600519", "name": "贵州茅台"},
-        {"code": "510300", "name": "沪深300ETF"},
-        {"code": "159915", "name": "创业板ETF"},
-    ]
+    ] + _EXTRA_ASSETS
     keyword = keyword.strip()
     if not keyword:
         return defaults[:limit]

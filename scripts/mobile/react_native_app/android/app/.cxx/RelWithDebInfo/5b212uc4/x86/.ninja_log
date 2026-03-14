@@ -1,7 +1,15 @@
 # ninja log v5
-0	37	0	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86/CMakeFiles/cmake.verify_globs	6c173af7bea1f80f
-1	3697	7951398057655335	CMakeFiles/appmodules.dir/D_/QMT/YourAce/scripts/mobile/react_native_app/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	b5fbe4e7f6470a1f
-5	4289	7951398063588559	CMakeFiles/appmodules.dir/OnLoad.cpp.o	223884ae7820b80
-4290	4423	7951398064978330	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/build/intermediates/cxx/RelWithDebInfo/5b212uc4/obj/x86/libappmodules.so	6b0ba7f7d4934145
-1	28	0	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86/CMakeFiles/cmake.verify_globs	6c173af7bea1f80f
-1	33	0	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86/CMakeFiles/cmake.verify_globs	6c173af7bea1f80f
+4143	4292	7952162961156173	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/build/intermediates/cxx/RelWithDebInfo/5b212uc4/obj/x86/libappmodules.so	ae0af6b8cba10bf4
+75	3807	7952162956247874	CMakeFiles/appmodules.dir/D_/QMT/YourAce/scripts/mobile/react_native_app/android/app/build/generated/autolinking/src/main/jni/autolinking.cpp.o	6aee0994fc182b38
+94	3786	7952162956042535	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/ComponentDescriptors.cpp.o	39e621fb9004aa1f
+1	58	0	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86/CMakeFiles/cmake.verify_globs	6c173af7bea1f80f
+28	323	7952168274572359	build.ninja	26be1acb24ddde68
+14	3292	7952162951102048	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/EventEmitters.cpp.o	e3a30f2f84c3ce59
+85	4142	7952162959615145	CMakeFiles/appmodules.dir/OnLoad.cpp.o	cc70bcdde7527223
+50	3124	7952162949434242	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/States.cpp.o	2c9a8602a6cba9d6
+31	3691	7952162955078432	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/ShadowNodes.cpp.o	a537f374299efccf
+66	3876	7952162956935123	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/Props.cpp.o	1cedd62bf659b002
+40	4021	7952162958392861	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/react/renderer/components/rnasyncstorage/rnasyncstorageJSI-generated.cpp.o	24d80545b9680bc6
+23	4089	7952162959061668	rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir/rnasyncstorage-generated.cpp.o	71b60f871e792921
+0	40	0	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86/CMakeFiles/cmake.verify_globs	6c173af7bea1f80f
+0	22	0	D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86/CMakeFiles/cmake.verify_globs	6c173af7bea1f80f
