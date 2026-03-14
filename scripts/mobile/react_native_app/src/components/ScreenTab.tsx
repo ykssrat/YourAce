@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -14,22 +15,22 @@ import { Opinion, ScreenItem } from "../types";
 
 // 筛选参数类型
 type ScreenFilter = {
-  asset_type: "stock" | "etf" | "fund";
-  horizon: "short" | "mid" | "long";
+  asset_type: "" | "stock" | "etf" | "fund";
+  horizon: "" | "short" | "mid" | "long";
   score_operator: "gte" | "lte";
   score_threshold: number;
   opinion: Opinion | "";
 };
 
-const SCORE_STEPS = [50, 60, 70, 80];
-
 const ASSET_TYPE_OPTIONS: { value: ScreenFilter["asset_type"]; label: string }[] = [
+  { value: "", label: "不限" },
   { value: "stock", label: "股票" },
   { value: "etf", label: "ETF" },
   { value: "fund", label: "场外基金" },
 ];
 
 const HORIZON_OPTIONS: { value: ScreenFilter["horizon"]; label: string }[] = [
+  { value: "", label: "不限" },
   { value: "short", label: "短期" },
   { value: "mid", label: "中期" },
   { value: "long", label: "长期" },
@@ -71,16 +72,17 @@ type ScreenTabProps = {
 };
 
 const DEFAULT_FILTER: ScreenFilter = {
-  asset_type: "stock",
-  horizon: "short",
+  asset_type: "",
+  horizon: "",
   score_operator: "gte",
   score_threshold: 60,
-  opinion: "BUY",
+  opinion: "",
 };
 
 export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
   const [filter, setFilter] = useState<ScreenFilter>(DEFAULT_FILTER);
   const [filterCollapsed, setFilterCollapsed] = useState(false);
+  const [scoreInput, setScoreInput] = useState(String(DEFAULT_FILTER.score_threshold));
 
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<ScreenItem[]>([]);
@@ -173,10 +175,22 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
 
   function handleReset() {
     setFilter(DEFAULT_FILTER);
+    setScoreInput(String(DEFAULT_FILTER.score_threshold));
     setFilterCollapsed(false);
     setResults([]);
     setError("");
     setStats({ scanned: 0, scorePass: 0, signalMiss: 0, rounds: 0, hasMore: false, totalAvailable: 0 });
+  }
+
+  function handleScoreInputChange(value: string) {
+    const digits = value.replace(/[^\d]/g, "");
+    setScoreInput(digits);
+    if (!digits) {
+      setFilter({ ...filter, score_threshold: 0 });
+      return;
+    }
+    const parsed = Math.min(100, Math.max(0, Number(digits)));
+    setFilter({ ...filter, score_threshold: parsed });
   }
 
   return (
@@ -190,7 +204,7 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
           <Text style={styles.filterSummaryText}>
             {ASSET_TYPE_OPTIONS.find((o) => o.value === filter.asset_type)?.label ?? filter.asset_type}
             {" · "}
-            {HORIZON_OPTIONS.find((o) => o.value === filter.horizon)?.label ?? filter.horizon}
+            {HORIZON_OPTIONS.find((o) => o.value === filter.horizon)?.label ?? (filter.horizon || "不限")}
             {" · 分数"}{filter.score_operator === "gte" ? "≥" : "≤"}{filter.score_threshold}
             {filter.opinion ? " · " + (LABEL_MAP[filter.opinion] ?? filter.opinion) : " · 不限"}
           </Text>
@@ -229,15 +243,16 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
               onPress={() => setFilter({ ...filter, score_operator: value })}
             />
           ))}
-          <View style={styles.scoreStepRow}>
-            {SCORE_STEPS.map((v) => (
-              <OptionChip
-                key={v}
-                label={String(v)}
-                active={filter.score_threshold === v}
-                onPress={() => setFilter({ ...filter, score_threshold: v })}
-              />
-            ))}
+          <View style={styles.scoreInputWrap}>
+            <TextInput
+              value={scoreInput}
+              onChangeText={handleScoreInputChange}
+              placeholder="0-100"
+              keyboardType="number-pad"
+              maxLength={3}
+              style={styles.scoreInput}
+            />
+            <Text style={styles.scoreInputHint}>范围 0-100</Text>
           </View>
         </FilterRow>
 
@@ -476,9 +491,26 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 6,
   },
-  scoreStepRow: {
+  scoreInputWrap: {
     flexDirection: "row",
-    gap: 6,
+    alignItems: "center",
+    gap: 8,
+  },
+  scoreInput: {
+    width: 88,
+    height: 34,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#c6d9c0",
+    backgroundColor: "#ffffff",
+    color: "#1f3a2a",
+    paddingHorizontal: 10,
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  scoreInputHint: {
+    fontSize: 11,
+    color: "#5b7160",
   },
   chip: {
     paddingHorizontal: 12,

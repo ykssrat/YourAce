@@ -1,3 +1,6 @@
 D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86_64/CMakeFiles/appmodules.dir
 D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86_64/CMakeFiles/edit_cache.dir
 D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86_64/CMakeFiles/rebuild_cache.dir
+D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86_64/rnasyncstorage_autolinked_build/CMakeFiles/react_codegen_rnasyncstorage.dir
+D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86_64/rnasyncstorage_autolinked_build/CMakeFiles/edit_cache.dir
+D:/QMT/YourAce/scripts/mobile/react_native_app/android/app/.cxx/RelWithDebInfo/5b212uc4/x86_64/rnasyncstorage_autolinked_build/CMakeFiles/rebuild_cache.dir
