@@ -22,3 +22,5 @@ scripts/mobile/rn_seed/
 # Local build logs
 *.log
 
+# Backtest frameworks
+scripts/backtest/lean/
