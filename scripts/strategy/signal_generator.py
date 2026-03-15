@@ -2,9 +2,19 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Dict
 
+import numpy as np
 import pandas as pd
+
+
+@dataclass(frozen=True)
+class HorizonSignalProfile:
+    """单一窗口期的离散信号与连续强度。"""
+
+    signal: str
+    strength: float
 
 
 def generate_multi_horizon_signal(
@@ -12,20 +22,29 @@ def generate_multi_horizon_signal(
     long_fund_trend: float = 0.0,
 ) -> Dict[str, str]:
     """输出短中长期离散建议。"""
+    profile = generate_multi_horizon_profile(close_series, long_fund_trend=long_fund_trend)
+    return {horizon: detail.signal for horizon, detail in profile.items()}
+
+
+def generate_multi_horizon_profile(
+    close_series: pd.Series,
+    long_fund_trend: float = 0.0,
+) -> Dict[str, HorizonSignalProfile]:
+    """输出短中长期离散建议与连续强度。"""
     _validate_close_series(close_series)
 
-    short_signal = _short_horizon_signal(close_series)
-    mid_signal = _mid_horizon_signal(close_series)
-    long_signal = _long_horizon_signal(close_series, long_fund_trend=long_fund_trend)
+    short_profile = _short_horizon_signal(close_series)
+    mid_profile = _mid_horizon_signal(close_series)
+    long_profile = _long_horizon_signal(close_series, long_fund_trend=long_fund_trend)
 
     return {
-        "short": short_signal,
-        "mid": mid_signal,
-        "long": long_signal,
+        "short": short_profile,
+        "mid": mid_profile,
+        "long": long_profile,
     }
 
 
-def _short_horizon_signal(close_series: pd.Series) -> str:
+def _short_horizon_signal(close_series: pd.Series) -> HorizonSignalProfile:
     """短期信号：结合 10 日动量和偏离度。"""
     current = float(close_series.iloc[-1])
     rolling_mean = float(close_series.tail(10).mean())
@@ -33,10 +52,15 @@ def _short_horizon_signal(close_series: pd.Series) -> str:
     deviation = (current / rolling_mean - 1.0) if rolling_mean != 0 else 0.0
 
     score = 0.65 * momentum_10 + 0.35 * deviation
-    return _map_score_to_signal(score, buy_threshold=0.02, sell_threshold=-0.02)
+    buy_threshold = 0.02
+    sell_threshold = -0.02
+    return HorizonSignalProfile(
+        signal=_map_score_to_signal(score, buy_threshold=buy_threshold, sell_threshold=sell_threshold),
+        strength=_score_to_strength(score, buy_threshold=buy_threshold, sell_threshold=sell_threshold),
+    )
 
 
-def _mid_horizon_signal(close_series: pd.Series) -> str:
+def _mid_horizon_signal(close_series: pd.Series) -> HorizonSignalProfile:
     """中期信号：结合 30 日趋势、支撑和压力区。"""
     window = close_series.tail(30)
     ma10 = float(window.tail(10).mean())
@@ -52,10 +76,15 @@ def _mid_horizon_signal(close_series: pd.Series) -> str:
     # 越接近支撑位越偏多，越接近压力位越偏空。
     zone_bias = 0.5 - position
     score = 0.7 * trend + 0.3 * zone_bias
-    return _map_score_to_signal(score, buy_threshold=0.015, sell_threshold=-0.015)
+    buy_threshold = 0.015
+    sell_threshold = -0.015
+    return HorizonSignalProfile(
+        signal=_map_score_to_signal(score, buy_threshold=buy_threshold, sell_threshold=sell_threshold),
+        strength=_score_to_strength(score, buy_threshold=buy_threshold, sell_threshold=sell_threshold),
+    )
 
 
-def _long_horizon_signal(close_series: pd.Series, long_fund_trend: float) -> str:
+def _long_horizon_signal(close_series: pd.Series, long_fund_trend: float) -> HorizonSignalProfile:
     """长期信号：结合 120 日均线结构和基本面趋势输入。"""
     window = close_series.tail(120)
     latest = float(window.iloc[-1])
@@ -67,7 +96,12 @@ def _long_horizon_signal(close_series: pd.Series, long_fund_trend: float) -> str
         ma_structure = (latest / ma120 - 1.0) * 0.5 + (ma30 / ma120 - 1.0) * 0.5
 
     score = 0.7 * ma_structure + 0.3 * long_fund_trend
-    return _map_score_to_signal(score, buy_threshold=0.01, sell_threshold=-0.01)
+    buy_threshold = 0.01
+    sell_threshold = -0.01
+    return HorizonSignalProfile(
+        signal=_map_score_to_signal(score, buy_threshold=buy_threshold, sell_threshold=sell_threshold),
+        strength=_score_to_strength(score, buy_threshold=buy_threshold, sell_threshold=sell_threshold),
+    )
 
 
 def _safe_pct_change(series: pd.Series, periods: int) -> float:
@@ -87,6 +121,13 @@ def _map_score_to_signal(score: float, buy_threshold: float, sell_threshold: flo
     if score <= sell_threshold:
         return "SELL"
     return "HOLD"
+
+
+def _score_to_strength(score: float, buy_threshold: float, sell_threshold: float) -> float:
+    """将原始分值转换为 [-1, 1] 连续强度。"""
+    scale = max(abs(buy_threshold), abs(sell_threshold), 1e-6)
+    raw = np.tanh(score / (scale * 2.5))
+    return float(max(-1.0, min(1.0, raw)))
 
 
 def _validate_close_series(close_series: pd.Series) -> None:

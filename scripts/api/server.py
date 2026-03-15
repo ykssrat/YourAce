@@ -15,12 +15,18 @@ from pydantic import BaseModel, Field
 from scripts.features.bic_pruner import bic_prune_features
 from scripts.features.calc_features import compute_feature_frame
 from scripts.strategy.scoring import aggregate_signal_score
-from scripts.strategy.signal_generator import generate_multi_horizon_signal
-from scripts.utils.asset_loader import load_assets
+from scripts.strategy.signal_generator import generate_multi_horizon_profile
+from scripts.utils.asset_loader import load_assets, get_asset_name
 from scripts.utils.news_fetcher import fetch_latest_news
+import json
+
+_CONFIG_PATH = Path("configs/asset_config.json")
+with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
+    _ASSET_CONFIG = json.load(f)
 
 
-app = FastAPI(title="YourAce API", version="0.1.0")
+
+app = FastAPI(title="YourAce API", version="0.1.5")
 
 # 合法枚举值，用于请求校验
 _VALID_HORIZONS = {"short", "mid", "long"}
@@ -81,20 +87,25 @@ def analyze_asset(payload: AnalyzeRequest) -> Dict[str, object]:
     if close_series.empty:
         raise HTTPException(status_code=404, detail=f"未找到标的 {code} 的行情数据")
 
-    horizon_signals = generate_multi_horizon_signal(
+    horizon_profile = generate_multi_horizon_profile(
         close_series=close_series,
         long_fund_trend=payload.long_fund_trend,
     )
-    score_result = aggregate_signal_score(horizon_signals)
+    horizon_signals = {horizon: detail.signal for horizon, detail in horizon_profile.items()}
+    horizon_strengths = {horizon: detail.strength for horizon, detail in horizon_profile.items()}
+    score_result = aggregate_signal_score(horizon_signals, horizon_strengths=horizon_strengths)
 
     selected_features = _run_bic_pruning(close_series)
     latest_news = fetch_latest_news(code, limit=3) if payload.include_news else []
+    asset_name = get_asset_name(code)
     return {
         "code": code,
+        "name": asset_name,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
         "score": score_result.score,
         "label": score_result.label,
         "horizon_signals": horizon_signals,
+        "horizon_strengths": horizon_strengths,
         "selected_features": selected_features,
         "news_enabled": payload.include_news,
         "latest_news": latest_news,
@@ -135,7 +146,11 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
 
     all_assets = load_assets(keyword="", limit=10000)
     if payload.asset_type:
-        all_assets = [asset for asset in all_assets if _match_asset_type(str(asset.get("code", "")), payload.asset_type)]
+        all_assets = [
+            asset
+            for asset in all_assets
+            if _match_asset_type(str(asset.get("code", "")), payload.asset_type, str(asset.get("name", "")))
+        ]
     all_assets = _rebalance_assets_for_screen(all_assets)
     total = len(all_assets)
 
@@ -152,8 +167,10 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         name = str(asset.get("name", ""))
 
         close_series = _load_close_series(code)
-        horizon_signals = generate_multi_horizon_signal(close_series)
-        score_result = aggregate_signal_score(horizon_signals)
+        horizon_profile = generate_multi_horizon_profile(close_series)
+        horizon_signals = {horizon: detail.signal for horizon, detail in horizon_profile.items()}
+        horizon_strengths = {horizon: detail.strength for horizon, detail in horizon_profile.items()}
+        score_result = aggregate_signal_score(horizon_signals, horizon_strengths=horizon_strengths)
 
         # 评分过滤
         if payload.score_operator == "gte":
@@ -169,12 +186,16 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         # 看法过滤（空字符串表示不过滤）
         if payload.opinion:
             if payload.horizon:
-                derived = _derive_opinion(horizon_signals[payload.horizon], score_result.label)
+                derived = _derive_opinion(
+                    horizon_signals[payload.horizon],
+                    score_result.label,
+                    horizon_strengths.get(payload.horizon),
+                )
                 matched = derived == payload.opinion
             else:
                 # 窗口期不限时，任一窗口匹配即通过
                 matched = any(
-                    _derive_opinion(horizon_signals[h], score_result.label) == payload.opinion
+                    _derive_opinion(horizon_signals[h], score_result.label, horizon_strengths.get(h)) == payload.opinion
                     for h in ("short", "mid", "long")
                 )
             if not matched:
@@ -187,6 +208,7 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
             "score": score_result.score,
             "label": score_result.label,
             "horizon_signals": horizon_signals,
+            "horizon_strengths": horizon_strengths,
         })
 
     return {
@@ -211,19 +233,24 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
     if close_series.empty:
         raise HTTPException(status_code=404, detail=f"未找到标的 {code} 的行情数据")
 
-    horizon_signals = generate_multi_horizon_signal(close_series)
-    score_result = aggregate_signal_score(horizon_signals)
-    matrix = _build_opinion_matrix(horizon_signals, score_result.label)
+    horizon_profile = generate_multi_horizon_profile(close_series)
+    horizon_signals = {horizon: detail.signal for horizon, detail in horizon_profile.items()}
+    horizon_strengths = {horizon: detail.strength for horizon, detail in horizon_profile.items()}
+    score_result = aggregate_signal_score(horizon_signals, horizon_strengths=horizon_strengths)
+    matrix = _build_opinion_matrix(horizon_signals, score_result.label, horizon_strengths)
 
     selected_features = _run_bic_pruning(close_series)
     latest_news = fetch_latest_news(code, limit=3) if payload.include_news else []
+    asset_name = get_asset_name(code)
 
     return {
         "code": code,
+        "name": asset_name,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
         "score": score_result.score,
         "label": score_result.label,
         "horizon_signals": horizon_signals,
+        "horizon_strengths": horizon_strengths,
         "matrix": matrix,
         "selected_features": selected_features,
         "news_enabled": payload.include_news,
@@ -247,18 +274,31 @@ def _run_bic_pruning(close_series: pd.Series) -> List[str]:
         return []
 
 
-def _match_asset_type(code: str, asset_type: str) -> bool:
+def _match_asset_type(code: str, asset_type: str, name: str = "") -> bool:
     """根据代码前缀粗分产品类型。"""
     digits = "".join(ch for ch in str(code) if ch.isdigit())
     if len(digits) < 6:
         return False
 
+    name_text = str(name)
+    rules = _ASSET_CONFIG.get("asset_type_rules", {})
+    
+    is_etf_by_name = any(k in name_text.upper() for k in rules.get("etf_name_keywords", ["ETF"]))
+    is_fund_by_name = any(k in name_text for k in rules.get("fund_name_keywords", ["基金", "混合", "债", "LOF", "FOF", "联接"]))
+    
+    is_etf_by_code = digits.startswith(tuple(rules.get("etf_code_prefixes", [])))
+    is_fund_by_code = digits.startswith(tuple(rules.get("fund_code_prefixes", [])))
+    
+    is_etf = is_etf_by_name or is_etf_by_code
+    is_fund = is_fund_by_name or is_fund_by_code
+
     if asset_type == "stock":
-        return digits.startswith(("000", "001", "002", "003", "300", "301", "600", "601", "603", "605", "688", "689"))
+        stock_prefixes = tuple(rules.get("stock_code_prefixes", []))
+        return (not is_etf) and (not is_fund) and (digits.startswith(stock_prefixes) if stock_prefixes else True)
     if asset_type == "etf":
-        return digits.startswith(("159", "510", "511", "512", "513", "515", "516", "517", "518", "588"))
+        return is_etf
     if asset_type == "fund":
-        return digits.startswith(("160", "161", "162", "163", "164", "165", "166", "167", "168", "169"))
+        return is_fund and (not is_etf)
     return True
 
 
@@ -341,21 +381,11 @@ def _asset_feature_vector(asset: Dict[str, str]) -> List[float]:
 def _infer_industry_group(name: str) -> int:
     """基于名称关键词推断行业组（无行业字段时的近似做法）。"""
     text = str(name)
-    rules = [
-        (0, ("银行", "证券", "保险", "金融")),
-        (1, ("医药", "医疗", "生物", "疫苗")),
-        (2, ("半导体", "芯片", "电子", "通信")),
-        (3, ("新能源", "光伏", "锂", "电池", "储能")),
-        (4, ("白酒", "酒", "食品", "消费")),
-        (5, ("军工", "航天", "国防")),
-        (6, ("煤炭", "有色", "钢铁", "化工")),
-        (7, ("地产", "基建", "建筑", "建材")),
-        (8, ("汽车", "机械", "制造")),
-        (9, ("ETF", "基金", "指数")),
-    ]
-    for group_id, keywords in rules:
-        if any(word in text for word in keywords):
-            return group_id
+    industry_groups = _ASSET_CONFIG.get("industry_groups", [])
+    
+    for group in industry_groups:
+        if any(word in text for word in group.get("keywords", [])):
+            return group.get("id", 10)
     return 10
 
 
@@ -407,18 +437,28 @@ def _generate_mock_close_series(code: str) -> pd.Series:
     return pd.Series(prices)
 
 
-def _derive_opinion(horizon_signal: str, overall_label: str) -> str:
+def _derive_opinion(horizon_signal: str, overall_label: str, horizon_strength: float | None = None) -> str:
     """根据窗口期信号与整体标签推导5级看法。"""
+    strength = float(horizon_strength) if horizon_strength is not None else None
+
     if horizon_signal == "BUY":
+        if strength is not None and strength >= 0.75:
+            return "STRONG_BUY"
         return "STRONG_BUY" if overall_label == "STRONG_BUY" else "BUY"
     if horizon_signal == "SELL":
+        if strength is not None and strength <= -0.75:
+            return "STRONG_SELL"
         return "STRONG_SELL" if overall_label == "STRONG_SELL" else "SELL"
     return "HOLD"
 
 
-def _build_opinion_matrix(horizon_signals: Dict[str, str], overall_label: str) -> Dict[str, str]:
+def _build_opinion_matrix(
+    horizon_signals: Dict[str, str],
+    overall_label: str,
+    horizon_strengths: Dict[str, float] | None = None,
+) -> Dict[str, str]:
     """为每个窗口期生成5级看法，构成3行矩阵。"""
     return {
-        horizon: _derive_opinion(signal, overall_label)
+        horizon: _derive_opinion(signal, overall_label, None if horizon_strengths is None else horizon_strengths.get(horizon))
         for horizon, signal in horizon_signals.items()
     }

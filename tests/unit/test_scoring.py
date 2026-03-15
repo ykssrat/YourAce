@@ -41,3 +41,22 @@ def test_aggregate_signal_score_invalid_weight_raises() -> None:
             {"short": "BUY", "mid": "HOLD", "long": "SELL"},
             weights={"short": 0.5, "mid": 0.5, "long": 0.5},
         )
+
+
+def test_aggregate_signal_score_with_strength_supports_point_one_precision() -> None:
+    """连续强度输入时，分数应支持 0.1 精度，而非固定 2.5 步进。"""
+    result = aggregate_signal_score(
+        {"short": "BUY", "mid": "BUY", "long": "SELL"},
+        horizon_strengths={"short": 0.12, "mid": 0.34, "long": -0.08},
+    )
+    assert result.score == 56.9
+    assert result.label == "HOLD"
+
+
+def test_aggregate_signal_score_invalid_strength_keys_raises() -> None:
+    """强度字典缺失 horizon 时应抛出异常。"""
+    with pytest.raises(ValueError):
+        aggregate_signal_score(
+            {"short": "BUY", "mid": "HOLD", "long": "SELL"},
+            horizon_strengths={"short": 0.5, "mid": 0.0},
+        )

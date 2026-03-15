@@ -1,30 +1,20 @@
-﻿"""资产列表加载工具。"""
+"""资产列表加载工具。"""
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Dict, List
 
+import json
 import pandas as pd
 
+# Load config
+_CONFIG_PATH = Path("configs/asset_config.json")
+with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
+    _ASSET_CONFIG = json.load(f)
 
-# 兜底补充资产池：用于增强不同前缀与行业分布
-_EXTRA_ASSETS = [
-    {"code": "510300", "name": "沪深300ETF"},
-    {"code": "510500", "name": "中证500ETF"},
-    {"code": "159915", "name": "创业板ETF"},
-    {"code": "588000", "name": "科创50ETF"},
-    {"code": "512690", "name": "酒ETF"},
-    {"code": "512660", "name": "军工ETF"},
-    {"code": "515170", "name": "食品饮料ETF"},
-    {"code": "512010", "name": "医药ETF"},
-    {"code": "512480", "name": "半导体ETF"},
-    {"code": "512000", "name": "券商ETF"},
-    {"code": "516160", "name": "新能源ETF"},
-    {"code": "516220", "name": "煤炭ETF"},
-    {"code": "515790", "name": "光伏ETF"},
-    {"code": "516950", "name": "基建ETF"},
-]
+# 从配置读取补充资产池
+_EXTRA_ASSETS = _ASSET_CONFIG.get("extra_assets", [])
 
 
 def load_assets(
@@ -93,10 +83,7 @@ def _find_column(df: pd.DataFrame, candidates: List[str]) -> str | None:
 
 def _fallback_assets(keyword: str, limit: int) -> List[Dict[str, str]]:
     """无缓存时提供兜底资产列表。"""
-    defaults = [
-        {"code": "000001", "name": "平安银行"},
-        {"code": "600519", "name": "贵州茅台"},
-    ] + _EXTRA_ASSETS
+    defaults = _ASSET_CONFIG.get("fallback_defaults", []) + _EXTRA_ASSETS
     keyword = keyword.strip()
     if not keyword:
         return defaults[:limit]
@@ -119,3 +106,32 @@ def _normalize_code(code: str) -> str:
     if digits and len(digits) <= 6:
         return digits.zfill(6)
     return value
+
+def get_asset_name(code: str, raw_dir: str = "datas/raw") -> str:
+    """根据资产代码返回名称。如果找不到返回空字符串。"""
+    normalized_code = _normalize_code(code)
+    
+    # 首先检查 fallback 和 extra assets，因为这些在内存里最快
+    for item in _EXTRA_ASSETS:
+        if _normalize_code(item["code"]) == normalized_code:
+            return item["name"]
+            
+    # 从完整列表查找
+    df = _load_stock_table(Path(raw_dir))
+    if not df.empty:
+        code_col = _find_column(df, ["代码", "code", "symbol", "证券代码"])
+        name_col = _find_column(df, ["名称", "name", "简称", "证券简称"])
+        if code_col and name_col:
+            # 找到匹配的行
+            mask = df[code_col].astype(str).apply(_normalize_code) == normalized_code
+            matched = df[mask]
+            if not matched.empty:
+                return str(matched.iloc[0][name_col])
+                
+    # 兜底查找
+    fallback_defaults = _ASSET_CONFIG.get("fallback_defaults", [])
+    for item in fallback_defaults:
+        if _normalize_code(item["code"]) == normalized_code:
+            return item["name"]
+            
+    return ""
