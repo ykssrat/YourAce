@@ -1,25 +1,13 @@
-"""动态共识看法 (Dynamic Consensus Opinion) 引擎。
-该引擎将市场分析降维为 3x3 的短中长期看法矩阵。
+"""默认策略实现。
+基于均线、动量和偏离度等启发式规则的 3x3 看法生成。
 """
 
-from __future__ import annotations
-
 from typing import Dict
-
 import pandas as pd
 
 
-VALID_HORIZONS = ["short", "mid", "long"]
-VALID_OPINIONS = ["BUY", "HOLD", "SELL"]
-
-
-def generate_opinion_matrix(
-    close_series: pd.Series,
-    long_fund_trend: float = 0.0,
-) -> Dict[str, str]:
-    """输出 3x3 看法矩阵：短中长期 x (看多/观望/看空)。"""
-    _validate_close_series(close_series)
-
+def generate_matrix(close_series: pd.Series, long_fund_trend: float = 0.0) -> Dict[str, str]:
+    """生成 3x3 看法矩阵。"""
     return {
         "short": _short_horizon_opinion(close_series),
         "mid": _mid_horizon_opinion(close_series),
@@ -72,7 +60,7 @@ def _long_horizon_opinion(close_series: pd.Series, long_fund_trend: float) -> st
 
 
 def _safe_pct_change(series: pd.Series, periods: int) -> float:
-    """返回最后一个涨跌幅，样本不足时回退为 0。"""
+    """返回最后一个涨跌幅。"""
     if len(series) <= periods:
         return 0.0
     value = series.pct_change(periods=periods).iloc[-1]
@@ -82,19 +70,9 @@ def _safe_pct_change(series: pd.Series, periods: int) -> float:
 
 
 def _map_score_to_opinion(score: float, buy_threshold: float, sell_threshold: float) -> str:
-    """将连续分值映射为离散矩阵看法。"""
+    """映射分值为看法。"""
     if score >= buy_threshold:
         return "BUY"
     if score <= sell_threshold:
         return "SELL"
     return "HOLD"
-
-
-def _validate_close_series(close_series: pd.Series) -> None:
-    """校验价格序列输入。"""
-    if close_series.empty:
-        raise ValueError("close_series 不能为空")
-    if close_series.isna().all():
-        raise ValueError("close_series 不能全为空值")
-    if len(close_series) < 30:
-        raise ValueError("close_series 长度至少为 30")

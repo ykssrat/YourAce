@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 from scripts.features.bic_pruner import bic_prune_features
 from scripts.features.calc_features import compute_feature_frame
-from scripts.strategy.opinion_engine import generate_opinion_matrix, VALID_OPINIONS
+from scripts.engine.opinion_engine import generate_opinion_matrix, VALID_OPINIONS
 from scripts.utils.asset_loader import load_assets, get_asset_name
 from scripts.utils.news_fetcher import fetch_latest_news
 import json
@@ -42,6 +42,7 @@ class AnalyzeRequest(BaseModel):
     """分析请求体。"""
 
     code: str = Field(..., min_length=1, max_length=20)
+    strategy: str = Field(default="default")
     long_fund_trend: float = Field(default=0.0, ge=-1.0, le=1.0)
     include_news: bool = Field(default=True)
 
@@ -51,8 +52,7 @@ class ScreenRequest(BaseModel):
 
     asset_type: str = Field(default="")
     horizon: str = Field(default="")
-    score_operator: str = Field(default="gte")
-    score_threshold: float = Field(default=60.0, ge=0.0, le=100.0)
+    strategy: str = Field(default="default")
     opinion: str = Field(default="")
     round_size: int = Field(default=20, ge=1, le=100)
     offset: int = Field(default=0, ge=0)
@@ -62,6 +62,7 @@ class DiagnoseRequest(BaseModel):
     """诊股请求体。"""
 
     code: str = Field(..., min_length=1, max_length=20)
+    strategy: str = Field(default="default")
     include_news: bool = Field(default=True)
 
 
@@ -88,6 +89,7 @@ def analyze_asset(payload: AnalyzeRequest) -> Dict[str, object]:
 
     matrix = generate_opinion_matrix(
         close_series=close_series,
+        strategy_name=payload.strategy,
         long_fund_trend=payload.long_fund_trend,
     )
 
@@ -137,12 +139,12 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
     """批量筛选资产，返回当前分页内符合条件的标的。"""
     if payload.horizon not in _VALID_HORIZONS_WITH_ALL:
         raise HTTPException(status_code=400, detail=f"horizon 非法，合法值: {_VALID_HORIZONS_WITH_ALL}")
-    if payload.score_operator not in _VALID_SCORE_OPERATORS:
-        raise HTTPException(status_code=400, detail=f"score_operator 非法，合法值: {_VALID_SCORE_OPERATORS}")
     if payload.opinion not in _VALID_OPINIONS:
         raise HTTPException(status_code=400, detail=f"opinion 非法，合法值: {_VALID_OPINIONS}")
     if payload.asset_type not in _VALID_ASSET_TYPES_WITH_ALL:
         raise HTTPException(status_code=400, detail=f"asset_type 非法，合法值: {_VALID_ASSET_TYPES_WITH_ALL}")
+
+    strategy_name = payload.strategy
 
     all_assets = load_assets(keyword="", limit=10000)
     if payload.asset_type:
@@ -159,7 +161,6 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
     batch = all_assets[start:end]
 
     items: List[Dict[str, object]] = []
-    score_pass_count = 0
     signal_miss_count = 0
 
     for asset in batch:
@@ -167,10 +168,7 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         name = str(asset.get("name", ""))
 
         close_series = _load_close_series(code)
-        matrix = generate_opinion_matrix(close_series)
-
-        # 评分过滤已失效，默认通过
-        score_pass_count += 1
+        matrix = generate_opinion_matrix(close_series, strategy_name=strategy_name)
 
         # 看法过滤
         if payload.opinion:
@@ -198,7 +196,6 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         "offset": start,
         "has_more": end < total,
         "total_available": total,
-        "score_pass_count": score_pass_count,
         "signal_miss_count": signal_miss_count,
     }
 
@@ -214,7 +211,7 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
     if close_series.empty:
         raise HTTPException(status_code=404, detail=f"未找到标的 {code} 的行情数据")
 
-    matrix = generate_opinion_matrix(close_series)
+    matrix = generate_opinion_matrix(close_series, strategy_name=payload.strategy)
 
     selected_features = _run_bic_pruning(close_series)
     latest_news = fetch_latest_news(code, limit=3) if payload.include_news else []

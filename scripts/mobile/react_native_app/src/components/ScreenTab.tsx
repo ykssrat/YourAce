@@ -1,6 +1,7 @@
 /// <reference path="../react_native_shims.d.ts" />
 import React, { useState } from "react";
 import {
+  Alert,
   ActivityIndicator,
   Pressable,
   ScrollView,
@@ -11,15 +12,14 @@ import {
 } from "react-native";
 
 import { screenAssets } from "../services/api";
-import { Opinion, ScreenItem } from "../types";
+import { Opinion, ScreenItem, STRATEGY_OPTIONS } from "../types";
 
 // 筛选参数类型
 type ScreenFilter = {
   asset_type: "" | "stock" | "etf" | "fund";
   horizon: "" | "short" | "mid" | "long";
-  score_operator: "gte" | "lte";
-  score_threshold: number;
   opinion: Opinion | "";
+  strategy: string;
 };
 
 const ASSET_TYPE_OPTIONS: { value: ScreenFilter["asset_type"]; label: string }[] = [
@@ -36,10 +36,6 @@ const HORIZON_OPTIONS: { value: ScreenFilter["horizon"]; label: string }[] = [
   { value: "long", label: "长期" },
 ];
 
-const SCORE_OP_OPTIONS: { value: ScreenFilter["score_operator"]; label: string }[] = [
-  { value: "gte", label: "大于" },
-  { value: "lte", label: "小于" },
-];
 
 const OPINION_OPTIONS: { value: Opinion | ""; label: string }[] = [
   { value: "", label: "不限" },
@@ -68,21 +64,18 @@ type ScreenTabProps = {
 const DEFAULT_FILTER: ScreenFilter = {
   asset_type: "",
   horizon: "",
-  score_operator: "gte",
-  score_threshold: 60,
   opinion: "",
+  strategy: "default",
 };
 
 export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
   const [filter, setFilter] = useState<ScreenFilter>(DEFAULT_FILTER);
   const [filterCollapsed, setFilterCollapsed] = useState(false);
-  const [scoreInput, setScoreInput] = useState(String(DEFAULT_FILTER.score_threshold));
 
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<ScreenItem[]>([]);
   const [stats, setStats] = useState({
     scanned: 0,
-    scorePass: 0,
     signalMiss: 0,
     rounds: 0,
     hasMore: false,
@@ -97,16 +90,15 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
     setFilterCollapsed(true);  // 开始选股后折叠筛选区
     setResults([]);
     setError("");
-    setStats({ scanned: 0, scorePass: 0, signalMiss: 0, rounds: 0, hasMore: false, totalAvailable: 0 });
+    setStats({ scanned: 0, signalMiss: 0, rounds: 0, hasMore: false, totalAvailable: 0 });
 
     try {
       const resp = await screenAssets(
         {
           asset_type: filter.asset_type,
           horizon: filter.horizon,
-          score_operator: filter.score_operator,
-          score_threshold: filter.score_threshold,
           opinion: filter.opinion,
+          strategy: filter.strategy,
           round_size: ROUND_SIZE,
           offset: 0,
         },
@@ -116,7 +108,6 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
       setResults(resp.items);
       setStats({
         scanned: resp.scanned_count,
-        scorePass: resp.score_pass_count,
         signalMiss: resp.signal_miss_count,
         rounds: 1,
         hasMore: resp.has_more,
@@ -142,9 +133,8 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
         {
           asset_type: filter.asset_type,
           horizon: filter.horizon,
-          score_operator: filter.score_operator,
-          score_threshold: filter.score_threshold,
           opinion: filter.opinion,
+          strategy: filter.strategy,
           round_size: ROUND_SIZE,
           offset: nextOffset,
         },
@@ -154,7 +144,6 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
       setResults((prev) => [...prev, ...resp.items]);
       setStats((prev) => ({
         scanned: prev.scanned + resp.scanned_count,
-        scorePass: prev.scorePass + resp.score_pass_count,
         signalMiss: prev.signalMiss + resp.signal_miss_count,
         rounds: prev.rounds + 1,
         hasMore: resp.has_more,
@@ -169,28 +158,17 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
 
   function handleReset() {
     setFilter(DEFAULT_FILTER);
-    setScoreInput(String(DEFAULT_FILTER.score_threshold));
     setFilterCollapsed(false);
     setResults([]);
     setError("");
-    setStats({ scanned: 0, scorePass: 0, signalMiss: 0, rounds: 0, hasMore: false, totalAvailable: 0 });
+    setStats({ scanned: 0, signalMiss: 0, rounds: 0, hasMore: false, totalAvailable: 0 });
   }
 
-  function handleScoreInputChange(value: string) {
-    const digits = value.replace(/[^\d]/g, "");
-    setScoreInput(digits);
-    if (!digits) {
-      setFilter({ ...filter, score_threshold: 0 });
-      return;
-    }
-    const parsed = Math.min(100, Math.max(0, Number(digits)));
-    setFilter({ ...filter, score_threshold: parsed });
-  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.pageTitle}>选股</Text>
-      <Text style={styles.pageSubtitle}>按窗口期、分数和看法筛选候选标的</Text>
+      <Text style={styles.pageSubtitle}>按窗口期和主观看法筛选候选标的</Text>
 
       {/* 筛选区：运行中折叠为摘要栏 */}
       {filterCollapsed ? (
@@ -199,13 +177,31 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
             {ASSET_TYPE_OPTIONS.find((o) => o.value === filter.asset_type)?.label ?? filter.asset_type}
             {" · "}
             {HORIZON_OPTIONS.find((o) => o.value === filter.horizon)?.label ?? (filter.horizon || "不限")}
-            {" · 分数"}{filter.score_operator === "gte" ? "≥" : "≤"}{filter.score_threshold}
-            {filter.opinion ? " · " + (LABEL_MAP[filter.opinion] ?? filter.opinion) : " · 不限"}
+            {" · "}
+            {STRATEGY_OPTIONS.find((o) => o.value === filter.strategy)?.label ?? filter.strategy}
+            {filter.opinion ? " · " + (LABEL_MAP[filter.opinion] ?? filter.opinion) : " · 看法不限"}
           </Text>
           <Text style={styles.filterSummaryEdit}>▼ 展开修改</Text>
         </Pressable>
       ) : (
       <View style={styles.filterCard}>
+        <FilterRow label="策略算法">
+          {STRATEGY_OPTIONS.map(({ value, label }) => (
+            <OptionChip
+              key={value}
+              label={label}
+              active={filter.strategy === value}
+              onPress={() => {
+                if (value !== "default") {
+                  Alert.alert("该策略暂未上线", "敬请期待");
+                  return;
+                }
+                setFilter({ ...filter, strategy: value });
+              }}
+            />
+          ))}
+        </FilterRow>
+
         <FilterRow label="产品类型">
           {ASSET_TYPE_OPTIONS.map(({ value, label }) => (
             <OptionChip
@@ -228,27 +224,6 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
           ))}
         </FilterRow>
 
-        <FilterRow label="分数">
-          {SCORE_OP_OPTIONS.map(({ value, label }) => (
-            <OptionChip
-              key={value}
-              label={label}
-              active={filter.score_operator === value}
-              onPress={() => setFilter({ ...filter, score_operator: value })}
-            />
-          ))}
-          <View style={styles.scoreInputWrap}>
-            <TextInput
-              value={scoreInput}
-              onChangeText={handleScoreInputChange}
-              placeholder="0-100"
-              keyboardType="number-pad"
-              maxLength={3}
-              style={styles.scoreInput}
-            />
-            <Text style={styles.scoreInputHint}>范围 0-100</Text>
-          </View>
-        </FilterRow>
 
         <FilterRow label="看法">
           {OPINION_OPTIONS.map(({ value, label }) => (
@@ -283,7 +258,6 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
           <Text style={styles.statsTitle}>扫描进度</Text>
           <View style={styles.statsGrid}>
             <StatItem label="已扫描" value={stats.scanned} />
-            <StatItem label="评分达标" value={stats.scorePass} />
             <StatItem label="信号不匹配" value={stats.signalMiss} />
             <StatItem label="命中结果" value={results.length} />
           </View>
@@ -328,8 +302,7 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
         <View style={styles.emptyBox}>
           <Text style={styles.emptyTitle}>本轮无命中</Text>
           <Text style={styles.emptyHint}>
-            建议：将分数阈值从 {filter.score_threshold} 分降至{" "}
-            {Math.max(filter.score_threshold - 10, 40)} 分，或将看法改为「不限」
+            建议：切换筛选的窗口期，或将看法改为「不限」
           </Text>
           {stats.hasMore ? (
             <Pressable style={styles.loadMoreBtn} onPress={handleLoadMore} disabled={running}>
@@ -360,7 +333,6 @@ function ScreenResultCard({
         </View>
         <View style={styles.resultScoreBox}>
           <Text style={[styles.resultLabel, { color: labelColor }]}>{LABEL_MAP[item.label] ?? item.label}</Text>
-          <Text style={styles.resultScore}>{item.score.toFixed(1)}</Text>
         </View>
       </View>
 
@@ -484,27 +456,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 6,
-  },
-  scoreInputWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  scoreInput: {
-    width: 88,
-    height: 34,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#c6d9c0",
-    backgroundColor: "#ffffff",
-    color: "#1f3a2a",
-    paddingHorizontal: 10,
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  scoreInputHint: {
-    fontSize: 11,
-    color: "#5b7160",
   },
   chip: {
     paddingHorizontal: 12,
@@ -647,11 +598,6 @@ const styles = StyleSheet.create({
   resultLabel: {
     fontSize: 12,
     fontWeight: "700",
-  },
-  resultScore: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#8c5100",
   },
   resultSignalRow: {
     flexDirection: "row",

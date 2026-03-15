@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.strategy.opinion_engine import generate_opinion_matrix
+from scripts.engine.opinion_engine import generate_opinion_matrix
 
 
 def test_generate_opinion_matrix_returns_expected_keys() -> None:

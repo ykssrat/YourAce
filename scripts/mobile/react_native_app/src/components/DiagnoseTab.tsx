@@ -1,6 +1,7 @@
 /// <reference path="../react_native_shims.d.ts" />
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -10,7 +11,7 @@ import {
 } from "react-native";
 
 import { diagnoseAsset, searchAssets } from "../services/api";
-import { DiagnoseResponse, SearchItem } from "../types";
+import { DiagnoseResponse, SearchItem, STRATEGY_OPTIONS } from "../types";
 import { OpinionMatrixCard } from "./OpinionMatrix";
 import { ScoreSignalCard } from "./ScoreSignalCard";
 
@@ -29,6 +30,7 @@ type DiagnoseTabProps = {
 
 export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTabProps) {
   const [query, setQuery] = useState(initialCode ?? "");
+  const [strategy, setStrategy] = useState("default");
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
@@ -62,7 +64,10 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
       setLoading(true);
       setError("");
       setSuggestions([]);
-      const data = await diagnoseAsset(finalCode, apiBaseUrl, newsEnabled);
+      const data = await diagnoseAsset(finalCode, apiBaseUrl, { 
+        strategy, 
+        include_news: newsEnabled 
+      });
       setResult(data);
       setQuery(finalCode);
     } catch (err) {
@@ -99,7 +104,7 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.pageTitle}>诊股</Text>
-      <Text style={styles.pageSubtitle}>输入代码查看三窗口诊断与总体分数</Text>
+      <Text style={styles.pageSubtitle}>输入代码查看三窗口诊断与共识看法</Text>
 
       {/* 输入区 */}
       <View style={styles.inputCard}>
@@ -137,6 +142,36 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
         ) : null}
       </View>
 
+      {/* 策略选择 */}
+      <View style={styles.strategyRow}>
+        <Text style={styles.strategyLabel}>策略算法:</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.strategyScroll}>
+          {STRATEGY_OPTIONS.map((opt) => (
+            <Pressable
+              key={opt.value}
+              onPress={() => {
+                if (opt.value !== "default") {
+                  Alert.alert("该策略暂未上线", "敬请期待");
+                  return;
+                }
+                setStrategy(opt.value);
+              }}
+              style={[
+                styles.strategyChip,
+                strategy === opt.value && styles.strategyChipActive
+              ]}
+            >
+              <Text style={[
+                styles.strategyChipText,
+                strategy === opt.value && styles.strategyChipTextActive
+              ]}>
+                {opt.label}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+
       {/* 错误提示 */}
       {error ? (
         <View style={styles.errorBox}>
@@ -152,7 +187,7 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
         <View style={styles.matrixCard}>
           <Text style={styles.matrixTitle}>三窗口看法矩阵</Text>
           <Text style={styles.matrixSubtitle}>
-            每行高亮当前窗口期的看法位置 · 总分综合了三个窗口期的加权结果
+            每行高亮当前窗口期的看法位置 · 综合反映了三个窗口期的共识结果
           </Text>
           <OpinionMatrixCard matrix={result.matrix} />
 
@@ -383,5 +418,44 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#5f3b00",
     lineHeight: 20,
+  },
+  strategyRow: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff9f0",
+    borderRadius: 12,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "#f1d7b2",
+  },
+  strategyLabel: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#6d4300",
+    marginRight: 8,
+  },
+  strategyScroll: {
+    gap: 8,
+  },
+  strategyChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#f1d7b2",
+  },
+  strategyChipActive: {
+    backgroundColor: "#2a4a37",
+    borderColor: "#2a4a37",
+  },
+  strategyChipText: {
+    fontSize: 12,
+    color: "#6d4300",
+  },
+  strategyChipTextActive: {
+    color: "#fff",
+    fontWeight: "700",
   },
 });

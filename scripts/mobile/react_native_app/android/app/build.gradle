@@ -82,8 +82,8 @@ android {
         applicationId "com.rn_seed"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "0.1.4"
+        versionCode 4
+        versionName "0.2.0"
     }
     signingConfigs {
         debug {
@@ -109,7 +109,7 @@ android {
     // 统一输出文件名
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "YourAce.apk"
+            outputFileName = "YourAce_${variant.versionName}.apk"
         }
     }
 }

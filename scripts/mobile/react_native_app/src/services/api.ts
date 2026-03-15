@@ -1,4 +1,4 @@
-import { AnalyzeResponse, DiagnoseResponse, ScreenResponse, SearchItem } from "../types";
+import { AnalyzeRequest, AnalyzeResponse, DiagnoseRequest, DiagnoseResponse, ScreenRequest, ScreenResponse, SearchItem } from "../types";
 
 const DEFAULT_API_BASE_URLS = [
   "http://10.0.2.2:8000",
@@ -23,7 +23,7 @@ export async function searchAssets(
 export async function analyzeAsset(
   code: string,
   preferredBaseUrl: string = "",
-  includeNews: boolean = true,
+  request?: Partial<AnalyzeRequest>,
 ): Promise<AnalyzeResponse> {
   const response = await requestWithBaseFallback("/analyze", {
     method: "POST",
@@ -32,8 +32,9 @@ export async function analyzeAsset(
     },
     body: JSON.stringify({
       code,
-      long_fund_trend: 0,
-      include_news: includeNews,
+      strategy: request?.strategy || "default",
+      long_fund_trend: request?.long_fund_trend || 0,
+      include_news: request?.include_news ?? true,
     }),
   }, buildBaseUrls(preferredBaseUrl));
 
@@ -43,33 +44,32 @@ export async function analyzeAsset(
 export async function diagnoseAsset(
   code: string,
   preferredBaseUrl: string = "",
-  includeNews: boolean = true,
+  request?: Partial<DiagnoseRequest>,
 ): Promise<DiagnoseResponse> {
   const response = await requestWithBaseFallback("/diagnose", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code, include_news: includeNews }),
+    body: JSON.stringify({ 
+      code, 
+      strategy: request?.strategy || "default",
+      include_news: request?.include_news ?? true 
+    }),
   }, buildBaseUrls(preferredBaseUrl));
 
   return (await response.json()) as DiagnoseResponse;
 }
 
 export async function screenAssets(
-  request: {
-    asset_type?: string;
-    horizon?: string;
-    score_operator?: string;
-    score_threshold?: number;
-    opinion?: string;
-    round_size?: number;
-    offset?: number;
-  },
+  request: ScreenRequest,
   preferredBaseUrl: string = "",
 ): Promise<ScreenResponse> {
   const response = await requestWithBaseFallback("/screen", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
+    body: JSON.stringify({
+      ...request,
+      strategy: request.strategy || "default",
+    }),
   }, buildBaseUrls(preferredBaseUrl));
 
   return (await response.json()) as ScreenResponse;

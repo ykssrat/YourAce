@@ -34,15 +34,15 @@ export function ScoreSignalCard(props: ScoreSignalCardProps) {
     );
   }
 
-  const { score, label, horizon_signals } = props.result;
+  const { label, horizon_signals } = props.result;
   const latestNews = props.result.latest_news ?? [];
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>评分仪表盘</Text>
-      <View style={styles.scoreRing}>
-        <Text style={styles.scoreText}>{score}</Text>
+      <Text style={styles.title}>共识看法总览</Text>
+      <View style={styles.labelContainer}>
+        <Text style={styles.labelText}>{labelMap[label] ?? label}</Text>
       </View>
-      <Text style={styles.labelText}>{labelMap[label] ?? label}</Text>
 
       <View style={styles.row}>
         <TrafficLight title="短期" signal={horizon_signals.short} />
@@ -93,29 +93,22 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#5f3b00",
   },
-  scoreRing: {
-    marginTop: 12,
-    width: 118,
-    height: 118,
-    borderRadius: 59,
-    borderWidth: 8,
-    borderColor: "#ffa94d",
+  labelContainer: {
+    marginTop: 16,
     alignItems: "center",
     justifyContent: "center",
     alignSelf: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 16,
     backgroundColor: "#fff9f0",
-  },
-  scoreText: {
-    fontSize: 34,
-    fontWeight: "800",
-    color: "#8c5100",
+    borderWidth: 2,
+    borderColor: "#ffa94d",
   },
   labelText: {
-    marginTop: 10,
-    textAlign: "center",
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#7a3e00",
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#8c5100",
   },
   row: {
     marginTop: 14,

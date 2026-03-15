@@ -25,4 +25,5 @@ declare module "react-native" {
   export const TextInput: any;
   export const View: any;
   export const Pressable: any;
+  export const Alert: any;
 }
