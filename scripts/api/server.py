@@ -14,8 +14,7 @@ from pydantic import BaseModel, Field
 
 from scripts.features.bic_pruner import bic_prune_features
 from scripts.features.calc_features import compute_feature_frame
-from scripts.strategy.scoring import aggregate_signal_score
-from scripts.strategy.signal_generator import generate_multi_horizon_profile
+from scripts.strategy.opinion_engine import generate_opinion_matrix, VALID_OPINIONS
 from scripts.utils.asset_loader import load_assets, get_asset_name
 from scripts.utils.news_fetcher import fetch_latest_news
 import json
@@ -31,7 +30,7 @@ app = FastAPI(title="YourAce API", version="0.1.5")
 # 合法枚举值，用于请求校验
 _VALID_HORIZONS = {"short", "mid", "long"}
 _VALID_SCORE_OPERATORS = {"gte", "lte"}
-_VALID_OPINIONS = {"STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL", ""}
+_VALID_OPINIONS = {"BUY", "HOLD", "SELL", ""}
 _VALID_ASSET_TYPES = {"stock", "etf", "fund"}
 
 # 兼容前端“不限”筛选
@@ -87,25 +86,26 @@ def analyze_asset(payload: AnalyzeRequest) -> Dict[str, object]:
     if close_series.empty:
         raise HTTPException(status_code=404, detail=f"未找到标的 {code} 的行情数据")
 
-    horizon_profile = generate_multi_horizon_profile(
+    matrix = generate_opinion_matrix(
         close_series=close_series,
         long_fund_trend=payload.long_fund_trend,
     )
-    horizon_signals = {horizon: detail.signal for horizon, detail in horizon_profile.items()}
-    horizon_strengths = {horizon: detail.strength for horizon, detail in horizon_profile.items()}
-    score_result = aggregate_signal_score(horizon_signals, horizon_strengths=horizon_strengths)
 
     selected_features = _run_bic_pruning(close_series)
     latest_news = fetch_latest_news(code, limit=3) if payload.include_news else []
     asset_name = get_asset_name(code)
+    
+    # 总体标签取中位看法或统一简化
+    overall_label = matrix["mid"]
+
     return {
         "code": code,
         "name": asset_name,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
-        "score": score_result.score,
-        "label": score_result.label,
-        "horizon_signals": horizon_signals,
-        "horizon_strengths": horizon_strengths,
+        "score": 0.0,  # 评分器已废弃
+        "label": overall_label,
+        "horizon_signals": matrix,
+        "matrix": matrix,
         "selected_features": selected_features,
         "news_enabled": payload.include_news,
         "latest_news": latest_news,
@@ -167,37 +167,18 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         name = str(asset.get("name", ""))
 
         close_series = _load_close_series(code)
-        horizon_profile = generate_multi_horizon_profile(close_series)
-        horizon_signals = {horizon: detail.signal for horizon, detail in horizon_profile.items()}
-        horizon_strengths = {horizon: detail.strength for horizon, detail in horizon_profile.items()}
-        score_result = aggregate_signal_score(horizon_signals, horizon_strengths=horizon_strengths)
+        matrix = generate_opinion_matrix(close_series)
 
-        # 评分过滤
-        if payload.score_operator == "gte":
-            score_ok = score_result.score >= payload.score_threshold
-        else:
-            score_ok = score_result.score <= payload.score_threshold
-
-        if not score_ok:
-            continue
-
+        # 评分过滤已失效，默认通过
         score_pass_count += 1
 
-        # 看法过滤（空字符串表示不过滤）
+        # 看法过滤
         if payload.opinion:
             if payload.horizon:
-                derived = _derive_opinion(
-                    horizon_signals[payload.horizon],
-                    score_result.label,
-                    horizon_strengths.get(payload.horizon),
-                )
-                matched = derived == payload.opinion
+                matched = matrix[payload.horizon] == payload.opinion
             else:
-                # 窗口期不限时，任一窗口匹配即通过
-                matched = any(
-                    _derive_opinion(horizon_signals[h], score_result.label, horizon_strengths.get(h)) == payload.opinion
-                    for h in ("short", "mid", "long")
-                )
+                matched = any(v == payload.opinion for v in matrix.values())
+            
             if not matched:
                 signal_miss_count += 1
                 continue
@@ -205,10 +186,10 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         items.append({
             "code": code,
             "name": name,
-            "score": score_result.score,
-            "label": score_result.label,
-            "horizon_signals": horizon_signals,
-            "horizon_strengths": horizon_strengths,
+            "score": 0.0,
+            "label": matrix["mid"],
+            "horizon_signals": matrix,
+            "matrix": matrix,
         })
 
     return {
@@ -224,7 +205,7 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
 
 @app.post("/diagnose")
 def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
-    """诊断指定标的，返回含看法矩阵的详细分析结果。"""
+    """诊断指定标的，返回含 3x3 看法矩阵的详细分析结果。"""
     code = payload.code.strip()
     if not code:
         raise HTTPException(status_code=400, detail="code 不能为空")
@@ -233,11 +214,7 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
     if close_series.empty:
         raise HTTPException(status_code=404, detail=f"未找到标的 {code} 的行情数据")
 
-    horizon_profile = generate_multi_horizon_profile(close_series)
-    horizon_signals = {horizon: detail.signal for horizon, detail in horizon_profile.items()}
-    horizon_strengths = {horizon: detail.strength for horizon, detail in horizon_profile.items()}
-    score_result = aggregate_signal_score(horizon_signals, horizon_strengths=horizon_strengths)
-    matrix = _build_opinion_matrix(horizon_signals, score_result.label, horizon_strengths)
+    matrix = generate_opinion_matrix(close_series)
 
     selected_features = _run_bic_pruning(close_series)
     latest_news = fetch_latest_news(code, limit=3) if payload.include_news else []
@@ -247,10 +224,9 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
         "code": code,
         "name": asset_name,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
-        "score": score_result.score,
-        "label": score_result.label,
-        "horizon_signals": horizon_signals,
-        "horizon_strengths": horizon_strengths,
+        "score": 0.0,
+        "label": matrix["mid"],
+        "horizon_signals": matrix,
         "matrix": matrix,
         "selected_features": selected_features,
         "news_enabled": payload.include_news,
@@ -437,28 +413,4 @@ def _generate_mock_close_series(code: str) -> pd.Series:
     return pd.Series(prices)
 
 
-def _derive_opinion(horizon_signal: str, overall_label: str, horizon_strength: float | None = None) -> str:
-    """根据窗口期信号与整体标签推导5级看法。"""
-    strength = float(horizon_strength) if horizon_strength is not None else None
-
-    if horizon_signal == "BUY":
-        if strength is not None and strength >= 0.75:
-            return "STRONG_BUY"
-        return "STRONG_BUY" if overall_label == "STRONG_BUY" else "BUY"
-    if horizon_signal == "SELL":
-        if strength is not None and strength <= -0.75:
-            return "STRONG_SELL"
-        return "STRONG_SELL" if overall_label == "STRONG_SELL" else "SELL"
-    return "HOLD"
-
-
-def _build_opinion_matrix(
-    horizon_signals: Dict[str, str],
-    overall_label: str,
-    horizon_strengths: Dict[str, float] | None = None,
-) -> Dict[str, str]:
-    """为每个窗口期生成5级看法，构成3行矩阵。"""
-    return {
-        horizon: _derive_opinion(signal, overall_label, None if horizon_strengths is None else horizon_strengths.get(horizon))
-        for horizon, signal in horizon_signals.items()
-    }
+    return pd.Series(prices)

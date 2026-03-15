@@ -10,11 +10,9 @@ type ScoreSignalCardProps = {
 };
 
 const labelMap: Record<string, string> = {
-  STRONG_BUY: "强烈看多",
-  BUY: "较为看多",
+  BUY: "看多",
   HOLD: "观望",
-  SELL: "较为看空",
-  STRONG_SELL: "强烈看空",
+  SELL: "看空",
 };
 
 function signalColor(signal: "BUY" | "HOLD" | "SELL"): string {

@@ -20,7 +20,7 @@ def test_local_api_smoke() -> None:
 
     assert result["code"] == "000001"
     assert isinstance(result["score"], (int, float))
-    assert result["label"] in {"STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL"}
+    assert result["label"] in {"BUY", "HOLD", "SELL"}
     assert set(result["horizon_signals"].keys()) == {"short", "mid", "long"}
     assert result.get("news_enabled") is False
     assert result.get("latest_news") == []

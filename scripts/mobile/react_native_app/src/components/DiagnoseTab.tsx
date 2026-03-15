@@ -15,11 +15,9 @@ import { OpinionMatrixCard } from "./OpinionMatrix";
 import { ScoreSignalCard } from "./ScoreSignalCard";
 
 const LABEL_MAP: Record<string, string> = {
-  STRONG_BUY: "强烈看多",
   BUY: "看多",
   HOLD: "观望",
   SELL: "看空",
-  STRONG_SELL: "强烈看空",
 };
 
 type DiagnoseTabProps = {

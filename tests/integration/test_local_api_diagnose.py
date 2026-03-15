@@ -16,11 +16,9 @@ from urllib.request import Request, urlopen
 
 # 看法取值映射（用于中文展示）
 _OPINION_LABEL = {
-    "STRONG_BUY": "强烈看多 ▲▲",
     "BUY":         "看多      ▲",
     "HOLD":        "中性      —",
     "SELL":        "看空      ▼",
-    "STRONG_SELL": "强烈看空 ▼▼",
 }
 
 
@@ -30,10 +28,10 @@ def test_local_api_diagnose() -> None:
 
     assert result["code"] == "000001"
     assert isinstance(result["score"], (int, float))
-    assert result["label"] in {"STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL"}
+    assert result["label"] in {"BUY", "HOLD", "SELL"}
     assert set(result["horizon_signals"].keys()) == {"short", "mid", "long"}
     assert set(result["matrix"].keys()) == {"short", "mid", "long"}
-    valid_opinions = {"STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL"}
+    valid_opinions = {"BUY", "HOLD", "SELL"}
     for v in result["matrix"].values():
         assert v in valid_opinions
     assert result.get("news_enabled") is False

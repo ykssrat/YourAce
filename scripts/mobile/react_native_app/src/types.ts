@@ -4,7 +4,7 @@ export type HorizonSignals = {
   long: "BUY" | "HOLD" | "SELL";
 };
 
-export type Opinion = "STRONG_BUY" | "BUY" | "HOLD" | "SELL" | "STRONG_SELL";
+export type Opinion = "BUY" | "HOLD" | "SELL";
 
 export type OpinionMatrix = {
   short: Opinion;

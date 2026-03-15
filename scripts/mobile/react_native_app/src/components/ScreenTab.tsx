@@ -43,27 +43,21 @@ const SCORE_OP_OPTIONS: { value: ScreenFilter["score_operator"]; label: string }
 
 const OPINION_OPTIONS: { value: Opinion | ""; label: string }[] = [
   { value: "", label: "不限" },
-  { value: "STRONG_BUY", label: "强烈看多" },
   { value: "BUY", label: "看多" },
   { value: "HOLD", label: "观望" },
   { value: "SELL", label: "看空" },
-  { value: "STRONG_SELL", label: "强烈看空" },
 ];
 
 const OPINION_COLORS: Record<string, string> = {
-  STRONG_BUY: "#1a7327",
   BUY: "#2f9e44",
   HOLD: "#f08c00",
   SELL: "#c92a2a",
-  STRONG_SELL: "#7d1111",
 };
 
 const LABEL_MAP: Record<string, string> = {
-  STRONG_BUY: "强烈看多",
   BUY: "看多",
   HOLD: "观望",
   SELL: "看空",
-  STRONG_SELL: "强烈看空",
 };
 
 type ScreenTabProps = {

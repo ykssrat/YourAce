@@ -4,22 +4,18 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { Opinion, OpinionMatrix } from "../types";
 
-const OPINIONS: Opinion[] = ["STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL"];
+const OPINIONS: Opinion[] = ["BUY", "HOLD", "SELL"];
 
 const OPINION_LABELS: Record<Opinion, string> = {
-  STRONG_BUY: "强烈\n看多",
   BUY: "看多",
   HOLD: "观望",
   SELL: "看空",
-  STRONG_SELL: "强烈\n看空",
 };
 
 const OPINION_ACTIVE_COLORS: Record<Opinion, string> = {
-  STRONG_BUY: "#1a7327",
   BUY: "#2f9e44",
   HOLD: "#f08c00",
   SELL: "#c92a2a",
-  STRONG_SELL: "#7d1111",
 };
 
 const HORIZONS: { key: keyof OpinionMatrix; label: string }[] = [

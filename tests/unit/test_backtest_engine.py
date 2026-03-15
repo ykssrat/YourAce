@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from scripts.backtest.engine import compare_backtest_results, run_backtest
+from scripts.backtest.lightweight.engine import compare_backtest_results, run_backtest
 
 
 def test_run_backtest_returns_core_metrics_and_as_of_date() -> None:
