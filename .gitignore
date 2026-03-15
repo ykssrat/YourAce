@@ -22,5 +22,8 @@ scripts/mobile/rn_seed/
 # Local build logs
 *.log
 
-# Backtest frameworks
+# Backtest frameworks (ignored as requested)
 scripts/backtest/lean/
+
+# APK Release folder (large binaries)
+scripts/mobile/release/
