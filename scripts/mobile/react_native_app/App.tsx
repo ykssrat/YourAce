@@ -10,7 +10,7 @@ import { checkServerHealth } from "./src/services/api";
 const STORAGE_KEY_BASE_URL = "yourace_api_base_url";
 const STORAGE_KEY_NEWS = "yourace_news_enabled";
 // 默认使用电脑局域网 IP，手机同 WiFi 下可直连
-const DEFAULT_BASE_URL = "10.198.35.177:8000";
+const DEFAULT_BASE_URL = "43.138.223.57";
 
 type ActiveTab = "screen" | "diagnose";
 
