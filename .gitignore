@@ -1,8 +1,8 @@
-
+tools/
 __pycache__/
 *.py[cod]
 .venv/
-
+.gradle-user/
 # Node / React Native
 scripts/mobile/react_native_app/node_modules/
 scripts/mobile/react_native_app/npm-debug.log*

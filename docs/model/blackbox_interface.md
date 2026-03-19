@@ -10,132 +10,135 @@ YourAce Model 黑箱接口说明
 
 二、黑箱边界定义
 
-黑箱内部核心流程（不关心具体算法细节）：
+黑箱内部当前核心流程：
 
 1. 行情序列准备（本地数据优先，缺失时模拟序列降级）
-2. 三窗口信号生成（short/mid/long）
-3. 三窗口强度计算（horizon_strengths，范围 [-1, 1]）
-4. 综合评分聚合（score，0-100，当前保留 1 位小数）
-5. 标签映射（label）
-6. 解释层输出（selected_features、matrix）
+2. 三窗口信号生成（`short/mid/long`）
+3. 看法矩阵生成（`matrix`）
+4. 标签确定（`label`，当前取中期看法）
+5. 解释层输出（`selected_features`）
+6. 资讯层补充（`latest_news`）
+
+说明：
+
+- 当前主链路已经不再输出 `score`
+- 当前也不再使用 `horizon_strengths`
 
 三、对外接口输入（API 入参）
 
-1) POST /analyze
+1) `POST /analyze`
 
 请求字段：
 
-- code: string，必填，证券代码
-- long_fund_trend: float，可选，默认 0，范围 [-1, 1]
-- include_news: bool，可选，默认 true
+- `code`：string，必填
+- `strategy`：string，可选，默认 `default`
+- `long_fund_trend`：float，可选，默认 `0`
+- `include_news`：bool，可选，默认 `true`
 
-2) POST /diagnose
-
-请求字段：
-
-- code: string，必填，证券代码
-- include_news: bool，可选，默认 true
-
-3) POST /screen
+2) `POST /diagnose`
 
 请求字段：
 
-- asset_type: string，可选，"stock"/"etf"/"fund"/""（"" 表示不限）
-- horizon: string，可选，"short"/"mid"/"long"/""（"" 表示不限）
-- score_operator: string，可选，"gte"/"lte"
-- score_threshold: float，可选，默认 60，范围 [0, 100]
-- opinion: string，可选，"STRONG_BUY"/"BUY"/"HOLD"/"SELL"/"STRONG_SELL"/""
-- round_size: int，可选，默认 20，范围 [1, 100]
-- offset: int，可选，默认 0
+- `code`：string，必填
+- `strategy`：string，可选，默认 `default`
+- `include_news`：bool，可选，默认 `true`
 
-4) GET /search
+3) `POST /screen`
+
+请求字段：
+
+- `asset_type`：string，可选，`"stock"/"etf"/"fund"/""`
+- `horizon`：string，可选，`"short"/"mid"/"long"/""`
+- `strategy`：string，可选，默认 `default`
+- `opinion`：string，可选，`"BUY"/"HOLD"/"SELL"/""`
+- `round_size`：int，可选，默认 `20`
+- `offset`：int，可选，默认 `0`
+
+4) `GET /search`
 
 请求参数：
 
-- query: string，可选，关键词
-- limit: int，可选，默认 20
+- `query`
+- `limit`
 
-5) GET /news
+5) `GET /news`
 
 请求参数：
 
-- code: string，必填
-- limit: int，可选，默认 3
+- `code`
+- `limit`
 
-6) GET /health
+6) `GET /health`
 
 - 无业务参数
 
 四、黑箱内部最小必要输入
 
-无论外部接口如何调用，真正喂给评分核心的数据只有两类：
+无论外部接口如何调用，真正进入当前判断核心的数据只有两类：
 
-- close_series: 价格序列（由 code 解析得到）
-- long_fund_trend: 长期趋势先验（/analyze 可传，其他接口默认 0）
+- `close_series`：价格序列（由 `code` 解析得到）
+- `long_fund_trend`：长期趋势先验（仅 `/analyze` 可显式传入）
 
 说明：
 
-- include_news 不参与评分计算，只影响 latest_news 是否拉取。
-- /screen 的筛选参数属于后处理过滤，不改变单标的评分公式。
+- `include_news` 不参与判断计算，只影响 `latest_news` 是否拉取
+- `/screen` 的筛选参数属于后处理过滤，不改变单标的策略结果
 
 五、对外接口输出（API 出参）
 
-1) /analyze 输出
+1) `/analyze` 输出
 
-- code: string
-- as_of_date: string
-- score: float（0-100，1 位小数）
-- label: string（STRONG_BUY/BUY/HOLD/SELL/STRONG_SELL）
-- horizon_signals: object（short/mid/long -> BUY/HOLD/SELL）
-- horizon_strengths: object（short/mid/long -> [-1, 1] 连续值）
-- selected_features: string[]
-- news_enabled: bool
-- latest_news: object[]
+- `code`
+- `name`
+- `as_of_date`
+- `label`
+- `horizon_signals`
+- `matrix`
+- `selected_features`
+- `news_enabled`
+- `latest_news`
 
-2) /diagnose 输出
+2) `/diagnose` 输出
 
-- code: string
-- as_of_date: string
-- score: float
-- label: string
-- horizon_signals: object
-- horizon_strengths: object
-- matrix: object（short/mid/long -> STRONG_BUY/BUY/HOLD/SELL/STRONG_SELL）
-- selected_features: string[]
-- news_enabled: bool
-- latest_news: object[]
+- `code`
+- `name`
+- `as_of_date`
+- `label`
+- `horizon_signals`
+- `matrix`
+- `selected_features`
+- `news_enabled`
+- `latest_news`
 
-3) /screen 输出
+3) `/screen` 输出
 
-- items: object[]，每项包含：
-  - code
-  - name
-  - score
-  - label
-  - horizon_signals
-  - horizon_strengths
-- scanned_count: int
-- offset: int
-- has_more: bool
-- total_available: int
-- score_pass_count: int
-- signal_miss_count: int
+- `items`
+  - `code`
+  - `name`
+  - `label`
+  - `horizon_signals`
+  - `matrix`
+- `scanned_count`
+- `offset`
+- `has_more`
+- `total_available`
+- `signal_miss_count`
 
-4) /search 输出
+4) `/search` 输出
 
-- query: string
-- count: int
-- items: object[]
+- `query`
+- `count`
+- `items`
 
-5) /news 输出
+5) `/news` 输出
 
-- code: string
-- count: int
-- items: object[]
+- `code`
+- `count`
+- `items`
 
-6) /health 输出
+6) `/health` 输出
 
-- status: "ok"
+- `status: "ok"`
 
 六、黑箱架构示意图
 
@@ -151,21 +154,29 @@ flowchart LR
     C2 --> D
     C3 --> D
 
-    D --> E[信号生成器 signal_generator\n输出 horizon_signals + horizon_strengths]
-    E --> F[评分聚合 scoring\n输出 score + label]
-    F --> G[看法矩阵构建\noutput matrix]
-    F --> H[BIC 剪枝\noutput selected_features]
+    D --> E[策略调度 opinion_engine\n输出三窗口结果]
+    E --> F[生成 horizon_signals + matrix]
+    F --> G[确定 label]
+    F --> H[BIC 剪枝\n输出 selected_features]
     B --> I[新闻模块 news_fetcher]
 
     G --> J[统一响应 JSON]
     H --> J
     I --> J
     F --> J
-    E --> J
 ```
 
-七、接口与模型耦合点（你最该盯的地方）
+七、接口与模型耦合点
 
-- /screen 的 opinion 过滤依赖 _derive_opinion 规则，阈值变化会直接影响命中率。
-- score_threshold 是筛选阈值，不是模型阈值；两者不要混淆。
-- 若后续调整 label 分段（80/60/40/20），会影响 App 的文案展示与筛选结果分布。
+- `/screen` 的 `opinion` 过滤直接依赖 `matrix` 与 `horizon_signals`
+- `strategy` 参数决定具体策略模块是否能被正确加载
+- 若后续新增策略元信息接口，移动端策略枚举与后端能力应同步维护
+
+八、历史说明
+
+- 旧版文档中出现过的 `score`、`score_threshold`、`horizon_strengths`、`STRONG_BUY/STRONG_SELL` 等描述，属于历史架构，不再代表当前接口
+- 当前接口口径应统一理解为：
+  - `BUY`
+  - `HOLD`
+  - `SELL`
+  - 三窗口矩阵

@@ -14,6 +14,5 @@ def test_end_to_end_pipeline_runs() -> None:
 
     analyze = result["analyze"]
     assert analyze["code"] == "000001"
-    assert isinstance(analyze["score"], (int, float))
-    assert analyze["label"] in {"STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL"}
+    assert analyze["label"] in {"BUY", "HOLD", "SELL"}
     assert isinstance(analyze["news_count"], int)

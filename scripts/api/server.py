@@ -104,7 +104,6 @@ def analyze_asset(payload: AnalyzeRequest) -> Dict[str, object]:
         "code": code,
         "name": asset_name,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
-        "score": 0.0,  # 评分器已废弃
         "label": overall_label,
         "horizon_signals": matrix,
         "matrix": matrix,
@@ -184,7 +183,6 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         items.append({
             "code": code,
             "name": name,
-            "score": 0.0,
             "label": matrix["mid"],
             "horizon_signals": matrix,
             "matrix": matrix,
@@ -221,7 +219,6 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
         "code": code,
         "name": asset_name,
         "as_of_date": datetime.now().strftime("%Y-%m-%d"),
-        "score": 0.0,
         "label": matrix["mid"],
         "horizon_signals": matrix,
         "matrix": matrix,

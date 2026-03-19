@@ -41,7 +41,6 @@ def run_end_to_end(enable_online_fetch: bool = False) -> Dict[str, object]:
         "search_count": search_payload.get("count", 0),
         "analyze": {
             "code": analyze_payload.get("code"),
-            "score": analyze_payload.get("score"),
             "label": analyze_payload.get("label"),
             "as_of_date": analyze_payload.get("as_of_date"),
             "news_count": len(analyze_payload.get("latest_news", [])),

@@ -19,7 +19,6 @@ def test_local_api_smoke() -> None:
     result = run_local_api_smoke(code="000001", include_news=False)
 
     assert result["code"] == "000001"
-    assert isinstance(result["score"], (int, float))
     assert result["label"] in {"BUY", "HOLD", "SELL"}
     assert set(result["horizon_signals"].keys()) == {"short", "mid", "long"}
     assert result.get("news_enabled") is False
@@ -134,11 +133,10 @@ def _parse_args() -> argparse.Namespace:
 
 def _print_result(result: dict[str, Any], port: int, include_news: bool) -> None:
     """打印可读的输入输出摘要。"""
-    print("[YourAce] 本地评分链路验证完成")
+    print("[YourAce] 本地看法矩阵链路验证完成")
     print(f"- 接口地址: http://127.0.0.1:{port}/analyze")
     print(f"- 代码: {result.get('code')}")
     print(f"- 新闻开关: {'开启' if include_news else '关闭'}")
-    print(f"- 评分: {result.get('score')}")
     print(f"- 标签: {result.get('label')}")
     horizon = result.get("horizon_signals", {})
     print(

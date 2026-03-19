@@ -27,7 +27,6 @@ def test_local_api_diagnose() -> None:
     result = run_local_api_diagnose(code="000001", include_news=False)
 
     assert result["code"] == "000001"
-    assert isinstance(result["score"], (int, float))
     assert result["label"] in {"BUY", "HOLD", "SELL"}
     assert set(result["horizon_signals"].keys()) == {"short", "mid", "long"}
     assert set(result["matrix"].keys()) == {"short", "mid", "long"}
@@ -186,7 +185,6 @@ def _print_result(result: dict[str, Any], port: int, include_news: bool) -> None
     print(f"  接口地址: http://127.0.0.1:{port}/diagnose")
     print(f"  代码:     {result.get('code')}")
     print(f"  日期:     {result.get('as_of_date')}")
-    print(f"  综合评分: {result.get('score')}")
     print(f"  综合标签: {result.get('label')}")
 
     horizon = result.get("horizon_signals", {})
