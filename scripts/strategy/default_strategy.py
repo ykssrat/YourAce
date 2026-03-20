@@ -22,8 +22,8 @@ def _short_horizon_opinion(close_series: pd.Series) -> str:
     momentum_10 = _safe_pct_change(close_series, periods=10)
     deviation = (current / rolling_mean - 1.0) if rolling_mean != 0 else 0.0
 
-    score = 0.65 * momentum_10 + 0.35 * deviation
-    return _map_score_to_opinion(score, buy_threshold=0.02, sell_threshold=-0.02)
+    signal_value = 0.65 * momentum_10 + 0.35 * deviation
+    return _map_signal_value_to_opinion(signal_value, buy_threshold=0.02, sell_threshold=-0.02)
 
 
 def _mid_horizon_opinion(close_series: pd.Series) -> str:
@@ -40,8 +40,8 @@ def _mid_horizon_opinion(close_series: pd.Series) -> str:
     position = ((latest - support) / band) if band > 0 else 0.5
     zone_bias = 0.5 - position
 
-    score = 0.7 * trend + 0.3 * zone_bias
-    return _map_score_to_opinion(score, buy_threshold=0.015, sell_threshold=-0.015)
+    signal_value = 0.7 * trend + 0.3 * zone_bias
+    return _map_signal_value_to_opinion(signal_value, buy_threshold=0.015, sell_threshold=-0.015)
 
 
 def _long_horizon_opinion(close_series: pd.Series, long_fund_trend: float) -> str:
@@ -55,8 +55,8 @@ def _long_horizon_opinion(close_series: pd.Series, long_fund_trend: float) -> st
     if ma120 != 0:
         ma_structure = (latest / ma120 - 1.0) * 0.5 + (ma30 / ma120 - 1.0) * 0.5
 
-    score = 0.7 * ma_structure + 0.3 * long_fund_trend
-    return _map_score_to_opinion(score, buy_threshold=0.01, sell_threshold=-0.01)
+    signal_value = 0.7 * ma_structure + 0.3 * long_fund_trend
+    return _map_signal_value_to_opinion(signal_value, buy_threshold=0.01, sell_threshold=-0.01)
 
 
 def _safe_pct_change(series: pd.Series, periods: int) -> float:
@@ -69,10 +69,10 @@ def _safe_pct_change(series: pd.Series, periods: int) -> float:
     return float(value)
 
 
-def _map_score_to_opinion(score: float, buy_threshold: float, sell_threshold: float) -> str:
-    """映射分值为看法。"""
-    if score >= buy_threshold:
+def _map_signal_value_to_opinion(signal_value: float, buy_threshold: float, sell_threshold: float) -> str:
+    """映射策略信号值为看法。"""
+    if signal_value >= buy_threshold:
         return "BUY"
-    if score <= sell_threshold:
+    if signal_value <= sell_threshold:
         return "SELL"
     return "HOLD"

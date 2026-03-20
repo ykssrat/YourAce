@@ -1,7 +1,11 @@
-
+tools/
 __pycache__/
 *.py[cod]
 .venv/
+.gradle-user/
+.pytest_cache/
+pytest-cache-files-*/
+build_log.txt
 
 # Node / React Native
 scripts/mobile/react_native_app/node_modules/
@@ -14,7 +18,27 @@ scripts/mobile/react_native_app/android/.gradle/
 scripts/mobile/react_native_app/android/build/
 scripts/mobile/react_native_app/android/app/build/
 scripts/mobile/react_native_app/android/app/.cxx/
+scripts/mobile/react_native_app/android/app/.externalNativeBuild/
+scripts/mobile/react_native_app/android/app/cmake-build-*/
 scripts/mobile/react_native_app/android/local.properties
+scripts/mobile/react_native_app/android/.idea/
+scripts/mobile/react_native_app/android/captures/
+
+# Android / Gradle machine-specific files
+**/compile_commands.json
+**/.ninja_deps
+**/.ninja_log
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/configure_fingerprint.bin
+**/android_gradle_build.json
+**/android_gradle_build_mini.json
+**/additional_project_files.txt
+**/build.ninja
+**/build_file_index.txt
+**/metadata_generation_command.txt
+**/prefab_config.json
+**/symbol_folder_index.txt
 
 # Temporary scaffold project
 scripts/mobile/rn_seed/

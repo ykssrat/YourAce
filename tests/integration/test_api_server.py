@@ -17,13 +17,12 @@ def test_search_endpoint_returns_items() -> None:
     assert isinstance(payload["items"], list)
 
 
-def test_analyze_endpoint_returns_score_and_signals() -> None:
-    """analyze 接口应返回分数、标签与三维信号。"""
+def test_analyze_endpoint_returns_label_and_signals() -> None:
+    """analyze 接口应返回标签与三维信号。"""
     response = client.post("/analyze", json={"code": "000001", "long_fund_trend": 0.02})
     assert response.status_code == 200
 
     payload = response.json()
-    assert "score" in payload
     assert "label" in payload
     assert set(payload["horizon_signals"].keys()) == {"short", "mid", "long"}
     assert "latest_news" in payload
