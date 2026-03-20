@@ -90,7 +90,7 @@ export type NewsItem = {
 };
 
 export const STRATEGY_OPTIONS = [
-  { value: "default", label: "默认" },
+  { value: "momentum_deviation", label: "动量偏离策略" },
   { value: "martingale", label: "马丁策略" },
   { value: "livermore", label: "利弗莫尔策略" },
   { value: "kdj", label: "KDJ策略" },

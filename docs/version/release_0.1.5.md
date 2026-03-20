@@ -16,7 +16,7 @@ YourAce 版本整理（0.1.5）
 - 后端 `analyze`、`screen`、`diagnose` 请求统一支持 `strategy` 参数。
 - `opinion_engine` 改为调度器角色，根据策略名动态分发到具体策略模块。
 - 当前已接入：
-  - `default`
+  - `momentum_deviation`
   - `livermore`
 - 策略显示名与内部 ID 做了兼容映射，便于移动端直接调用。
 
@@ -57,7 +57,7 @@ YourAce 版本整理（0.1.5）
 2) 移动端能力
 
 - 用户可在界面上切换不同策略后再执行选股或诊股。
-- 当前前端策略枚举已先行扩容，但后端实际稳定接入的仍以 `default` 与 `livermore` 为主。
+- 当前前端策略枚举已先行扩容，但后端实际稳定接入的仍以 `momentum_deviation` 与 `livermore` 为主。
 
 3) 研发能力
 

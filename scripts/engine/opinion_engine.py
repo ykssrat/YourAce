@@ -13,7 +13,7 @@ VALID_OPINIONS = ["BUY", "HOLD", "SELL"]
 
 def generate_opinion_matrix(
     close_series: pd.Series,
-    strategy_name: str = "default",
+    strategy_name: str = "momentum_deviation",
     long_fund_trend: float = 0.0,
 ) -> Dict[str, str]:
     """
@@ -21,7 +21,7 @@ def generate_opinion_matrix(
     
     Args:
         close_series: 行情序列
-        strategy_name: 策略标识，对应 scripts/strategy/ 下的文件名（如 "default", "livermore"）
+        strategy_name: 策略标识，对应 scripts/strategy/ 下的文件名（如 "momentum_deviation", "livermore"）
         long_fund_trend: 基本面趋势输入（由外部传入）
         
     Returns:
@@ -45,7 +45,7 @@ def generate_opinion_matrix(
         
     except (ImportError, AttributeError) as e:
         # 如果策略未找到或加载失败，且不是默认策略，则抛出异常或回退
-        if strategy_name != "default":
+        if strategy_name != "momentum_deviation":
             raise ValueError(f"策略 '{strategy_name}' 加载失败: {str(e)}")
             
         # 兜底：如果默认策略加载也失败（不应该发生），手动定义一个简单逻辑
@@ -55,8 +55,8 @@ def generate_opinion_matrix(
 def _map_strategy_label_to_id(label: str) -> str:
     """内部映射：将 UI 标签或 ID 统一为策略文件后缀。"""
     mapping = {
-        "默认": "default",
-        "default": "default",
+        "动量偏离策略": "momentum_deviation",
+        "momentum_deviation": "momentum_deviation",
         "livermore": "livermore",
         "利弗莫尔策略": "livermore",
     }

@@ -20,7 +20,7 @@ YourAce 后端接口与最小闭环验证
 三、`/analyze` 请求体
 
 - `code`：证券代码，必填
-- `strategy`：策略名，可选，默认 `default`
+- `strategy`：策略名，可选，默认 `momentum_deviation`
 - `long_fund_trend`：长期趋势输入，默认 `0`
 - `include_news`：是否抓取资讯，默认 `true`
 

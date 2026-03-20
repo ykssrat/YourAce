@@ -43,7 +43,7 @@ class AnalyzeRequest(BaseModel):
     """分析请求体。"""
 
     code: str = Field(..., min_length=1, max_length=20)
-    strategy: str = Field(default="default")
+    strategy: str = Field(default="momentum_deviation")
     long_fund_trend: float = Field(default=0.0, ge=-1.0, le=1.0)
     include_news: bool = Field(default=True)
 
@@ -53,7 +53,7 @@ class ScreenRequest(BaseModel):
 
     asset_type: str = Field(default="")
     horizon: str = Field(default="")
-    strategy: str = Field(default="default")
+    strategy: str = Field(default="momentum_deviation")
     opinion: str = Field(default="")
     round_size: int = Field(default=20, ge=1, le=100)
     offset: int = Field(default=0, ge=0)
@@ -63,7 +63,7 @@ class DiagnoseRequest(BaseModel):
     """诊股请求体。"""
 
     code: str = Field(..., min_length=1, max_length=20)
-    strategy: str = Field(default="default")
+    strategy: str = Field(default="momentum_deviation")
     include_news: bool = Field(default=True)
 
 
@@ -71,7 +71,7 @@ class ScreenActionLogRequest(BaseModel):
     asset_type: str = Field(default="")
     horizon: str = Field(default="")
     opinion: str = Field(default="")
-    strategy: str = Field(default="default")
+    strategy: str = Field(default="momentum_deviation")
     round_size: int = Field(default=0, ge=0, le=500)
     offset: int = Field(default=0, ge=0)
     result_count: int = Field(default=0, ge=0)

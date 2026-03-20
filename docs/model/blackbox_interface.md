@@ -31,7 +31,7 @@ YourAce Model 黑箱接口说明
 请求字段：
 
 - `code`：string，必填
-- `strategy`：string，可选，默认 `default`
+- `strategy`：string，可选，默认 `momentum_deviation`
 - `long_fund_trend`：float，可选，默认 `0`
 - `include_news`：bool，可选，默认 `true`
 
@@ -40,7 +40,7 @@ YourAce Model 黑箱接口说明
 请求字段：
 
 - `code`：string，必填
-- `strategy`：string，可选，默认 `default`
+- `strategy`：string，可选，默认 `momentum_deviation`
 - `include_news`：bool，可选，默认 `true`
 
 3) `POST /screen`
@@ -49,7 +49,7 @@ YourAce Model 黑箱接口说明
 
 - `asset_type`：string，可选，`"stock"/"etf"/"fund"/""`
 - `horizon`：string，可选，`"short"/"mid"/"long"/""`
-- `strategy`：string，可选，默认 `default`
+- `strategy`：string，可选，默认 `momentum_deviation`
 - `opinion`：string，可选，`"BUY"/"HOLD"/"SELL"/""`
 - `round_size`：int，可选，默认 `20`
 - `offset`：int，可选，默认 `0`

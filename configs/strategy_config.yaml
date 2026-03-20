@@ -1,6 +1,5 @@
-﻿strategy:
+strategy:
   name: livermore
   risk_free_rate: 0.02
-  score_range: [0, 100]
 optimization:
   objectives: [return, sharpe, win_rate]

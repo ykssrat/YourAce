@@ -23,7 +23,7 @@ type DiagnoseTabProps = {
 
 export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTabProps) {
   const [query, setQuery] = useState(initialCode ?? "");
-  const [strategy, setStrategy] = useState("default");
+  const [strategy, setStrategy] = useState("momentum_deviation");
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
@@ -137,7 +137,7 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
             <Pressable
               key={opt.value}
               onPress={() => {
-                if (opt.value !== "default") {
+                if (opt.value !== "momentum_deviation") {
                   Alert.alert("该策略暂未上线", "敬请期待");
                   return;
                 }

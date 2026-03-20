@@ -32,7 +32,7 @@ export async function analyzeAsset(
     },
     body: JSON.stringify({
       code,
-      strategy: request?.strategy || "default",
+      strategy: request?.strategy || "momentum_deviation",
       long_fund_trend: request?.long_fund_trend || 0,
       include_news: request?.include_news ?? true,
     }),
@@ -52,7 +52,7 @@ export async function diagnoseAsset(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ 
       code, 
-      strategy: request?.strategy || "default",
+      strategy: request?.strategy || "momentum_deviation",
       include_news: request?.include_news ?? true 
     }),
   }, buildBaseUrls(preferredBaseUrl));
@@ -70,7 +70,7 @@ export async function screenAssets(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...request,
-      strategy: request.strategy || "default",
+      strategy: request.strategy || "momentum_deviation",
     }),
   }, buildBaseUrls(preferredBaseUrl));
 
@@ -124,12 +124,6 @@ function normalizeHorizonSignals(signals: AnalyzeResponse["horizon_signals"]): A
 }
 
 function normalizeOpinion(opinion: string): Opinion {
-  if (opinion === "STRONG_BUY") {
-    return "BUY";
-  }
-  if (opinion === "STRONG_SELL") {
-    return "SELL";
-  }
   if (opinion === "BUY" || opinion === "HOLD" || opinion === "SELL") {
     return opinion;
   }

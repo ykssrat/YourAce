@@ -65,7 +65,7 @@ const DEFAULT_FILTER: ScreenFilter = {
   asset_type: "",
   horizon: "",
   opinion: "",
-  strategy: "default",
+  strategy: "momentum_deviation",
 };
 
 export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
@@ -216,7 +216,7 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
               label={label}
               active={filter.strategy === value}
               onPress={() => {
-                if (value !== "default") {
+                if (value !== "momentum_deviation") {
                   Alert.alert("该策略暂未上线", "敬请期待");
                   return;
                 }
