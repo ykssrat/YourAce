@@ -13,9 +13,23 @@ from typing import Any
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
+import pytest
+
+from scripts.utils.asset_loader import detect_asset_type, load_assets
+
+PYTHON_CANDIDATES = [
+    sys.executable,
+    r"C:\Users\Public\.codegeex\mamba\envs\codegeex-agent\python.exe",
+    r"D:\conda\python.exe",
+    r"D:\git_project\venv\Scripts\python.exe",
+]
+
 
 def test_local_api_smoke() -> None:
     """自动启动本地后端并验证 analyze 最小闭环。"""
+    if not _server_smoke_supported():
+        pytest.skip("当前测试解释器缺少 FastAPI/uvicorn 依赖，跳过本地 API 冒烟测试")
+
     result = run_local_api_smoke(code="000001", include_news=False)
 
     assert result["code"] == "000001"
@@ -23,6 +37,17 @@ def test_local_api_smoke() -> None:
     assert set(result["horizon_signals"].keys()) == {"short", "mid", "long"}
     assert result.get("news_enabled") is False
     assert result.get("latest_news") == []
+
+
+def test_screen_universe_contains_enough_etfs_and_funds() -> None:
+    assets = load_assets(keyword="", limit=10000)
+    etf_assets = [item for item in assets if detect_asset_type(item["code"], item["name"]) == "etf"]
+    fund_assets = [item for item in assets if detect_asset_type(item["code"], item["name"]) == "fund"]
+
+    assert len(etf_assets) >= 100
+    assert len(fund_assets) >= 100
+    assert any("ETF" in item["name"].upper() for item in etf_assets[:20])
+    assert any("基金" in item["name"] or "混合" in item["name"] or "债" in item["name"] or "FOF" in item["name"].upper() for item in fund_assets[:20])
 
 
 def run_local_api_smoke(code: str = "000001", include_news: bool = False) -> dict[str, Any]:
@@ -45,24 +70,54 @@ def run_local_api_smoke(code: str = "000001", include_news: bool = False) -> dic
         _stop_server(process)
 
 
+def _server_smoke_supported() -> bool:
+    try:
+        import fastapi  # noqa: F401
+        import uvicorn  # noqa: F401
+    except Exception:
+        return False
+    return True
+
+
 def _start_server(project_root: Path, port: int) -> subprocess.Popen[str]:
     """以子进程方式启动 uvicorn 服务。"""
-    return subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "uvicorn",
-            "scripts.api.server:app",
-            "--host",
-            "127.0.0.1",
-            "--port",
-            str(port),
-        ],
-        cwd=str(project_root),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
+    last_error: Exception | None = None
+    for python_executable in _iter_python_candidates():
+        try:
+            process = subprocess.Popen(
+                [
+                    python_executable,
+                    "-m",
+                    "uvicorn",
+                    "scripts.api.server:app",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    str(port),
+                ],
+                cwd=str(project_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+            time.sleep(1)
+            if process.poll() is None:
+                return process
+
+            output = _read_process_output(process)
+            last_error = RuntimeError(f"uvicorn failed with {python_executable}: {output}")
+        except Exception as exc:
+            last_error = exc
+
+    raise RuntimeError(f"无法启动测试服务: {last_error}")
+
+
+def _iter_python_candidates() -> list[str]:
+    unique_candidates: list[str] = []
+    for candidate in PYTHON_CANDIDATES:
+        if candidate and Path(candidate).exists() and candidate not in unique_candidates:
+            unique_candidates.append(candidate)
+    return unique_candidates
 
 
 def _wait_for_health(health_url: str, timeout_seconds: int) -> None:
@@ -120,6 +175,15 @@ def _stop_server(process: subprocess.Popen[str]) -> None:
     except subprocess.TimeoutExpired:
         process.kill()
         process.wait(timeout=8)
+
+
+def _read_process_output(process: subprocess.Popen[str]) -> str:
+    if process.stdout is None:
+        return ""
+    try:
+        return process.stdout.read()
+    except Exception:
+        return ""
 
 
 def _parse_args() -> argparse.Namespace:

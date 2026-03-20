@@ -1,4 +1,4 @@
-import { AnalyzeRequest, AnalyzeResponse, DiagnoseRequest, DiagnoseResponse, ScreenRequest, ScreenResponse, SearchItem } from "../types";
+import { AnalyzeRequest, AnalyzeResponse, DiagnoseRequest, DiagnoseResponse, Opinion, ScreenActionLogRequest, ScreenRequest, ScreenResponse, SearchItem } from "../types";
 
 const DEFAULT_API_BASE_URLS = [
   "http://10.0.2.2:8000",
@@ -38,7 +38,8 @@ export async function analyzeAsset(
     }),
   }, buildBaseUrls(preferredBaseUrl));
 
-  return (await response.json()) as AnalyzeResponse;
+  const payload = (await response.json()) as AnalyzeResponse;
+  return normalizeAnalyzeResponse(payload);
 }
 
 export async function diagnoseAsset(
@@ -56,7 +57,8 @@ export async function diagnoseAsset(
     }),
   }, buildBaseUrls(preferredBaseUrl));
 
-  return (await response.json()) as DiagnoseResponse;
+  const payload = (await response.json()) as DiagnoseResponse;
+  return normalizeDiagnoseResponse(payload);
 }
 
 export async function screenAssets(
@@ -72,7 +74,66 @@ export async function screenAssets(
     }),
   }, buildBaseUrls(preferredBaseUrl));
 
-  return (await response.json()) as ScreenResponse;
+  const payload = (await response.json()) as ScreenResponse;
+  return {
+    ...payload,
+    items: (payload.items ?? []).map((item) => ({
+      ...item,
+      label: normalizeOpinion(item.label),
+      horizon_signals: normalizeHorizonSignals(item.horizon_signals),
+    })),
+  };
+}
+
+export async function logScreenAction(
+  request: ScreenActionLogRequest,
+  preferredBaseUrl: string = "",
+): Promise<void> {
+  await requestWithBaseFallback("/screen/log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  }, buildBaseUrls(preferredBaseUrl));
+}
+
+function normalizeDiagnoseResponse(payload: DiagnoseResponse): DiagnoseResponse {
+  return {
+    ...normalizeAnalyzeResponse(payload),
+    matrix: {
+      short: normalizeOpinion(payload.matrix.short),
+      mid: normalizeOpinion(payload.matrix.mid),
+      long: normalizeOpinion(payload.matrix.long),
+    },
+  };
+}
+
+function normalizeAnalyzeResponse(payload: AnalyzeResponse): AnalyzeResponse {
+  return {
+    ...payload,
+    label: normalizeOpinion(payload.label),
+    horizon_signals: normalizeHorizonSignals(payload.horizon_signals),
+  };
+}
+
+function normalizeHorizonSignals(signals: AnalyzeResponse["horizon_signals"]): AnalyzeResponse["horizon_signals"] {
+  return {
+    short: normalizeOpinion(signals.short),
+    mid: normalizeOpinion(signals.mid),
+    long: normalizeOpinion(signals.long),
+  };
+}
+
+function normalizeOpinion(opinion: string): Opinion {
+  if (opinion === "STRONG_BUY") {
+    return "BUY";
+  }
+  if (opinion === "STRONG_SELL") {
+    return "SELL";
+  }
+  if (opinion === "BUY" || opinion === "HOLD" || opinion === "SELL") {
+    return opinion;
+  }
+  return "HOLD";
 }
 
 export async function checkServerHealth(

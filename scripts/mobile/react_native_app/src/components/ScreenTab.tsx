@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { screenAssets } from "../services/api";
+import { logScreenAction, screenAssets } from "../services/api";
 import { Opinion, ScreenItem, STRATEGY_OPTIONS } from "../types";
 
 // 筛选参数类型
@@ -113,6 +113,18 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
         hasMore: resp.has_more,
         totalAvailable: resp.total_available,
       });
+      void logScreenAction({
+        asset_type: filter.asset_type,
+        horizon: filter.horizon,
+        opinion: filter.opinion,
+        strategy: filter.strategy,
+        round_size: ROUND_SIZE,
+        offset: 0,
+        result_count: resp.items.length,
+        total_available: resp.total_available,
+        scanned_count: resp.scanned_count,
+        signal_miss_count: resp.signal_miss_count,
+      }, apiBaseUrl).catch(() => {});
     } catch (err) {
       setError(err instanceof Error ? err.message : "请求失败");
     } finally {
@@ -149,6 +161,18 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
         hasMore: resp.has_more,
         totalAvailable: resp.total_available,
       }));
+      void logScreenAction({
+        asset_type: filter.asset_type,
+        horizon: filter.horizon,
+        opinion: filter.opinion,
+        strategy: filter.strategy,
+        round_size: ROUND_SIZE,
+        offset: nextOffset,
+        result_count: resp.items.length,
+        total_available: resp.total_available,
+        scanned_count: resp.scanned_count,
+        signal_miss_count: resp.signal_miss_count,
+      }, apiBaseUrl).catch(() => {});
     } catch (err) {
       setError(err instanceof Error ? err.message : "请求失败");
     } finally {

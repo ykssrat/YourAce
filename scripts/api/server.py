@@ -25,7 +25,8 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
 
 
 
-app = FastAPI(title="YourAce API", version="0.1.5")
+app = FastAPI(title="YourAce API", version="0.1.6")
+_SCREEN_EVENT_LOG_PATH = Path("datas/logs/screen_events.jsonl")
 
 # 合法枚举值，用于请求校验
 _VALID_HORIZONS = {"short", "mid", "long"}
@@ -64,6 +65,19 @@ class DiagnoseRequest(BaseModel):
     code: str = Field(..., min_length=1, max_length=20)
     strategy: str = Field(default="default")
     include_news: bool = Field(default=True)
+
+
+class ScreenActionLogRequest(BaseModel):
+    asset_type: str = Field(default="")
+    horizon: str = Field(default="")
+    opinion: str = Field(default="")
+    strategy: str = Field(default="default")
+    round_size: int = Field(default=0, ge=0, le=500)
+    offset: int = Field(default=0, ge=0)
+    result_count: int = Field(default=0, ge=0)
+    total_available: int = Field(default=0, ge=0)
+    scanned_count: int = Field(default=0, ge=0)
+    signal_miss_count: int = Field(default=0, ge=0)
 
 
 @app.get("/search")
@@ -196,6 +210,26 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         "total_available": total,
         "signal_miss_count": signal_miss_count,
     }
+
+
+@app.post("/screen/log")
+def log_screen_action(payload: ScreenActionLogRequest) -> Dict[str, object]:
+    """记录一次选股行为，供远程服务端留存分析。"""
+    event = {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "asset_type": payload.asset_type,
+        "horizon": payload.horizon,
+        "opinion": payload.opinion,
+        "strategy": payload.strategy,
+        "round_size": payload.round_size,
+        "offset": payload.offset,
+        "result_count": payload.result_count,
+        "total_available": payload.total_available,
+        "scanned_count": payload.scanned_count,
+        "signal_miss_count": payload.signal_miss_count,
+    }
+    _append_screen_log(event)
+    return {"status": "ok"}
 
 
 @app.post("/diagnose")
@@ -407,4 +441,7 @@ def _generate_mock_close_series(code: str) -> pd.Series:
     return pd.Series(prices)
 
 
-    return pd.Series(prices)
+def _append_screen_log(event: Dict[str, object]) -> None:
+    _SCREEN_EVENT_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with _SCREEN_EVENT_LOG_PATH.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(event, ensure_ascii=False) + "\n")

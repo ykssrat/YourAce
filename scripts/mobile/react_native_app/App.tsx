@@ -149,16 +149,17 @@ export default function App() {
               <Text style={styles.startupDate}>{formatTodayLabel()}</Text>
             </View>
 
-            <View style={styles.startupCard}>
-              <Text style={styles.startupCardLabel}>今日理财小知识</Text>
-              <Text style={styles.startupCardTitle}>{startupCard.title}</Text>
-              <Text style={styles.startupCardBody}>{startupCard.summary}</Text>
-              <Text style={styles.startupCardHint}>启动阶段展示知识卡片，同时在后台完成设置读取与连接预热。</Text>
-            </View>
+            <View style={styles.startupBottom}>
+              <View style={styles.startupCard}>
+                <Text style={styles.startupCardLabel}>今日理财小知识</Text>
+                <Text style={styles.startupCardTitle}>{startupCard.title}</Text>
+                <Text style={styles.startupCardBody}>{startupCard.summary}</Text>
+              </View>
 
-            <View style={styles.startupFooter}>
-              <ActivityIndicator color="#013E75" size="small" />
-              <Text style={styles.startupStatus}>{startupStatus}</Text>
+              <View style={styles.startupFooter}>
+                <ActivityIndicator color="#013E75" size="small" />
+                <Text style={styles.startupStatus}>{startupStatus}</Text>
+              </View>
             </View>
           </View>
         </ImageBackground>
@@ -313,6 +314,11 @@ const styles = StyleSheet.create({
   },
   startupHero: {
     gap: 6,
+  },
+  startupBottom: {
+    marginTop: "auto",
+    gap: 14,
+    paddingTop: 24,
   },
   startupEyebrow: {
     fontSize: 12,

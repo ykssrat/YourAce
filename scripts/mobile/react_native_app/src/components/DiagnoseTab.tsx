@@ -15,16 +15,9 @@ import { DiagnoseResponse, SearchItem, STRATEGY_OPTIONS } from "../types";
 import { OpinionMatrixCard } from "./OpinionMatrix";
 import { ScoreSignalCard } from "./ScoreSignalCard";
 
-const LABEL_MAP: Record<string, string> = {
-  BUY: "看多",
-  HOLD: "观望",
-  SELL: "看空",
-};
-
 type DiagnoseTabProps = {
   apiBaseUrl: string;
   newsEnabled: boolean;
-  /** 从选股跳转时预填的代码 */
   initialCode?: string;
 };
 
@@ -38,13 +31,11 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
   const [result, setResult] = useState<DiagnoseResponse | null>(null);
   const analyzingRef = useRef(false);
 
-  // 从选股跳转时自动触发诊断
   useEffect(() => {
     if (initialCode && initialCode.trim()) {
       setQuery(initialCode.trim());
       void handleDiagnose(initialCode.trim());
     }
-    // 仅在 initialCode 变化时触发
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCode]);
 
@@ -64,9 +55,9 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
       setLoading(true);
       setError("");
       setSuggestions([]);
-      const data = await diagnoseAsset(finalCode, apiBaseUrl, { 
-        strategy, 
-        include_news: newsEnabled 
+      const data = await diagnoseAsset(finalCode, apiBaseUrl, {
+        strategy,
+        include_news: newsEnabled,
       });
       setResult(data);
       setQuery(finalCode);
@@ -78,7 +69,6 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
     }
   }
 
-  // 搜索建议防抖
   useEffect(() => {
     const keyword = query.trim();
     if (!keyword) {
@@ -104,9 +94,8 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.pageTitle}>诊股</Text>
-      <Text style={styles.pageSubtitle}>输入代码查看三窗口诊断与共识看法</Text>
+      <Text style={styles.pageSubtitle}>输入代码查看三个窗口期的诊断与共识看法</Text>
 
-      {/* 输入区 */}
       <View style={styles.inputCard}>
         <View style={styles.inputRow}>
           <TextInput
@@ -121,10 +110,9 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
           </Pressable>
         </View>
 
-        {/* 搜索建议 */}
         {suggestions.length > 0 ? (
           <View style={styles.suggestionBox}>
-            <Text style={styles.suggestionTitle}>{searching ? "检索中..." : "搜索建议"}</Text>
+            <Text style={styles.suggestionTitle}>{searching ? "搜索中..." : "搜索建议"}</Text>
             {suggestions.map((item) => (
               <Pressable
                 key={`${item.code}-${item.name}`}
@@ -142,7 +130,6 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
         ) : null}
       </View>
 
-      {/* 策略选择 */}
       <View style={styles.strategyRow}>
         <Text style={styles.strategyLabel}>策略算法:</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.strategyScroll}>
@@ -158,13 +145,15 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
               }}
               style={[
                 styles.strategyChip,
-                strategy === opt.value && styles.strategyChipActive
+                strategy === opt.value && styles.strategyChipActive,
               ]}
             >
-              <Text style={[
-                styles.strategyChipText,
-                strategy === opt.value && styles.strategyChipTextActive
-              ]}>
+              <Text
+                style={[
+                  styles.strategyChipText,
+                  strategy === opt.value && styles.strategyChipTextActive,
+                ]}
+              >
                 {opt.label}
               </Text>
             </Pressable>
@@ -172,31 +161,23 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
         </ScrollView>
       </View>
 
-      {/* 错误提示 */}
       {error ? (
         <View style={styles.errorBox}>
           <Text style={styles.errorText}>{error}</Text>
         </View>
       ) : null}
 
-      {/* 总览卡片（复用已有 ScoreSignalCard） */}
       <ScoreSignalCard result={result} />
 
-      {/* 看法矩阵卡片 */}
       {result?.matrix ? (
         <View style={styles.matrixCard}>
-          <Text style={styles.matrixTitle}>三窗口看法矩阵</Text>
-          <Text style={styles.matrixSubtitle}>
-            每行高亮当前窗口期的看法位置 · 综合反映了三个窗口期的共识结果
-          </Text>
+          <Text style={styles.matrixTitle}>三个窗口期看法矩阵</Text>
           <OpinionMatrixCard matrix={result.matrix} />
-
         </View>
       ) : null}
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -308,12 +289,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#203627",
-  },
-  matrixSubtitle: {
-    marginTop: 4,
-    fontSize: 11,
-    color: "#4f6b5a",
-    lineHeight: 16,
   },
   strategyRow: {
     marginTop: 12,

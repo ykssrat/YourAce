@@ -58,6 +58,19 @@ export type ScreenRequest = {
   offset?: number;
 };
 
+export type ScreenActionLogRequest = {
+  asset_type?: string;
+  horizon?: string;
+  opinion?: string;
+  strategy?: string;
+  round_size?: number;
+  offset?: number;
+  result_count?: number;
+  total_available?: number;
+  scanned_count?: number;
+  signal_miss_count?: number;
+};
+
 export type DiagnoseRequest = {
   code: string;
   strategy?: string;

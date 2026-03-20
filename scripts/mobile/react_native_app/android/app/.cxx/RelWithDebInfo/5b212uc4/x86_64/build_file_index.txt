@@ -1,2 +1,0 @@
-D:\QMT\YourAce\scripts\mobile\react_native_app\node_modules\@react-native-async-storage\async-storage\android\build\generated\source\codegen\jni\CMakeLists.txt
-D:\QMT\YourAce\scripts\mobile\react_native_app\node_modules\react-native\ReactAndroid\cmake-utils\default-app-setup\CMakeLists.txt
