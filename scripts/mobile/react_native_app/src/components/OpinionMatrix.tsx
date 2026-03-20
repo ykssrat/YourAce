@@ -58,9 +58,7 @@ export function OpinionMatrixCard({ matrix }: OpinionMatrixCardProps) {
                     styles.cell,
                     active && { backgroundColor: OPINION_ACTIVE_COLORS[op] },
                   ]}
-                >
-                  {active ? <Text style={styles.activeCheck}>✓</Text> : null}
-                </View>
+                />
               );
             })}
           </View>

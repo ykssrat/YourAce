@@ -191,59 +191,12 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
           </Text>
           <OpinionMatrixCard matrix={result.matrix} />
 
-          {/* 结构解读 */}
-          <View style={styles.structSection}>
-            <Text style={styles.structTitle}>结构解读</Text>
-            <StructLine
-              horizon="短期"
-              signal={result.horizon_signals.short}
-              matrixOpinion={result.matrix.short}
-            />
-            <StructLine
-              horizon="中期"
-              signal={result.horizon_signals.mid}
-              matrixOpinion={result.matrix.mid}
-            />
-            <StructLine
-              horizon="长期"
-              signal={result.horizon_signals.long}
-              matrixOpinion={result.matrix.long}
-            />
-          </View>
-        </View>
-      ) : null}
-
-      {/* 选中特征 */}
-      {result && result.selected_features.length > 0 ? (
-        <View style={styles.featureCard}>
-          <Text style={styles.featureTitle}>选中特征 ({result.selected_features.length})</Text>
-          <Text style={styles.featureList}>{result.selected_features.join("  ·  ")}</Text>
         </View>
       ) : null}
     </ScrollView>
   );
 }
 
-function StructLine({
-  horizon,
-  signal,
-  matrixOpinion,
-}: {
-  horizon: string;
-  signal: string;
-  matrixOpinion: string;
-}) {
-  const opinionLabel = LABEL_MAP[matrixOpinion] ?? matrixOpinion;
-  const signalColor = signal === "BUY" ? "#2f9e44" : signal === "SELL" ? "#c92a2a" : "#f08c00";
-  return (
-    <View style={styles.structLine}>
-      <Text style={styles.structHorizon}>{horizon}</Text>
-      <Text style={[styles.structSignal, { color: signalColor }]}>{signal}</Text>
-      <Text style={styles.structArrow}>→</Text>
-      <Text style={styles.structOpinion}>{opinionLabel}</Text>
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -361,63 +314,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#4f6b5a",
     lineHeight: 16,
-  },
-  structSection: {
-    marginTop: 12,
-    backgroundColor: "#eef6ea",
-    borderRadius: 10,
-    padding: 10,
-    gap: 6,
-  },
-  structTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#2a4a37",
-    marginBottom: 4,
-  },
-  structLine: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  structHorizon: {
-    width: 32,
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#2a4a37",
-  },
-  structSignal: {
-    width: 36,
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  structArrow: {
-    fontSize: 12,
-    color: "#7c8b7a",
-  },
-  structOpinion: {
-    fontSize: 12,
-    color: "#335240",
-    fontWeight: "600",
-  },
-  featureCard: {
-    marginTop: 12,
-    backgroundColor: "#fff9f0",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#f1d7b2",
-    padding: 12,
-  },
-  featureTitle: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#6d4300",
-    marginBottom: 6,
-  },
-  featureList: {
-    fontSize: 12,
-    color: "#5f3b00",
-    lineHeight: 20,
   },
   strategyRow: {
     marginTop: 12,

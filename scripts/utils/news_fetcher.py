@@ -91,26 +91,5 @@ def _find_col(df: pd.DataFrame, candidates: List[str]) -> str | None:
 
 
 def _fallback_news(code: str, limit: int) -> List[Dict[str, str]]:
-    """无外部数据时的离线兜底新闻。"""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
-    items = [
-        {
-            "title": f"{code} 行情观察：短期波动加大，关注量价配合",
-            "source": "YourAce 本地资讯",
-            "time": now,
-            "url": "",
-        },
-        {
-            "title": f"{code} 行业跟踪：资金风格切换带来估值分化",
-            "source": "YourAce 本地资讯",
-            "time": now,
-            "url": "",
-        },
-        {
-            "title": f"{code} 风险提示：公告与财报窗口期临近",
-            "source": "YourAce 本地资讯",
-            "time": now,
-            "url": "",
-        },
-    ]
-    return items[:limit]
+    """无外部数据时不再提供虚假新闻。"""
+    return []
