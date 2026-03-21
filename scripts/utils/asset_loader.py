@@ -1,4 +1,4 @@
-"""资产列表加载工具。"""
+"""Asset universe loading helpers."""
 
 from __future__ import annotations
 
@@ -15,6 +15,150 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
 _ASSET_TYPE_RULES = _ASSET_CONFIG.get("asset_type_rules", {})
 _MIN_EXTRA_ETF_COUNT = 100
 _MIN_EXTRA_FUND_COUNT = 100
+_CODE_COLUMN_CANDIDATES = [
+    "代码",
+    "code",
+    "symbol",
+    "证券代码",
+    "基金代码",
+    "基金编号",
+    "股票代码",
+    "A股代码",
+]
+_NAME_COLUMN_CANDIDATES = [
+    "名称",
+    "name",
+    "简称",
+    "证券简称",
+    "基金简称",
+    "股票简称",
+    "A股简称",
+]
+_ASSET_CACHE_BASENAMES = ("stock_list", "etf_list", "open_fund_nav")
+_ETF_THEME_NAMES = [
+    "沪深300",
+    "中证500",
+    "创业板",
+    "科创50",
+    "上证50",
+    "红利",
+    "央企",
+    "国企",
+    "港股通",
+    "恒生科技",
+    "医疗",
+    "创新药",
+    "生物医药",
+    "消费",
+    "食品饮料",
+    "白酒",
+    "家电",
+    "传媒",
+    "游戏",
+    "人工智能",
+    "机器人",
+    "软件",
+    "云计算",
+    "数据要素",
+    "半导体",
+    "芯片",
+    "电子",
+    "通信",
+    "5G",
+    "算力",
+    "信创",
+    "军工",
+    "国防",
+    "航空",
+    "航天",
+    "新能源",
+    "光伏",
+    "储能",
+    "锂电",
+    "风电",
+    "电池",
+    "新能源汽车",
+    "电力",
+    "煤炭",
+    "有色",
+    "黄金",
+    "稀土",
+    "钢铁",
+    "化工",
+    "基建",
+    "建材",
+    "地产",
+    "银行",
+    "证券",
+    "保险",
+    "金融科技",
+    "高股息",
+    "价值",
+    "成长",
+    "低波",
+]
+_FUND_THEME_NAMES = [
+    "沪深300指数",
+    "中证500指数",
+    "创业板联接",
+    "科创50联接",
+    "红利低波",
+    "央企红利",
+    "价值成长",
+    "均衡成长",
+    "灵活配置",
+    "偏股混合",
+    "消费升级",
+    "医药健康",
+    "先进制造",
+    "科技创新",
+    "半导体主题",
+    "人工智能",
+    "机器人",
+    "新能源",
+    "光伏产业",
+    "储能主题",
+    "锂电产业",
+    "高端装备",
+    "军工主题",
+    "国企改革",
+    "银行精选",
+    "证券保险",
+    "消费电子",
+    "食品饮料",
+    "白酒主题",
+    "传媒互联网",
+    "游戏动漫",
+    "软件服务",
+    "云计算",
+    "数据要素",
+    "通信主题",
+    "5G成长",
+    "信创产业",
+    "医疗服务",
+    "创新药",
+    "生物科技",
+    "稳健增利债券",
+    "纯债债券",
+    "中短债债券",
+    "可转债债券",
+    "信用债债券",
+    "利率债债券",
+    "固收增强债券",
+    "双债增强债券",
+    "黄金主题",
+    "有色金属",
+    "稀土新材料",
+    "煤炭资源",
+    "电力公用事业",
+    "环保低碳",
+    "碳中和",
+    "绿色能源",
+    "新材料",
+    "化工新材料",
+    "纳指联接",
+    "标普联接",
+]
 
 
 def load_assets(
@@ -22,26 +166,13 @@ def load_assets(
     limit: int = 20,
     raw_dir: str = "datas/raw",
 ) -> List[Dict[str, str]]:
-    """返回待检索资产列表。"""
+    """Return the local asset universe for search and screening."""
     if limit <= 0:
-        raise ValueError("limit 必须为正整数")
+        raise ValueError("limit must be a positive integer")
 
-    df = _load_stock_table(Path(raw_dir))
-    if df.empty:
+    assets = _load_asset_universe(Path(raw_dir))
+    if assets.empty:
         return _fallback_assets(keyword=keyword, limit=limit)
-
-    code_col = _find_column(df, ["代码", "code", "symbol", "证券代码"])
-    name_col = _find_column(df, ["名称", "name", "简称", "证券简称"])
-    if code_col is None or name_col is None:
-        return _fallback_assets(keyword=keyword, limit=limit)
-
-    assets = (
-        df[[code_col, name_col]]
-        .rename(columns={code_col: "code", name_col: "name"})
-        .dropna()
-        .astype(str)
-    )
-    assets["code"] = assets["code"].map(_normalize_code)
 
     extra_df = pd.DataFrame(_EXTRA_ASSETS, columns=["code", "name"]).astype(str)
     extra_df["code"] = extra_df["code"].map(_normalize_code)
@@ -49,7 +180,7 @@ def load_assets(
 
     keyword = keyword.strip()
     if keyword:
-        mask = assets["code"].str.contains(keyword, na=False) | assets["name"].str.contains(keyword, na=False)
+        mask = assets["code"].str.contains(keyword, na=False, regex=False) | assets["name"].str.contains(keyword, na=False, regex=False)
         assets = assets[mask]
 
     assets = assets.drop_duplicates(subset=["code"]).head(limit)
@@ -105,75 +236,75 @@ def _generate_supplemental_assets(asset_type: str, existing_count: int, minimum_
 
     needed = minimum_count - existing_count
     if asset_type == "etf":
-        return _generate_catalog(
-            prefix="51",
-            names=[
-                "沪深300ETF", "中证500ETF", "创业板ETF", "科创50ETF", "上证50ETF", "红利ETF", "央企ETF", "国企ETF",
-                "港股通ETF", "恒生科技ETF", "医疗ETF", "创新药ETF", "生物医药ETF", "消费ETF", "食品饮料ETF", "白酒ETF",
-                "家电ETF", "传媒ETF", "游戏ETF", "动漫ETF", "人工智能ETF", "机器人ETF", "软件ETF", "云计算ETF",
-                "数据要素ETF", "半导体ETF", "芯片ETF", "电子ETF", "通信ETF", "5GETF", "算力ETF", "信创ETF",
-                "军工ETF", "国防ETF", "航空ETF", "航天ETF", "新能源ETF", "光伏ETF", "储能ETF", "锂电ETF",
-                "风电ETF", "电池ETF", "新能源汽车ETF", "电力ETF", "煤炭ETF", "有色ETF", "黄金ETF", "稀土ETF",
-                "钢铁ETF", "化工ETF", "基建ETF", "建材ETF", "地产ETF", "银行ETF", "证券ETF", "保险ETF",
-                "金融科技ETF", "高股息ETF", "价值ETF", "成长ETF", "低波ETF", "中小盘ETF", "专精特新ETF", "北证50ETF",
-                "农业ETF", "养殖ETF", "种业ETF", "环保ETF", "水务ETF", "旅游ETF", "酒店ETF", "机场航运ETF",
-                "物流ETF", "航运ETF", "汽车ETF", "整车ETF", "零部件ETF", "机械ETF", "工业母机ETF", "工程机械ETF",
-                "消费电子ETF", "家居ETF", "纺织服装ETF", "美容护理ETF", "医美ETF", "养老ETF", "公用事业ETF", "REITsETF",
-                "海外中国ETF", "纳指ETF", "标普ETF", "日经ETF", "德国ETF", "法国ETF", "东南亚ETF", "一带一路ETF",
-                "ESGETF", "碳中和ETF", "绿色电力ETF", "内需ETF", "国潮消费ETF", "新质生产力ETF", "高端制造ETF", "工业互联网ETF",
-            ],
-            needed=needed,
-        )
-
-    return _generate_catalog(
-        prefix="16",
-        names=[
-            "沪深300指数基金A", "中证500指数基金A", "创业板联接基金A", "科创50联接基金A", "红利低波基金A", "央企红利基金A",
-            "价值成长混合A", "均衡成长混合A", "灵活配置混合A", "偏股混合A", "消费升级混合A", "医药健康混合A",
-            "先进制造混合A", "科技创新混合A", "半导体主题混合A", "人工智能混合A", "机器人混合A", "新能源混合A",
-            "光伏产业混合A", "储能主题混合A", "锂电产业混合A", "高端装备混合A", "军工主题混合A", "国企改革混合A",
-            "央企创新驱动混合A", "银行精选混合A", "证券保险混合A", "消费电子混合A", "食品饮料混合A", "白酒主题混合A",
-            "传媒互联网混合A", "游戏动漫混合A", "软件服务混合A", "云计算混合A", "数据要素混合A", "通信主题混合A",
-            "5G成长混合A", "信创产业混合A", "医疗服务混合A", "创新药混合A", "生物科技混合A", "养老目标FOF",
-            "稳健增利债券A", "纯债债券A", "中短债债券A", "可转债债券A", "信用债债券A", "利率债债券A",
-            "固收增强债券A", "双债增强债券A", "黄金主题基金A", "有色金属混合A", "稀土新材料混合A", "煤炭资源混合A",
-            "电力公用事业混合A", "环保低碳混合A", "碳中和混合A", "绿色能源混合A", "新材料混合A", "化工新材料混合A",
-            "地产产业混合A", "基建工程混合A", "建材主题混合A", "物流供应链混合A", "航运港口混合A", "旅游服务混合A",
-            "酒店餐饮混合A", "农业主题混合A", "种业振兴混合A", "养殖产业混合A", "汽车产业混合A", "新能源车混合A",
-            "整车制造混合A", "汽车零部件混合A", "机械设备混合A", "工业母机混合A", "高端制造联接基金A", "专精特新混合A",
-            "北交所精选混合A", "中小盘成长混合A", "高股息基金A", "低波红利基金A", "内需消费混合A", "品质消费混合A",
-            "家电家居混合A", "纺织服装混合A", "美容护理混合A", "医美消费混合A", "港股科技混合A", "全球配置FOF",
-            "纳指联接基金A", "标普联接基金A", "恒生科技联接基金A", "一带一路混合A", "ESG责任投资混合A", "新质生产力混合A",
-            "工业互联网混合A", "算力基础设施混合A", "低空经济混合A", "商业航天混合A",
-        ],
-        needed=needed,
-    )
+        return _generate_catalog(prefix="51", names=_ETF_THEME_NAMES, needed=needed, suffix="ETF")
+    return _generate_catalog(prefix="16", names=_FUND_THEME_NAMES, needed=needed, suffix="基金A")
 
 
-def _generate_catalog(prefix: str, names: List[str], needed: int) -> List[Dict[str, str]]:
+def _generate_catalog(prefix: str, names: List[str], needed: int, suffix: str) -> List[Dict[str, str]]:
     items: List[Dict[str, str]] = []
-    for index, name in enumerate(names[:needed], start=1):
-        items.append({
-            "code": _normalize_code(f"{prefix}{index:04d}"),
-            "name": name,
-        })
+    for index in range(needed):
+        theme = names[index % len(names)]
+        serial = index // len(names) + 1
+        serial_suffix = f"{serial}" if serial > 1 else ""
+        items.append(
+            {
+                "code": _normalize_code(f"{prefix}{index + 1:04d}"),
+                "name": f"{theme}{suffix}{serial_suffix}",
+            }
+        )
     return items
 
 
-def _load_stock_table(raw_dir: Path) -> pd.DataFrame:
-    """读取股票列表缓存。"""
-    parquet = raw_dir / "stock_list.parquet"
-    csv = raw_dir / "stock_list.csv"
+def _load_asset_universe(raw_dir: Path) -> pd.DataFrame:
+    """Load and merge stock, ETF, and open-fund caches."""
+    frames: List[pd.DataFrame] = []
+    for basename in _ASSET_CACHE_BASENAMES:
+        frame = _read_cached_table(raw_dir / basename)
+        if frame.empty:
+            continue
 
-    if parquet.exists():
-        return pd.read_parquet(parquet)
-    if csv.exists():
-        return pd.read_csv(csv, dtype=str)
+        normalized = _normalize_asset_frame(frame)
+        if not normalized.empty:
+            frames.append(normalized)
+
+    if not frames:
+        return pd.DataFrame(columns=["code", "name"])
+    return pd.concat(frames, ignore_index=True).drop_duplicates(subset=["code"]).reset_index(drop=True)
+
+
+def _read_cached_table(base_path: Path) -> pd.DataFrame:
+    parquet = base_path.with_suffix(".parquet")
+    csv = base_path.with_suffix(".csv")
+
+    try:
+        if parquet.exists():
+            return pd.read_parquet(parquet)
+        if csv.exists():
+            return pd.read_csv(csv, dtype=str)
+    except Exception:
+        return pd.DataFrame()
     return pd.DataFrame()
 
 
+def _normalize_asset_frame(df: pd.DataFrame) -> pd.DataFrame:
+    code_col = _find_column(df, _CODE_COLUMN_CANDIDATES)
+    name_col = _find_column(df, _NAME_COLUMN_CANDIDATES)
+    if code_col is None or name_col is None:
+        return pd.DataFrame(columns=["code", "name"])
+
+    result = (
+        df[[code_col, name_col]]
+        .rename(columns={code_col: "code", name_col: "name"})
+        .dropna()
+        .astype(str)
+    )
+    result["code"] = result["code"].map(_normalize_code)
+    result["name"] = result["name"].str.strip()
+    result = result[(result["code"] != "") & (result["name"] != "")]
+    return result.drop_duplicates(subset=["code"]).reset_index(drop=True)
+
+
 def _find_column(df: pd.DataFrame, candidates: List[str]) -> str | None:
-    """根据候选名称查找列。"""
     lower_map = {str(col).lower(): str(col) for col in df.columns}
     for name in candidates:
         col = lower_map.get(name.lower())
@@ -183,7 +314,6 @@ def _find_column(df: pd.DataFrame, candidates: List[str]) -> str | None:
 
 
 def _fallback_assets(keyword: str, limit: int) -> List[Dict[str, str]]:
-    """无缓存时提供兜底资产列表。"""
     defaults = _ASSET_CONFIG.get("fallback_defaults", []) + _EXTRA_ASSETS
     keyword = keyword.strip()
     if not keyword:
@@ -198,7 +328,6 @@ def _fallback_assets(keyword: str, limit: int) -> List[Dict[str, str]]:
 
 
 def _normalize_code(code: str) -> str:
-    """统一证券代码格式，保留前导零。"""
     value = str(code).strip()
     if value.endswith(".0"):
         value = value[:-2]
@@ -210,22 +339,17 @@ def _normalize_code(code: str) -> str:
 
 
 def get_asset_name(code: str, raw_dir: str = "datas/raw") -> str:
-    """根据资产代码返回名称。"""
     normalized_code = _normalize_code(code)
 
     for item in _EXTRA_ASSETS:
         if _normalize_code(item["code"]) == normalized_code:
             return item["name"]
 
-    df = _load_stock_table(Path(raw_dir))
+    df = _load_asset_universe(Path(raw_dir))
     if not df.empty:
-        code_col = _find_column(df, ["代码", "code", "symbol", "证券代码"])
-        name_col = _find_column(df, ["名称", "name", "简称", "证券简称"])
-        if code_col and name_col:
-            mask = df[code_col].astype(str).apply(_normalize_code) == normalized_code
-            matched = df[mask]
-            if not matched.empty:
-                return str(matched.iloc[0][name_col])
+        matched = df[df["code"].astype(str).apply(_normalize_code) == normalized_code]
+        if not matched.empty:
+            return str(matched.iloc[0]["name"])
 
     fallback_defaults = _ASSET_CONFIG.get("fallback_defaults", [])
     for item in fallback_defaults:

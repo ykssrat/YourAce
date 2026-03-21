@@ -181,43 +181,11 @@ def _parse_args() -> argparse.Namespace:
 
 def _print_result(result: dict[str, Any], port: int, include_news: bool) -> None:
     """打印可读的诊股结果摘要。"""
-    print("[YourAce] 诊股结果")
-    print(f"  接口地址: http://127.0.0.1:{port}/diagnose")
-    print(f"  代码:     {result.get('code')}")
-    print(f"  日期:     {result.get('as_of_date')}")
-    print(f"  综合标签: {result.get('label')}")
-
     horizon = result.get("horizon_signals", {})
-    print("\n  三维信号:")
+    print("三维信号：")
     for dim in ("short", "mid", "long"):
-        sig = horizon.get(dim, {})
-        if isinstance(sig, dict):
-            direction = sig.get("direction")
-            strength = sig.get("strength")
-        else:
-            direction = str(sig)
-            strength = "-"
-        print(f"    {dim:5s}: direction={direction}  strength={strength}")
-
-    matrix = result.get("matrix", {})
-    dim_names = {"short": "短线", "mid": "中线", "long": "长线"}
-    print("\n  看法矩阵:")
-    for dim in ("short", "mid", "long"):
-        opinion = matrix.get(dim, "—")
-        label = _OPINION_LABEL.get(opinion, opinion)
-        print(f"    {dim_names[dim]}({dim:5s}): {label}")
-
-    selected_features = result.get("selected_features", [])
-    print(f"\n  选中特征({len(selected_features)}): {selected_features}")
-
-    if include_news:
-        latest_news = result.get("latest_news", [])
-        print(f"\n  最新资讯({len(latest_news)} 条):")
-        for item in latest_news:
-            print(f"    - {item}")
-
-    print("\n原始响应 JSON:")
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+        direction = horizon.get(dim, "-")
+        print(f"  {dim}: {direction}")
 
 
 if __name__ == "__main__":

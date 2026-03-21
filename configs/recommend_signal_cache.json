@@ -1,0 +1,902 @@
+{
+  "510300": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "510500": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "159915": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "588000": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "512690": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "512660": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "515170": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "512010": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "512480": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "512000": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "516160": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "516220": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:24"
+  },
+  "515790": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "516950": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "161725": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "163406": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "160706": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "001632": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "161903": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "510001": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:25"
+  },
+  "510002": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510003": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510004": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510005": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510006": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510007": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510008": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510009": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510010": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510011": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510012": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510013": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510014": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510015": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510016": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510017": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510018": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510019": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510020": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:37"
+  },
+  "510021": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T19:41:38"
+  },
+  "510022": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510023": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510024": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510025": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510026": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510027": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510028": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510029": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510030": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510031": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510032": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510033": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510034": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510035": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510036": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510037": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510038": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510039": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510040": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510041": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510042": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510043": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510044": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510045": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510046": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510047": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510048": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510049": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510050": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510051": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510052": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:21"
+  },
+  "510053": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510054": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510055": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510056": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510057": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510058": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510059": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510060": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510061": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510062": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510063": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510064": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510065": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510066": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510067": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510068": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510069": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510070": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510071": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510072": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510073": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510074": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510075": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510076": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510077": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510078": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510079": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510080": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  },
+  "510081": {
+    "label": "HOLD",
+    "horizon_signals": {
+      "short": "HOLD",
+      "mid": "HOLD",
+      "long": "HOLD"
+    },
+    "updated_at": "2026-03-21T20:03:22"
+  }
+}

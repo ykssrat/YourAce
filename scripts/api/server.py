@@ -9,13 +9,14 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
+import akshare as ak
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from scripts.features.bic_pruner import bic_prune_features
 from scripts.features.calc_features import compute_feature_frame
 from scripts.engine.opinion_engine import generate_opinion_matrix, VALID_OPINIONS
-from scripts.utils.asset_loader import load_assets, get_asset_name
+from scripts.utils.asset_loader import load_assets, get_asset_name, detect_asset_type
 from scripts.utils.news_fetcher import fetch_latest_news
 import json
 
@@ -27,6 +28,7 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
 
 app = FastAPI(title="YourAce API", version="0.1.6")
 _SCREEN_EVENT_LOG_PATH = Path("datas/logs/screen_events.jsonl")
+_AK_HISTORY_START_DATE = "20180101"
 
 # 合法枚举值，用于请求校验
 _VALID_HORIZONS = {"short", "mid", "long"}

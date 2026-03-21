@@ -179,19 +179,35 @@ def _parse_args() -> argparse.Namespace:
 
 def _build_signal_filter(tokens: List[str]) -> Dict[str, str]:
     """将命令行 token 转换为信号过滤条件。"""
+    # 支持多窗口混合筛选：如 --signals BUY HOLD BUY 或 --signals short BUY mid HOLD
     if len(tokens) == 1 and tokens[0].strip().upper() in {"ANY", "ALL", "NONE"}:
         return {}
 
-    if len(tokens) < 2:
-        raise ValueError("--signals 至少需要 2 个参数，例如: --signals short BUY；或使用 --signals ANY")
+    # 只传一个信号，表示所有窗口都按此信号筛选
+    if len(tokens) == 1:
+        signal = _normalize_signal(tokens[0])
+        return {"short": signal, "mid": signal, "long": signal}
 
-    horizon = tokens[0].strip().lower()
-    if horizon not in {"short", "mid", "long"}:
-        raise ValueError("horizon 必须是 short/mid/long")
+    # 支持 --signals short BUY mid HOLD long BUY
+    if len(tokens) % 2 == 0:
+        filter_dict = {}
+        for i in range(0, len(tokens), 2):
+            horizon = tokens[i].strip().lower()
+            if horizon not in {"short", "mid", "long"}:
+                raise ValueError("horizon 必须是 short/mid/long")
+            signal = _normalize_signal(tokens[i+1])
+            filter_dict[horizon] = signal
+        return filter_dict
 
-    signal_phrase = " ".join(tokens[1:]).strip()
-    signal = _normalize_signal(signal_phrase)
-    return {horizon: signal}
+    # 兼容老写法：如 --signals short BUY
+    if len(tokens) == 2:
+        horizon = tokens[0].strip().lower()
+        if horizon not in {"short", "mid", "long"}:
+            raise ValueError("horizon 必须是 short/mid/long")
+        signal = _normalize_signal(tokens[1])
+        return {horizon: signal}
+
+    raise ValueError("--signals 支持：1) BUY/HOLD/SELL（全局），2) short BUY mid HOLD long BUY（多窗口），3) short BUY（单窗口），或 --signals ANY")
 
 
 def _normalize_signal(value: str) -> str:
