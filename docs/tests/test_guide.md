@@ -118,16 +118,6 @@ YourAce 测试与脚本使用手册
 - `as_of_date`
 - `news_count`
 
-5) `scripts/api/server.py`
-
-用途：FastAPI 服务入口（通常用 `uvicorn` 启动）。
-
-命令：
-
-```bash
-d:/QMT/YourAce/.venv/Scripts/python.exe -m uvicorn scripts.api.server:app --host 0.0.0.0 --port 8000
-```
-
 
 五、常见问题
 

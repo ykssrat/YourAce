@@ -1,125 +1,218 @@
-# YourAce 云服务器更新操作手册
+# YourAce 服务器最小运行包与部署说明
 
-- 电脑的终端执行的命令：主要是 scp、ssh（把文件传上去，以及远程下发命令）
-- 需要在服务器 Ubuntu 终端执行的命令：主要是重启后端、查看日志、验证接口
+## 一、这份文档现在要解决什么问题
 
-二选一：
+旧版 `server.md` 主要在讲 `scp / ssh / 重启 uvicorn`，这已经不是当前服务端说明的重点。
 
-- 方式 A：全在你电脑 PowerShell 执行（推荐，省事）
-- 方式 B：先 ssh 登陆后，在 Ubuntu 里逐条执行
+现在的服务器说明应该围绕下面这件事展开：
 
-## 二、前置条件
+- 服务器负责承载 **已经打包进工程的策略代码**
+- 手机 App 只负责通过 API 连接服务器，不直接管理策略实现
+- 服务器要准备 **最小运行数据包**
+- 服务器应优先通过 `akshare` 拉取并缓存：
+  - A 股股票列表
+  - ETF 列表
+  - 场外公开基金列表
+- 手机 App 连接服务器后，直接消费 `/search`、`/analyze`、`/diagnose`、`/screen` 等接口完成指标分析
 
-请先确认：
+一句话概括：
 
-- 你的电脑能 ssh 到云服务器
-- 云服务器上项目目录存在（示例用 ~/YourAce）
-- 云服务器上的后端是监听 8000，并由 Nginx 反代 80
+> 当前服务端的目标不是“手工上传一个 `server.py`”，而是“打包最小可运行策略服务，让手机 App 能稳定连接并使用”。
 
-## 三、方式 A（推荐）：在你电脑 PowerShell 全部执行
+## 二、服务端当前职责
 
-### 1) 设置变量（本机执行）
+当前服务端应承担以下职责：
 
-    $SERVER="ubuntu@43.138.223.57"
-    $REMOTE_DIR="~/YourAce"
-    $KEY="D:\QMT\secret_key\yourace_secret_key.pem"
+1. 承载已打包策略
+   - `scripts/api`
+   - `scripts/engine`
+   - `scripts/strategy`
+   - `scripts/features`
+   - `scripts/utils`
 
-通用一键执行（推荐，支持你每次传任意文件，不固定 server.py）：
+2. 暴露统一 API
+   - `GET /health`
+   - `GET /search`
+   - `GET /news`
+   - `POST /analyze`
+   - `POST /diagnose`
+   - `POST /screen`
 
-先复制下面这段函数到 PowerShell（只需执行一次）：
+3. 为手机 App 提供最小可用资产池
+   - 股票
+   - ETF
+   - 场外基金
 
-        function Sync-YourAce {
-            param(
-                [Parameter(Mandatory = $true)][string[]]$Files,
-                [string]$Server = "ubuntu@43.138.223.57",
-                [string]$RemoteDir = "~/YourAce",
-                [string]$Key = "D:\QMT\secret_key\yourace_secret_key.pem"
-            )
+4. 为指标分析准备价格序列
+   - 优先读取本地缓存
+   - 不应把“模拟价格序列”当作线上正式数据源
 
-            foreach ($f in $Files) {
-                if (-not (Test-Path $f)) { throw "本地文件不存在: $f" }
-                $remote = "$Server`:$RemoteDir/$($f -replace '\\','/')"
-                scp -i "$Key" -o IdentitiesOnly=yes "$f" "$remote"
-            }
+## 三、最小运行包包含什么
 
-            # 自动杀死旧进程并用 nohup 重启
-            ssh -i "$Key" -o IdentitiesOnly=yes $Server "
-                set -e
-                pkill -f 'uvicorn scripts.api.server:app' || true
-                mkdir -p $RemoteDir/logs
-                cd $RemoteDir
-                nohup .venv/bin/python -m uvicorn scripts.api.server:app --host 0.0.0.0 --port 8000 > logs/api.log 2>&1 &
-                sleep 3
-                curl -s http://127.0.0.1:8000/health
-            "
-        }
+### 1. 代码部分
 
-然后每次只用这一条（把你改过的文件路径放进去）：
+最小代码包至少包括：
 
-        Sync-YourAce -Files @("scripts/api/server.py","scripts/strategy/scoring.py")
+- `scripts/api/server.py`
+- `scripts/engine/`
+- `scripts/strategy/`
+- `scripts/features/`
+- `scripts/utils/`
+- `configs/`
 
-### 2) 如果不使用一键脚本，手动操作步骤（本机执行）
+### 2. 数据部分
 
-**上传文件：**
-    scp -i "$KEY" -o IdentitiesOnly=yes scripts/api/server.py "${SERVER}:$REMOTE_DIR/scripts/api/server.py"
+最小运行数据包至少包括 `datas/raw` 下的这几类缓存：
 
-**重启服务（nohup 方式）：**
-    ssh -i "$KEY" -o IdentitiesOnly=yes $SERVER "pkill -f 'uvicorn scripts.api.server:app'"
-    ssh -i "$KEY" -o IdentitiesOnly=yes $SERVER "mkdir -p $REMOTE_DIR/logs; cd $REMOTE_DIR; nohup .venv/bin/python -m uvicorn scripts.api.server:app --host 0.0.0.0 --port 8000 > logs/api.log 2>&1 &"
+- `stock_list.parquet` 或 `stock_list.csv`
+- `etf_list.parquet` 或 `etf_list.csv`
+- `open_fund_nav.parquet` 或 `open_fund_nav.csv`
+- `runtime_asset_manifest.json`
 
-### 3) 健康检查与功能检查（本机执行）
+说明：
 
-    ssh -i "$KEY" -o IdentitiesOnly=yes $SERVER "curl -s http://127.0.0.1:8000/health"
-    ssh -i "$KEY" -o IdentitiesOnly=yes $SERVER "curl -s -X POST http://127.0.0.1:8000/analyze -H 'Content-Type: application/json' -d '{\"code\":\"161725\",\"include_news\":false}'"
-    ssh -i "$KEY" -o IdentitiesOnly=yes $SERVER "curl -s -X POST http://127.0.0.1:8000/screen -H 'Content-Type: application/json' -d '{\"asset_type\":\"fund\",\"horizon\":\"\",\"score_operator\":\"gte\",\"score_threshold\":0,\"opinion\":\"\",\"round_size\":20,\"offset\":0}'"
+- `stock_list` 用于 A 股股票资产池
+- `etf_list` 用于 ETF 资产池
+- `open_fund_nav` 用于场外公开基金资产池
+- 当前仓库里的资产加载器已经会合并这三类缓存，而不是只看 `stock_list`
 
-你应该重点看：
-- /analyze 响应是否有 horizon_strengths
-- /screen fund 是否返回 items 非空
+### 3. 真实分析时还需要什么
 
-## 四、方式 B：先进入 Ubuntu 再执行
+如果你希望 `/analyze` 或 `/diagnose` 做的是 **真实价格指标分析**，还应该准备对应标的的行情缓存，例如：
 
-### 1) 进入服务器（本机执行）
+- `datas/raw/kline_000001.parquet`
+- `datas/raw/kline_510300.parquet`
+- `datas/raw/kline_161725.parquet`
 
-    ssh ubuntu@43.138.223.57
+当前代码在缺少行情缓存时仍可能降级为模拟序列，这只适合本地冒烟或离线验证，不应该作为正式线上分析依据。
 
-### 2) 在服务器里重启后端（服务器执行）
+## 四、推荐的数据准备命令
 
-清理旧进程并用 nohup 重新启动：
+### 方式 A：推荐，直接准备最小服务端资产包
 
-    # 杀掉旧进程（如果有）
-    pkill -f "uvicorn scripts.api.server:app"
-    
-    # 进入项目目录并确保 logs 文件夹存在
-    cd ~/YourAce
-    mkdir -p logs
+在项目根目录执行：
 
-    # 后台启动服务
-    nohup .venv/bin/python -m uvicorn scripts.api.server:app --host 0.0.0.0 --port 8000 > logs/api.log 2>&1 &
+```bash
+.venv/bin/python scripts/processed/package_runtime_assets.py
+```
 
-### 3) 在服务器里验证（服务器执行）
+这条命令会：
 
-    curl -s http://127.0.0.1:8000/health
+- 通过 `akshare` 拉取股票、ETF、场外基金三类基础数据
+- 写入 `datas/raw`
+- 生成 `datas/raw/runtime_asset_manifest.json`
 
-## 五、常见问题
+### 方式 B：旧脚本，只能补股票池，不再足够
 
-1. 我改了代码但 App 没变化
-- 原因：没重启云端后端进程，或者上传到了错误目录
-- 处理：先看 `cat logs/api.log` 是否报错，再看 /analyze 是否出现新字段。
+```bash
+.venv/bin/python scripts/processed/build_stock_list.py
+```
 
-2. scp 提示路径不存在
-- 原因：REMOTE_DIR 写错
-- 处理：先 ssh 上去执行 pwd 和 ls，确认项目根目录
+说明：
 
-3. /health 正常但 /screen fund 仍为空
-- 原因：云端还没拿到新的 asset_loader.py 或 server.py
-- 处理：重新上传这两个文件并按上述流程重启
+- 这个脚本只会构建 `stock_list`
+- 它不能完整覆盖 ETF 和场外基金
+- 所以它不应该再作为手机 App 服务端的唯一数据准备步骤
 
-## 六、推荐日常流程（最省心）
+## 五、推荐部署顺序
 
-每次后端改动后固定执行 4 步（方式 B）：
+### 1. 上传代码到服务器
 
-1. 本地 scp 上传改动文件
-2. 服务器上 `pkill -f "uvicorn" && cd ~/YourAce && nohup .venv/bin/python -m uvicorn scripts.api.server:app --host 0.0.0.0 --port 8000 > logs/api.log 2>&1 &`
-3. 服务器上 `curl http://127.0.0.1:8000/health`
-4. 本地请求 `/analyze` 与 `/screen fund` 做冒烟验证
+把项目同步到服务器，例如：
+
+```bash
+scp -i yourace_secret_key.pem -r ./YourAce ubuntu@your-server:~/YourAce
+```
+
+### 2. 进入服务器项目目录
+
+```bash
+ssh -i yourace_secret_key.pem ubuntu@your-server
+cd ~/YourAce
+```
+
+### 3. 准备最小运行数据包
+
+```bash
+.venv/bin/python scripts/processed/package_runtime_assets.py
+```
+
+### 4. 启动 API 服务
+
+```bash
+mkdir -p logs
+nohup .venv/bin/python -m uvicorn scripts.api.server:app --host 0.0.0.0 --port 8000 > logs/api.log 2>&1 &
+```
+
+### 5. 健康检查
+
+```bash
+curl -s http://127.0.0.1:8000/health
+```
+
+期望返回：
+
+```json
+{"status":"ok"}
+```
+
+## 六、手机 App 连接服务器后的最小验证
+
+### 1. 搜索资产池是否已经包含股票 / ETF / 基金
+
+```bash
+curl -s "http://127.0.0.1:8000/search?query=ETF&limit=10"
+```
+
+```bash
+curl -s "http://127.0.0.1:8000/search?query=基金&limit=10"
+```
+
+### 2. 单标的分析
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/analyze \
+  -H "Content-Type: application/json" \
+  -d "{\"code\":\"510300\",\"include_news\":false}"
+```
+
+### 3. 单标的诊股
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/diagnose \
+  -H "Content-Type: application/json" \
+  -d "{\"code\":\"161725\",\"include_news\":false}"
+```
+
+### 4. 资产池筛选
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/screen \
+  -H "Content-Type: application/json" \
+  -d "{\"asset_type\":\"fund\",\"horizon\":\"\",\"opinion\":\"\",\"round_size\":20,\"offset\":0}"
+```
+
+验证重点：
+
+- `/search` 不再只返回股票
+- `/screen` 对 `etf` / `fund` 有真实候选池
+- `/analyze` 和 `/diagnose` 返回 `label + horizon_signals + matrix`
+- 不再使用旧版 `score_threshold`、`score_operator`、`horizon_strengths` 文案
+
+## 七、当前正确理解方式
+
+当前手机端接入服务端，应该这样理解：
+
+1. 策略是跟随工程一起打包部署到服务器的
+2. 手机 App 只是调用服务器接口，不直接运行策略源码
+3. 服务器最少要先准备股票、ETF、场外基金三类缓存
+4. 如果要做真实指标分析，还要准备真实行情缓存，而不是依赖模拟序列
+
+## 八、结论
+
+当前 `server.md` 应该从“上传和重启手册”升级为“最小运行包说明”。
+
+最关键的两条结论是：
+
+- 服务器必须先准备 `stock_list + etf_list + open_fund_nav` 三类 AKShare 资产缓存
+- 手机 App 连接的是 **已打包策略 + 已准备资产缓存** 的服务端，而不是临时拼接的测试环境
