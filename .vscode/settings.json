@@ -1,4 +1,5 @@
 {
+    "java.jdt.ls.java.home": "D:\\game\\android_studio\\jbr",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive"
 }
