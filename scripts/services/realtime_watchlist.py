@@ -126,6 +126,27 @@ _TRADING_AM_END = time(11, 30)
 _TRADING_PM_START = time(13, 0)
 _TRADING_PM_END = time(15, 0)
 
+# 东方财富行业代码 → 中文名称映射（常用行业）
+_INDUSTRY_CODE_MAP = {
+    "BK0477": "白酒", "BK0478": "啤酒", "BK0480": "食品饮料",
+    "BK0483": "银行", "BK0484": "证券", "BK0485": "保险",
+    "BK0487": "半导体", "BK0488": "芯片", "BK0489": "电子元件",
+    "BK0490": "通信", "BK0491": "5G", "BK0492": "计算机",
+    "BK0493": "软件", "BK0494": "人工智能", "BK0495": "机器人",
+    "BK0496": "医药", "BK0497": "医疗器械", "BK0498": "生物医药",
+    "BK0500": "新能源", "BK0501": "光伏", "BK0502": "储能",
+    "BK0503": "风电", "BK0504": "锂电", "BK0505": "新能源汽车",
+    "BK0506": "军工", "BK0507": "航天", "BK0508": "国防",
+    "BK0509": "电力", "BK0510": "煤炭", "BK0511": "有色",
+    "BK0512": "黄金", "BK0513": "稀土", "BK0514": "钢铁",
+    "BK0515": "化工", "BK0516": "建材", "BK0517": "基建",
+    "BK0518": "地产", "BK0519": "家电", "BK0520": "传媒",
+    "BK0521": "游戏", "BK0522": "消费", "BK0523": "服装",
+    "BK0524": "旅游", "BK0525": "交通", "BK0526": "物流",
+    "BK0527": "汽车", "BK0528": "机械", "BK0529": "环保",
+    "BK0473": "上证50", "BK0474": "沪深300", "BK0475": "中证500", "BK0476": "创业板",
+}
+
 
 def _is_a_share_trading_time(now: Optional[datetime] = None) -> bool:
     """判断当前是否处于 A 股连续竞价时段。"""
@@ -825,47 +846,74 @@ class WatchlistRuntime:
             raise ValueError("limit 必须大于 0")
 
         stock_name = stock_name.strip() or get_asset_name(code)
+        # 通过东方财富获取个股所属行业，只推荐同行业 ETF
+        industry = self._get_stock_industry(code, stock_name)
         universe = load_assets(keyword="", limit=10000)
         etfs = [asset for asset in universe if detect_asset_type(str(asset.get("code", "")), str(asset.get("name", ""))) == "etf"]
         if not etfs:
             return []
 
-        tokens = self._collect_keywords(stock_name)
         scored: List[Dict[str, Any]] = []
         for asset in etfs:
             asset_name = str(asset.get("name", ""))
+            asset_code = str(asset.get("code", ""))
             score = 0
-            matched_tokens: List[str] = []
+            matched: List[str] = []
+            if industry:
+                if industry in asset_name:
+                    score += 3
+                    matched.append(industry)
+            # fallback: 也检查股票名称关键字
+            tokens = self._collect_keywords(stock_name)
             for token in tokens:
-                if token and token in asset_name:
-                    score += 2
-                    matched_tokens.append(token)
+                if token and token in asset_name and token not in matched:
+                    score += 1
+                    matched.append(token)
             if score > 0:
-                scored.append(
-                    {
-                        "code": str(asset.get("code", "")),
-                        "name": asset_name,
-                        "score": score,
-                        "matched_keywords": matched_tokens,
-                    }
-                )
+                scored.append({
+                    "code": asset_code,
+                    "name": asset_name,
+                    "score": score,
+                    "matched_keywords": matched[:3],
+                })
 
         if not scored:
             broad = [asset for asset in etfs if str(asset.get("code", "")) in _DEFAULT_RECOMMENDED_ETF_CODES]
             if not broad:
                 broad = etfs[:limit]
             return [
-                {
-                    "code": str(asset.get("code", "")),
-                    "name": str(asset.get("name", "")),
-                    "score": 1,
-                    "matched_keywords": [],
-                }
+                {"code": str(asset.get("code", "")), "name": str(asset.get("name", "")), "score": 1, "matched_keywords": []}
                 for asset in broad[:limit]
             ]
 
         scored.sort(key=lambda item: (-int(item["score"]), item["code"]))
         return scored[:limit]
+
+    def _get_stock_industry(self, code: str, stock_name: str) -> str:
+        """通过东方财富 API 获取个股所属行业名称。"""
+        secid = _em_stock_code(code)
+        url = f"http://push2.eastmoney.com/api/qt/slist/get?secid={secid}&fields=f100"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=_EM_REQUEST_TIMEOUT) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except Exception:
+            return ""
+
+        industry_code = str((data or {}).get("data", {}).get("f100", ""))
+        return _INDUSTRY_CODE_MAP.get(industry_code, "")
+
+    def _industry_keywords(self, industry: str) -> List[str]:
+        if not industry:
+            return []
+        keywords: List[str] = []
+        for group in self._industry_groups():
+            group_keywords = [str(kw) for kw in group.get("keywords", []) if str(kw)]
+            if any(kw in industry for kw in group_keywords):
+                keywords.extend(group_keywords)
+        if not keywords:
+            keywords.append(industry)
+        return keywords
 
     def get_watchlist_quotes(self, user_id: str, token: str) -> Dict[str, Any]:
         snapshot = self.refresh_watchlist(user_id, token, enqueue_notifications=False)

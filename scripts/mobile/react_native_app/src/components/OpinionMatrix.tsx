@@ -13,9 +13,15 @@ const OPINION_LABELS: Record<Opinion, string> = {
 };
 
 const OPINION_ACTIVE_COLORS: Record<Opinion, string> = {
-  BUY: "#2f9e44",
-  HOLD: "#f08c00",
-  SELL: "#c92a2a",
+  BUY: "#c92a2a",
+  HOLD: "#ffffff",
+  SELL: "#2f9e44",
+};
+
+const OPINION_ACTIVE_BG: Record<Opinion, string> = {
+  BUY: "#fff5f5",
+  HOLD: "#ffffff",
+  SELL: "#f0fff4",
 };
 
 const HORIZONS: { key: keyof OpinionMatrix; label: string }[] = [
@@ -56,9 +62,19 @@ export function OpinionMatrixCard({ matrix }: OpinionMatrixCardProps) {
                   key={op}
                   style={[
                     styles.cell,
-                    active && { backgroundColor: OPINION_ACTIVE_COLORS[op] },
+                    active && {
+                      backgroundColor: OPINION_ACTIVE_BG[op],
+                      borderWidth: 2,
+                      borderColor: OPINION_ACTIVE_COLORS[op],
+                    },
                   ]}
-                />
+                >
+                  {active ? (
+                    <Text style={[styles.cellActiveText, { color: OPINION_ACTIVE_COLORS[op] }]}>
+                      ●
+                    </Text>
+                  ) : null}
+                </View>
               );
             })}
           </View>

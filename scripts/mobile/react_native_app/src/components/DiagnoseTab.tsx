@@ -164,30 +164,56 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
 
       {result?.consensus ? (
         <View style={styles.matrixCard}>
-          <Text style={styles.matrixTitle}>共识看法总览（五大策略混合）</Text>
-          {(["short", "mid", "long"] as const).map((horizon) => {
-            const h = result.consensus?.[horizon];
-            if (!h) return null;
-            const horizonLabel = result.horizon_labels?.[horizon] ?? horizon;
-            const c = h.consensus as string;
-            const color = c === "BUY" ? "#2f9e44" : c === "SELL" ? "#c92a2a" : "#868e96";
-            return (
-              <View key={horizon} style={styles.consensusRow}>
-                <Text style={styles.consensusHorizon}>{horizonLabel}</Text>
-                <Text style={[styles.consensusVote, { color }]}>{c === "BUY" ? "看多" : c === "SELL" ? "看空" : "静默"}</Text>
-                <Text style={styles.consensusCount}>
-                  {h.buy}看多 / {h.sell}看空 / {h.hold}静默（共{h.total}策略）
-                </Text>
-                <View style={styles.signalDetailRow}>
-                  {Object.entries(h.signals as Record<string,string>).map(([name, opinion]) => (
-                    <Text key={name} style={[styles.signalPill,
-                      opinion === "BUY" ? styles.signalBuy : opinion === "SELL" ? styles.signalSell : styles.signalHold
-                    ]}>{name}:{opinion === "BUY" ? "看多" : opinion === "SELL" ? "看空" : opinion === "N/A" ? "无" : "静默"}</Text>
-                  ))}
+          <Text style={styles.matrixTitle}>信号灯（五大策略混合投票）</Text>
+          <Text style={styles.matrixSubtitle}>红涨绿跌，颜色越深支持策略越多；观望为白色</Text>
+          <View style={styles.consensusMatrix}>
+            {/* 表头 */}
+            <View style={styles.consensusHeader}>
+              <Text style={styles.consensusHeaderLabel}></Text>
+              <Text style={[styles.consensusHeaderCell, { color: "#c92a2a" }]}>看多↑</Text>
+              <Text style={[styles.consensusHeaderCell, { color: "#868e96" }]}>观望</Text>
+              <Text style={[styles.consensusHeaderCell, { color: "#2f9e44" }]}>看空↓</Text>
+            </View>
+            {(["short", "mid", "long"] as const).map((horizon) => {
+              const h = result.consensus?.[horizon];
+              if (!h) return null;
+              const horizonLabel = result.horizon_labels?.[horizon] ?? horizon;
+              const signals = h.signals as Record<string, string>;
+              // 分三组
+              const buyStrategies = Object.entries(signals).filter(([, o]) => o === "BUY").map(([n]) => n);
+              const sellStrategies = Object.entries(signals).filter(([, o]) => o === "SELL").map(([n]) => n);
+              const holdStrategies = Object.entries(signals).filter(([, o]) => o !== "BUY" && o !== "SELL").map(([n]) => n);
+              const total = (h.total as number) || 5;
+              return (
+                <View key={horizon} style={styles.consensusRow}>
+                  <Text style={styles.consensusHorizon}>{horizonLabel}</Text>
+                  {[
+                    { list: buyStrategies, tone: "buy" as const, alpha: buyStrategies.length / total },
+                    { list: holdStrategies, tone: "hold" as const, alpha: holdStrategies.length / total },
+                    { list: sellStrategies, tone: "sell" as const, alpha: sellStrategies.length / total },
+                  ].map(({ list, tone, alpha }) => {
+                    const intensity = alpha > 0.8 ? 1.0 : alpha > 0.5 ? 0.75 : alpha > 0.2 ? 0.45 : 0.12;
+                    const bgColor = tone === "buy" ? `rgba(201,42,42,${intensity})`
+                                  : tone === "sell" ? `rgba(47,158,68,${intensity})`
+                                  : alpha > 0 ? "rgba(200,200,200,0.25)" : "#fff";
+                    const textColor = tone === "buy" && alpha > 0.4 ? "#fff"
+                                    : tone === "sell" && alpha > 0.4 ? "#fff"
+                                    : tone === "buy" ? "#c92a2a"
+                                    : tone === "sell" ? "#2f9e44"
+                                    : "#868e96";
+                    return (
+                      <View key={tone} style={[styles.consensusCell, { backgroundColor: bgColor }]}>
+                        {list.map((name) => (
+                          <Text key={name} style={[styles.consensusStrategyTag, { color: textColor }]}>{name}</Text>
+                        ))}
+                        {list.length === 0 ? <Text style={[styles.consensusStrategyTag, { color: "#ccc" }]}>-</Text> : null}
+                      </View>
+                    );
+                  })}
                 </View>
-              </View>
-            );
-          })}
+              );
+            })}
+          </View>
         </View>
       ) : result?.matrix ? (
         <View style={styles.matrixCard}>

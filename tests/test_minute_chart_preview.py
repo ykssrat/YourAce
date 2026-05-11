@@ -130,6 +130,7 @@ def test_minute_chart_preview_smoke(monkeypatch) -> None:
     runtime = _install_runtime(monkeypatch)
     monkeypatch.setattr(rw, "_fetch_spot_from_eastmoney", _fake_spot_em)
     monkeypatch.setattr(rw, "_fetch_minute_from_eastmoney", _fake_hist_min_em)
+    monkeypatch.setattr(rw.WatchlistRuntime, "_get_stock_industry", lambda self, c, n: "")
     monkeypatch.setattr(rw, "datetime", _FixedDatetime)
 
     register_response = client.post("/auth/register", json={"username": "preview_user", "password": "preview123"})
