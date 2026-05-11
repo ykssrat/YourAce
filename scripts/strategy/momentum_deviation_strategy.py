@@ -5,6 +5,13 @@
 from typing import Dict
 import pandas as pd
 
+MACD_FAST_PERIOD = 12
+MACD_SLOW_PERIOD = 26
+MACD_SIGNAL_PERIOD = 9
+MACD_SHORT_WINDOW = 60
+MACD_MID_WINDOW = 120
+MACD_LONG_WINDOW = 240
+
 
 def generate_matrix(close_series: pd.Series, long_fund_trend: float = 0.0) -> Dict[str, str]:
     """生成 3x3 看法矩阵。"""
@@ -13,6 +20,25 @@ def generate_matrix(close_series: pd.Series, long_fund_trend: float = 0.0) -> Di
         "mid": _mid_horizon_opinion(close_series),
         "long": _long_horizon_opinion(close_series, long_fund_trend=long_fund_trend),
     }
+
+
+def generate_macd_matrix(close_series: pd.Series, **kwargs) -> Dict[str, str]:
+    """生成标准分钟线 MACD 的 3x3 看法矩阵。
+
+    这里使用分钟级收盘价序列计算 EMA12、EMA26 和 DEA9，
+    并以最近一根分钟线是否形成金叉/死叉作为交易信号。
+    """
+    minute_series = _prepare_minute_close_series(close_series)
+    return {
+        "short": _macd_horizon_opinion(minute_series.tail(MACD_SHORT_WINDOW)),
+        "mid": _macd_horizon_opinion(minute_series.tail(MACD_MID_WINDOW)),
+        "long": _macd_horizon_opinion(minute_series.tail(MACD_LONG_WINDOW)),
+    }
+
+
+def generate_macd_signal(close_series: pd.Series) -> str:
+    """生成标准分钟线 MACD 单信号。"""
+    return _macd_horizon_opinion(close_series)
 
 
 def _short_horizon_opinion(close_series: pd.Series) -> str:
@@ -75,4 +101,70 @@ def _map_signal_value_to_opinion(signal_value: float, buy_threshold: float, sell
         return "BUY"
     if signal_value <= sell_threshold:
         return "SELL"
+    return "HOLD"
+
+
+def _prepare_minute_close_series(close_series: pd.Series) -> pd.Series:
+    """清洗分钟线收盘价序列。"""
+    if close_series is None:
+        return pd.Series(dtype=float)
+
+    series = pd.Series(close_series, dtype="float64").dropna()
+    if series.empty:
+        return pd.Series(dtype=float)
+    return series.reset_index(drop=True)
+
+
+def _calculate_macd_components(
+    close_series: pd.Series,
+    fast_period: int = MACD_FAST_PERIOD,
+    slow_period: int = MACD_SLOW_PERIOD,
+    signal_period: int = MACD_SIGNAL_PERIOD,
+) -> Dict[str, pd.Series]:
+    """计算 MACD 的 DIF、DEA 和柱体值。"""
+    ema_fast = close_series.ewm(span=fast_period, adjust=False).mean()
+    ema_slow = close_series.ewm(span=slow_period, adjust=False).mean()
+    dif = ema_fast - ema_slow
+    dea = dif.ewm(span=signal_period, adjust=False).mean()
+    macd_histogram = (dif - dea) * 2.0
+    return {
+        "dif": dif,
+        "dea": dea,
+        "histogram": macd_histogram,
+    }
+
+
+def _macd_horizon_opinion(
+    close_series: pd.Series,
+    fast_period: int = MACD_FAST_PERIOD,
+    slow_period: int = MACD_SLOW_PERIOD,
+    signal_period: int = MACD_SIGNAL_PERIOD,
+) -> str:
+    """根据标准 MACD 金叉/死叉生成单个周期信号。"""
+    series = _prepare_minute_close_series(close_series)
+    min_required = max(fast_period, slow_period, signal_period) + 1
+    if len(series) < min_required:
+        return "HOLD"
+
+    components = _calculate_macd_components(series, fast_period=fast_period, slow_period=slow_period, signal_period=signal_period)
+    dif = components["dif"]
+    dea = components["dea"]
+    histogram = components["histogram"]
+
+    previous_dif = float(dif.iloc[-2])
+    previous_dea = float(dea.iloc[-2])
+    current_dif = float(dif.iloc[-1])
+    current_dea = float(dea.iloc[-1])
+
+    if previous_dif <= previous_dea and current_dif > current_dea:
+        return "BUY"
+    if previous_dif >= previous_dea and current_dif < current_dea:
+        return "SELL"
+
+    current_histogram = float(histogram.iloc[-1])
+    if current_dif > current_dea and current_histogram > 0:
+        return "BUY"
+    if current_dif < current_dea and current_histogram < 0:
+        return "SELL"
+
     return "HOLD"

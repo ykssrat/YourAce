@@ -1,4 +1,26 @@
-import { AnalyzeRequest, AnalyzeResponse, DiagnoseRequest, DiagnoseResponse, Opinion, ScreenActionLogRequest, ScreenRequest, ScreenResponse, SearchItem } from "../types";
+import {
+  AnalyzeRequest,
+  AnalyzeResponse,
+  AuthRequest,
+  AuthResponse,
+  DiagnoseRequest,
+  DiagnoseResponse,
+  Opinion,
+  QuoteSnapshot,
+  ScreenActionLogRequest,
+  ScreenRequest,
+  ScreenResponse,
+  SearchItem,
+  WatchlistAddRequest,
+  WatchlistListResponse,
+  WatchlistNotification,
+  WatchlistQueueResponse,
+  WatchlistQuotesResponse,
+  WatchlistRecommendation,
+  WatchlistRemoveRequest,
+  WatchlistSignalsResponse,
+  WatchlistSummaryResponse,
+} from "../types";
 
 const DEFAULT_API_BASE_URLS = [
   "http://10.0.2.2:8000",
@@ -94,6 +116,143 @@ export async function logScreenAction(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
   }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function registerUser(
+  request: AuthRequest,
+  preferredBaseUrl: string = "",
+): Promise<AuthResponse> {
+  return await requestJsonWithBaseFallback<AuthResponse>("/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: request.username,
+      password: request.password,
+      persist_session: request.persist_session ?? false,
+    }),
+  }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function loginUser(
+  request: AuthRequest,
+  preferredBaseUrl: string = "",
+): Promise<AuthResponse> {
+  return await requestJsonWithBaseFallback<AuthResponse>("/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: request.username,
+      password: request.password,
+      persist_session: request.persist_session ?? false,
+    }),
+  }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function refreshAuthSession(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+): Promise<AuthResponse> {
+  return await requestJsonWithBaseFallback<AuthResponse>("/auth/refresh", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userId, token }),
+  }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function recommendWatchlistEtfs(
+  code: string,
+  preferredBaseUrl: string = "",
+  stockName: string = "",
+  limit: number = 5,
+): Promise<WatchlistRecommendation[]> {
+  const path = `/watchlist/recommendations?code=${encodeURIComponent(code)}&stock_name=${encodeURIComponent(stockName)}&limit=${limit}`;
+  const payload = await requestJsonWithBaseFallback<{ items?: WatchlistRecommendation[] }>(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
+  return (payload.items ?? []) as WatchlistRecommendation[];
+}
+
+export async function addWatchlistItem(
+  request: WatchlistAddRequest,
+  preferredBaseUrl: string = "",
+): Promise<{ user_id: string; item: unknown; recommendations: WatchlistRecommendation[] }> {
+  return await requestJsonWithBaseFallback<{ user_id: string; item: unknown; recommendations: WatchlistRecommendation[] }>("/watchlist/add", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function removeWatchlistItem(
+  request: WatchlistRemoveRequest,
+  preferredBaseUrl: string = "",
+): Promise<{ user_id: string; code: string; removed: boolean }> {
+  return await requestJsonWithBaseFallback<{ user_id: string; code: string; removed: boolean }>("/watchlist/remove", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function listWatchlistItems(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+): Promise<WatchlistListResponse> {
+  const path = `/watchlist?user_id=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`;
+  return await requestJsonWithBaseFallback<WatchlistListResponse>(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function getWatchlistQuotes(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+): Promise<WatchlistQuotesResponse> {
+  const path = `/watchlist/quotes?user_id=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`;
+  return await requestJsonWithBaseFallback<WatchlistQuotesResponse>(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function getWatchlistSignals(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+): Promise<WatchlistSignalsResponse> {
+  const path = `/watchlist/signals?user_id=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`;
+  return await requestJsonWithBaseFallback<WatchlistSignalsResponse>(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function getWatchlistSummary(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+): Promise<WatchlistSummaryResponse> {
+  const path = `/watchlist/summary?user_id=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`;
+  return await requestJsonWithBaseFallback<WatchlistSummaryResponse>(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
+}
+
+export async function drainWatchlistNotifications(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+): Promise<WatchlistQueueResponse> {
+  const path = `/watchlist/notifications?user_id=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`;
+  return await requestJsonWithBaseFallback<WatchlistQueueResponse>(path, { method: "GET" }, buildBaseUrls(preferredBaseUrl));
+}
+
+export function buildWatchlistStreamUrl(
+  userId: string,
+  token: string,
+  preferredBaseUrl: string = "",
+  intervalSeconds: number = 20,
+  durationSeconds: number = 300,
+): string {
+  const baseUrl = normalizeBaseUrl(preferredBaseUrl) || DEFAULT_API_BASE_URLS[0];
+  const query = new URLSearchParams({
+    user_id: userId,
+    token,
+    interval_seconds: String(intervalSeconds),
+    duration_seconds: String(durationSeconds),
+  });
+  return `${baseUrl}/watchlist/stream?${query.toString()}`;
 }
 
 function normalizeDiagnoseResponse(payload: DiagnoseResponse): DiagnoseResponse {
@@ -216,6 +375,64 @@ async function requestWithRetry(url: string, init: RequestInit): Promise<Respons
   }
 
   throw lastError ?? new Error("请求失败");
+}
+
+async function requestWithBaseFallbackAllowHttpError(path: string, init: RequestInit, baseUrls: string[]): Promise<Response> {
+  const errors: string[] = [];
+  for (const baseUrl of baseUrls) {
+    const url = `${baseUrl}${path}`;
+    try {
+      return await requestWithTimeout(url, init, REQUEST_TIMEOUT_MS);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "未知错误";
+      errors.push(`${baseUrl}: ${msg}`);
+    }
+  }
+
+  throw new Error(`network request failed: ${errors.join(" | ")}`);
+}
+
+async function requestJsonWithBaseFallback<T>(path: string, init: RequestInit, baseUrls: string[]): Promise<T> {
+  const response = await requestWithBaseFallbackAllowHttpError(path, init, baseUrls);
+  const payload = await readResponsePayload(response);
+  if (!response.ok) {
+    throw new Error(extractApiErrorMessage(payload, response.status, response.statusText));
+  }
+  return payload as T;
+}
+
+async function readResponsePayload(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (!text) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    return text;
+  }
+}
+
+function extractApiErrorMessage(payload: unknown, status: number, statusText: string): string {
+  if (typeof payload === "string" && payload.trim()) {
+    return payload;
+  }
+
+  if (payload && typeof payload === "object") {
+    const detail = (payload as { detail?: unknown }).detail;
+    if (typeof detail === "string" && detail.trim()) {
+      return detail;
+    }
+    if (Array.isArray(detail) && detail.length > 0) {
+      const firstDetail = detail[0];
+      if (typeof firstDetail === "string" && firstDetail.trim()) {
+        return firstDetail;
+      }
+    }
+  }
+
+  return statusText ? `${status}: ${statusText}` : `请求失败: ${status}`;
 }
 
 async function requestWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {

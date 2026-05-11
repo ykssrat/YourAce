@@ -89,12 +89,166 @@ export type NewsItem = {
   url: string;
 };
 
+export type WatchlistRecommendation = {
+  code: string;
+  name: string;
+  score: number;
+  matched_keywords: string[];
+};
+
+export type AuthResponse = {
+  user_id: string;
+  username: string;
+  token: string;
+  created_at: string;
+  updated_at: string;
+  /** 服务端会话过期时间（ISO），旧后端可能为空 */
+  token_expires_at?: string;
+  persist_session?: boolean;
+};
+
+export type WatchlistItem = {
+  code: string;
+  name: string;
+  etf_code: string;
+  etf_name: string;
+  sector_name: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type QuoteSnapshot = {
+  code: string;
+  name: string;
+  latest_price: number;
+  pct_change: number;
+  volume: number;
+  amount: number;
+  turnover: number;
+  updated_at: string;
+  source: string;
+};
+
+export type SignalCandidate = {
+  signal_id: string;
+  action: Opinion;
+  title: string;
+  reason: string;
+};
+
+export type SignalDecision = {
+  primary_signal: string;
+  primary_action: Opinion;
+  final_action: Opinion;
+  final_action_label: string;
+  notify: boolean;
+  buy_signal_count: number;
+  sell_signal_count: number;
+  reason_tags: string[];
+  reason_text: string;
+  signals: SignalCandidate[];
+};
+
+export type WatchlistSignalSummary = {
+  timestamp: string;
+  clock: string;
+  signals: SignalCandidate[];
+  decision: SignalDecision;
+  notification: string;
+};
+
+export type WatchlistNotification = {
+  code: string;
+  name: string;
+  sector_name: string;
+  etf_code: string;
+  etf_name: string;
+  action: Opinion;
+  action_label: string;
+  timestamp: string;
+  clock: string;
+  reason_tags: string[];
+  reason_text: string;
+  message: string;
+  fingerprint: string;
+};
+
+export type WatchlistItemSnapshot = {
+  code: string;
+  name: string;
+  sector_name: string;
+  etf_code: string;
+  etf_name: string;
+  quote: QuoteSnapshot;
+  etf_quote?: QuoteSnapshot | null;
+  intraday_high: number;
+  intraday_high_time: string;
+  intraday_low: number;
+  intraday_low_time: string;
+  minute_volume: Array<{ time: string; volume: number }>;
+  signals: WatchlistSignalSummary;
+  notification?: WatchlistNotification | null;
+};
+
+export type WatchlistSummaryResponse = {
+  user_id: string;
+  count: number;
+  items: WatchlistItemSnapshot[];
+  notifications: WatchlistNotification[];
+};
+
+export type WatchlistListResponse = {
+  user_id: string;
+  count: number;
+  items: WatchlistItem[];
+};
+
+export type WatchlistQuotesResponse = {
+  user_id: string;
+  count: number;
+  items: QuoteSnapshot[];
+};
+
+export type WatchlistSignalsResponse = {
+  user_id: string;
+  count: number;
+  items: WatchlistSignalSummary[];
+};
+
+export type WatchlistQueueResponse = {
+  user_id: string;
+  count: number;
+  items: WatchlistNotification[];
+};
+
+export type WatchlistAddRequest = {
+  user_id: string;
+  token: string;
+  code: string;
+  stock_name?: string;
+  etf_code?: string;
+  etf_name?: string;
+  sector_name?: string;
+};
+
+export type WatchlistRemoveRequest = {
+  user_id: string;
+  token: string;
+  code: string;
+};
+
+export type AuthRequest = {
+  username: string;
+  password: string;
+  /** 与「保持登录」勾选一致，影响服务端 token 有效期 */
+  persist_session?: boolean;
+};
+
 export const STRATEGY_OPTIONS = [
   { value: "momentum_deviation", label: "动量偏离策略" },
-  { value: "martingale", label: "马丁策略" },
-  { value: "livermore", label: "利弗莫尔策略" },
+  { value: "rsi", label: "RSI策略" },
   { value: "kdj", label: "KDJ策略" },
-  { value: "golden_cross", label: "金叉死叉策略" },
-  { value: "ml_multi_factor", label: "机器学习多因子策略" },
-  { value: "retail_psychology", label: "散户心理学策略" },
+  { value: "macd", label: "MACD策略" },
+  { value: "boll", label: "BOLL策略" },
+  { value: "livermore", label: "利弗莫尔策略" },
 ];

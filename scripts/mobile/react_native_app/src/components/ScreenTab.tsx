@@ -1,7 +1,6 @@
 /// <reference path="../react_native_shims.d.ts" />
 import React, { useState } from "react";
 import {
-  Alert,
   ActivityIndicator,
   Pressable,
   ScrollView,
@@ -215,13 +214,7 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
               key={value}
               label={label}
               active={filter.strategy === value}
-              onPress={() => {
-                if (value !== "momentum_deviation") {
-                  Alert.alert("该策略暂未上线", "敬请期待");
-                  return;
-                }
-                setFilter({ ...filter, strategy: value });
-              }}
+              onPress={() => setFilter({ ...filter, strategy: value })}
             />
           ))}
         </FilterRow>

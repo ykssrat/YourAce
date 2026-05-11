@@ -54,7 +54,7 @@ def test_screen_universe_contains_enough_etfs_and_funds() -> None:
 
 def run_local_api_smoke(code: str = "000001", include_news: bool = False) -> dict[str, Any]:
     """启动临时后端进程后请求 analyze，并返回响应体。"""
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = Path(__file__).resolve().parents[1]
     port = int(os.getenv("YOURACE_API_TEST_PORT", "8010"))
     base_url = f"http://127.0.0.1:{port}"
 

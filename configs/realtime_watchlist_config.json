@@ -1,0 +1,13 @@
+{
+  "redis_url": "redis://127.0.0.1:6379/0",
+  "quote_cache_seconds": 30,
+  "minute_cache_seconds": 30,
+  "notification_dedup_seconds": 60,
+  "stream_interval_seconds": 20,
+  "stream_duration_seconds": 300,
+  "macd_fast": 12,
+  "macd_slow": 26,
+  "macd_signal": 9,
+  "p2_window_minutes": 10,
+  "p2_threshold": 0.02
+}

@@ -33,6 +33,13 @@ def generate_opinion_matrix(
     try:
         # 兼容性处理：如果传入的是中文显示名，映射回文件名
         strategy_id = _map_strategy_label_to_id(strategy_name)
+
+        if strategy_id == "macd":
+            module = importlib.import_module("scripts.strategy.momentum_deviation_strategy")
+            if not hasattr(module, "generate_macd_matrix"):
+                raise AttributeError("策略模块 scripts.strategy.momentum_deviation_strategy 缺失 generate_macd_matrix 函数")
+            return module.generate_macd_matrix(close_series, long_fund_trend=long_fund_trend)
+
         module_path = f"scripts.strategy.{strategy_id}_strategy"
         
         # 尝试加载模块
@@ -57,6 +64,22 @@ def _map_strategy_label_to_id(label: str) -> str:
     mapping = {
         "动量偏离策略": "momentum_deviation",
         "momentum_deviation": "momentum_deviation",
+        "RSI": "rsi",
+        "rsi": "rsi",
+        "RSI策略": "rsi",
+        "KDJ": "kdj",
+        "kdj": "kdj",
+        "KDJ策略": "kdj",
+        "macd": "macd",
+        "MACD": "macd",
+        "MACD策略": "macd",
+        "分钟线MACD": "macd",
+        "分钟线macd": "macd",
+        "BOLL": "boll",
+        "boll": "boll",
+        "BOLL策略": "boll",
+        "布林": "boll",
+        "布林带策略": "boll",
         "livermore": "livermore",
         "利弗莫尔策略": "livermore",
     }

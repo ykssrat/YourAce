@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime
 from pathlib import Path
 from collections import deque
@@ -11,11 +12,13 @@ import numpy as np
 import pandas as pd
 import akshare as ak
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from scripts.features.bic_pruner import bic_prune_features
 from scripts.features.calc_features import compute_feature_frame
 from scripts.engine.opinion_engine import generate_opinion_matrix, VALID_OPINIONS
+from scripts.services.realtime_watchlist import get_watchlist_runtime
 from scripts.utils.asset_loader import load_assets, get_asset_name, detect_asset_type
 from scripts.utils.news_fetcher import fetch_latest_news
 import json
@@ -26,7 +29,7 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
 
 
 
-app = FastAPI(title="YourAce API", version="0.1.6")
+app = FastAPI(title="YourAce API", version="0.1.7")
 _SCREEN_EVENT_LOG_PATH = Path("datas/logs/screen_events.jsonl")
 _AK_HISTORY_START_DATE = "20180101"
 
@@ -80,6 +83,57 @@ class ScreenActionLogRequest(BaseModel):
     total_available: int = Field(default=0, ge=0)
     scanned_count: int = Field(default=0, ge=0)
     signal_miss_count: int = Field(default=0, ge=0)
+
+
+class RegisterRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=32)
+    password: str = Field(..., min_length=4, max_length=64)
+    persist_session: bool = Field(
+        default=False,
+        description="勾选「保持登录」时服务端签发更长有效期的 token。",
+    )
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(..., min_length=1, max_length=32)
+    password: str = Field(..., min_length=4, max_length=64)
+    persist_session: bool = Field(default=False)
+
+
+class RefreshSessionRequest(BaseModel):
+    user_id: str = Field(..., min_length=1, max_length=64)
+    token: str = Field(..., min_length=1, max_length=128)
+
+
+class WatchlistAddRequest(BaseModel):
+    user_id: str = Field(..., min_length=1, max_length=64)
+    token: str = Field(..., min_length=1, max_length=128)
+    code: str = Field(..., min_length=1, max_length=20)
+    stock_name: str = Field(default="")
+    etf_code: str = Field(default="")
+    etf_name: str = Field(default="")
+    sector_name: str = Field(default="")
+
+
+class WatchlistRemoveRequest(BaseModel):
+    user_id: str = Field(..., min_length=1, max_length=64)
+    token: str = Field(..., min_length=1, max_length=128)
+    code: str = Field(..., min_length=1, max_length=20)
+
+
+class WatchlistIdentityRequest(BaseModel):
+    user_id: str = Field(..., min_length=1, max_length=64)
+    token: str = Field(..., min_length=1, max_length=128)
+
+
+def _watchlist_runtime() -> object:
+    return get_watchlist_runtime()
+
+
+def _runtime_error_to_http(exc: Exception) -> None:
+    message = str(exc)
+    status_code = 401 if "认证" in message or "登录" in message else 400
+    raise HTTPException(status_code=status_code, detail=message)
 
 
 @app.get("/search")
@@ -147,6 +201,176 @@ def get_latest_news(
 def health() -> Dict[str, str]:
     """健康检查。"""
     return {"status": "ok"}
+
+
+@app.post("/auth/register")
+def register_user(payload: RegisterRequest) -> Dict[str, object]:
+    """注册用户并返回 token。"""
+    try:
+        return _watchlist_runtime().register_user(
+            payload.username,
+            payload.password,
+            persist_session=payload.persist_session,
+        )
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.post("/auth/login")
+def login_user(payload: LoginRequest) -> Dict[str, object]:
+    """用户登录并刷新 token。"""
+    try:
+        return _watchlist_runtime().login_user(
+            payload.username,
+            payload.password,
+            persist_session=payload.persist_session,
+        )
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.post("/auth/refresh")
+def refresh_session(payload: RefreshSessionRequest) -> Dict[str, object]:
+    """在 token 未过期时顺延会话（按该账号的保持登录策略）。"""
+    try:
+        return _watchlist_runtime().refresh_session(payload.user_id, payload.token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist/recommendations")
+def recommend_watchlist_etfs(
+    code: str = Query(..., min_length=1, max_length=20),
+    stock_name: str = Query(default="", max_length=50),
+    limit: int = Query(default=5, ge=1, le=10),
+) -> Dict[str, object]:
+    """给个股返回可选 ETF 推荐。"""
+    try:
+        items = _watchlist_runtime().recommend_etfs(code=code, stock_name=stock_name, limit=limit)
+        return {"code": code, "count": len(items), "items": items}
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.post("/watchlist/add")
+def add_watchlist_item(payload: WatchlistAddRequest) -> Dict[str, object]:
+    """加入自选池并保存 ETF 绑定。"""
+    try:
+        return _watchlist_runtime().add_watchlist_item(
+            user_id=payload.user_id,
+            token=payload.token,
+            code=payload.code,
+            stock_name=payload.stock_name,
+            etf_code=payload.etf_code,
+            etf_name=payload.etf_name,
+            sector_name=payload.sector_name,
+        )
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.post("/watchlist/remove")
+def remove_watchlist_item(payload: WatchlistRemoveRequest) -> Dict[str, object]:
+    """从自选池移除标的。"""
+    try:
+        return _watchlist_runtime().remove_watchlist_item(payload.user_id, payload.token, payload.code)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist")
+def list_watchlist_items(
+    user_id: str = Query(..., min_length=1, max_length=64),
+    token: str = Query(..., min_length=1, max_length=128),
+) -> Dict[str, object]:
+    """返回用户自选池。"""
+    try:
+        return _watchlist_runtime().list_watchlist(user_id, token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist/quotes")
+def get_watchlist_quotes(
+    user_id: str = Query(..., min_length=1, max_length=64),
+    token: str = Query(..., min_length=1, max_length=128),
+) -> Dict[str, object]:
+    """返回自选池行情快照。"""
+    try:
+        return _watchlist_runtime().get_watchlist_quotes(user_id, token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist/signals")
+def get_watchlist_signals(
+    user_id: str = Query(..., min_length=1, max_length=64),
+    token: str = Query(..., min_length=1, max_length=128),
+) -> Dict[str, object]:
+    """返回自选池信号摘要。"""
+    try:
+        return _watchlist_runtime().get_watchlist_signals(user_id, token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist/summary")
+def get_watchlist_summary(
+    user_id: str = Query(..., min_length=1, max_length=64),
+    token: str = Query(..., min_length=1, max_length=128),
+) -> Dict[str, object]:
+    """刷新并返回自选池摘要，必要时会入队通知。"""
+    try:
+        return _watchlist_runtime().get_watchlist_summary(user_id, token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist/notifications")
+def drain_watchlist_notifications(
+    user_id: str = Query(..., min_length=1, max_length=64),
+    token: str = Query(..., min_length=1, max_length=128),
+) -> Dict[str, object]:
+    """读取并清空待推送通知。"""
+    try:
+        return _watchlist_runtime().drain_notifications(user_id, token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+
+@app.get("/watchlist/stream")
+async def stream_watchlist_notifications(
+    user_id: str = Query(..., min_length=1, max_length=64),
+    token: str = Query(..., min_length=1, max_length=128),
+    interval_seconds: int = Query(default=20, ge=5, le=120),
+    duration_seconds: int = Query(default=300, ge=30, le=3600),
+) -> StreamingResponse:
+    """应用内推送流，使用 SSE 传输最新通知。"""
+    runtime = _watchlist_runtime()
+    try:
+        runtime.list_watchlist(user_id, token)
+    except Exception as exc:  # noqa: BLE001
+        _runtime_error_to_http(exc)
+
+    async def event_generator():
+        deadline = datetime.now().timestamp() + duration_seconds
+        while datetime.now().timestamp() < deadline:
+            try:
+                snapshot = runtime.get_watchlist_summary(user_id, token)
+                notifications = snapshot.get("notifications", [])
+                if notifications:
+                    for notification in notifications:
+                        yield f"data: {json.dumps(notification, ensure_ascii=False)}\n\n"
+                else:
+                    yield ": heartbeat\n\n"
+            except Exception as exc:  # noqa: BLE001
+                yield f"event: error\ndata: {json.dumps({'message': str(exc)}, ensure_ascii=False)}\n\n"
+                return
+            await asyncio.sleep(interval_seconds)
+
+        yield "event: done\ndata: {}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
 
 
 @app.post("/screen")

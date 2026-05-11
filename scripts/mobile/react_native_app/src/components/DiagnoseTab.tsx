@@ -1,7 +1,6 @@
 /// <reference path="../react_native_shims.d.ts" />
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -136,13 +135,7 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
           {STRATEGY_OPTIONS.map((opt) => (
             <Pressable
               key={opt.value}
-              onPress={() => {
-                if (opt.value !== "momentum_deviation") {
-                  Alert.alert("该策略暂未上线", "敬请期待");
-                  return;
-                }
-                setStrategy(opt.value);
-              }}
+              onPress={() => setStrategy(opt.value)}
               style={[
                 styles.strategyChip,
                 strategy === opt.value && styles.strategyChipActive,

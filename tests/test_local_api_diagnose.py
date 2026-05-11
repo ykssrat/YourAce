@@ -38,7 +38,7 @@ def test_local_api_diagnose() -> None:
 
 def run_local_api_diagnose(code: str = "000001", include_news: bool = False) -> dict[str, Any]:
     """启动临时后端进程后请求 diagnose，并返回响应体。"""
-    project_root = Path(__file__).resolve().parents[2]
+    project_root = Path(__file__).resolve().parents[1]
     preferred_port = int(os.getenv("YOURACE_API_TEST_PORT", "8010"))
     port = _pick_available_port(preferred_port)
     base_url = f"http://127.0.0.1:{port}"

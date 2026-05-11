@@ -51,3 +51,7 @@ scripts/backtest/lean/
 
 # APK Release folder (large binaries)
 scripts/mobile/release/
+
+# Local API keys (manual JSON — never commit)
+configs/secrets.local.json
+configs/secrets.json
