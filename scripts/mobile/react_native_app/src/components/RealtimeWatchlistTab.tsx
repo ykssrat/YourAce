@@ -1,6 +1,6 @@
 /// <reference path="../react_native_shims.d.ts" />
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import {
   addWatchlistItem,
@@ -159,6 +159,11 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
       const incomingNotifications = collectNotifications(payload);
       if (incomingNotifications.length > 0) {
         setNotifications((previous) => mergeNotifications(incomingNotifications, previous));
+        for (const noti of incomingNotifications.slice(0, 1)) {
+          if (noti && noti.message) {
+            Alert.alert("行情信号", noti.message);
+          }
+        }
       }
     } catch (err) {
       if (!aliveRef.current) {
@@ -435,70 +440,90 @@ function WatchlistItemCard({
   onGoToDiagnose: (code: string) => void;
   onRemove: (code: string) => void;
 }) {
-  const decision = item.signals.decision;
-  const actionColor = decision.final_action === "BUY" ? "#2f9e44" : decision.final_action === "SELL" ? "#c92a2a" : "#f08c00";
+  const decision = item?.signals?.decision;
+  const finalAction = decision?.final_action ?? "HOLD";
+  const actionLabel = decision?.final_action_label ?? "静默";
+  const reasonText = decision?.reason_text ?? "";
+  const actionColor = finalAction === "BUY" ? "#2f9e44" : finalAction === "SELL" ? "#c92a2a" : "#7c8b7a";
+  const quote = item?.quote;
+  const latestPrice = quote?.latest_price ?? 0;
+  const pctChange = quote?.pct_change ?? 0;
+  const quoteVolume = quote?.volume ?? 0;
+  const intradayHigh = item?.intraday_high ?? 0;
+  const intradayHighTime = item?.intraday_high_time ?? "";
+  const intradayLow = item?.intraday_low ?? 0;
+  const intradayLowTime = item?.intraday_low_time ?? "";
+  const etfName = item?.etf_name ?? "";
+  const sectorName = item?.sector_name ?? "";
+  const code = item?.code ?? "";
+  const name = item?.name ?? "";
+  const notification = item?.notification;
+  const minuteVolume = item?.minute_volume ?? [];
+  const isTradingHalted = actionLabel === "休市";
 
   return (
     <View style={styles.itemCard}>
       <View style={styles.itemHeader}>
         <View>
-          <Text style={styles.itemCode}>{item.code}</Text>
-          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.itemCode}>{code}</Text>
+          <Text style={styles.itemName}>{name}</Text>
         </View>
-        <View style={[styles.actionBadge, { borderColor: actionColor, backgroundColor: `${actionColor}15` }]}>
-          <Text style={[styles.actionBadgeText, { color: actionColor }]}>{decision.final_action_label}</Text>
+        <View style={[styles.actionBadge, { backgroundColor: isTradingHalted ? "#f1f3f5" : `${actionColor}15` }]}>
+          <Text style={[styles.actionBadgeText, { color: isTradingHalted ? "#868e96" : actionColor }]}>
+            {isTradingHalted ? "休市" : actionLabel}
+          </Text>
         </View>
       </View>
 
       <View style={styles.metricRow}>
-        <Metric label="最新价" value={formatMoney(item.quote.latest_price)} />
-        <Metric label="涨跌幅" value={formatPercent(item.quote.pct_change)} valueStyle={item.quote.pct_change >= 0 ? styles.greenText : styles.redText} />
-        <Metric label="成交量" value={formatLargeNumber(item.quote.volume)} />
+        <Metric label="最新价" value={formatMoney(latestPrice)} />
+        <Metric label="涨跌幅" value={formatPercent(pctChange)} valueStyle={pctChange >= 0 ? styles.greenText : styles.redText} />
+        <Metric label="成交量" value={formatLargeNumber(quoteVolume)} />
       </View>
 
       <View style={styles.metricRow}>
-        <Metric label="绑定 ETF" value={item.etf_name || "未绑定"} />
-        <Metric label="板块名称" value={item.sector_name || "未命名"} />
-        <Metric label="信号" value={decision.reason_text || "无"} />
+        <Metric label="绑定 ETF" value={etfName || "未绑定"} />
+        <Metric label="板块名称" value={sectorName || "未命名"} />
+        <Metric label="信号" value={isTradingHalted ? "非交易时段" : (reasonText || "无")} />
       </View>
 
       <View style={styles.intradayMarkerRow}>
         <IntradayMarkerCard
           label="盘中高点"
-          value={item.intraday_high}
-          time={item.intraday_high_time}
+          value={intradayHigh}
+          time={intradayHighTime}
           tone="high"
         />
         <IntradayMarkerCard
           label="盘中低点"
-          value={item.intraday_low}
-          time={item.intraday_low_time}
+          value={intradayLow}
+          time={intradayLowTime}
           tone="low"
         />
       </View>
 
-      <MinuteVolumeChart points={item.minute_volume} />
+      <MinuteVolumeChart points={minuteVolume} />
 
       <View style={styles.minuteVolumeRow}>
-        {item.minute_volume.slice(-6).map((point) => (
-          <View key={`${item.code}-${point.time}`} style={styles.minuteVolumeChip}>
+        {minuteVolume.slice(-6).map((point: MinuteVolumePoint) => (
+          <View key={`${code}-${point.time}`} style={styles.minuteVolumeChip}>
             <Text style={styles.minuteVolumeTime}>{point.time}</Text>
-            <Text style={styles.minuteVolumeValue}>{formatLargeNumber(point.volume)}</Text>
+            <Text style={styles.minuteVolumeValue}>{formatLargeNumber(point.volume ?? 0)}</Text>
           </View>
         ))}
       </View>
 
-      {item.notification ? (
+      {notification ? (
         <View style={styles.itemNotifyBox}>
-          <Text style={styles.itemNotifyText}>{item.notification.message}</Text>
+          <Text style={styles.itemNotifyText}>{notification.message}</Text>
         </View>
       ) : null}
 
       <View style={styles.itemActionRow}>
-        <Pressable style={styles.itemActionBtn} onPress={() => onGoToDiagnose(item.code)}>
+        <Pressable style={styles.itemActionBtn} onPress={() => onGoToDiagnose(code)}>
           <Text style={styles.itemActionBtnText}>去诊股</Text>
         </Pressable>
-        <Pressable style={styles.itemActionDangerBtn} onPress={() => onRemove(item.code)}>
+        <Pressable style={styles.itemActionDangerBtn} onPress={() => onRemove(code)}>
           <Text style={styles.itemActionDangerText}>移除</Text>
         </Pressable>
       </View>
@@ -522,24 +547,27 @@ function IntradayMarkerCard({
   tone,
 }: {
   label: string;
-  value: number;
-  time: string;
+  value?: number;
+  time?: string;
   tone: "high" | "low";
 }) {
   const isHigh = tone === "high";
+  const safeValue = value ?? 0;
+  const safeTime = time ?? "";
   return (
     <View style={[styles.intradayMarkerCard, isHigh ? styles.intradayMarkerCardHigh : styles.intradayMarkerCardLow]}>
       <Text style={[styles.intradayMarkerLabel, isHigh ? styles.intradayHighText : styles.intradayLowText]}>{label}</Text>
       <Text style={[styles.intradayMarkerValue, isHigh ? styles.intradayHighText : styles.intradayLowText]} numberOfLines={1}>
-        {formatMarkerPrice(value)}
+        {formatMarkerPrice(safeValue)}
       </Text>
-      <Text style={styles.intradayMarkerTime}>{time ? `发生于 ${time}` : "暂无时间"}</Text>
+      <Text style={styles.intradayMarkerTime}>{safeTime ? `发生于 ${safeTime}` : "暂无时间"}</Text>
     </View>
   );
 }
 
-function MinuteVolumeChart({ points, limit = 18 }: { points: MinuteVolumePoint[]; limit?: number }) {
-  const chartPoints = buildMinuteChartPoints(points, limit);
+function MinuteVolumeChart({ points, limit = 18 }: { points?: MinuteVolumePoint[]; limit?: number }) {
+  const safePoints = points ?? [];
+  const chartPoints = buildMinuteChartPoints(safePoints, limit);
   if (chartPoints.length === 0) {
     return (
       <View style={styles.minuteChartEmpty}>
@@ -968,13 +996,12 @@ const styles = StyleSheet.create({
     color: "#4f6b5a",
   },
   actionBadge: {
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   actionBadgeText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "800",
   },
   metricRow: {

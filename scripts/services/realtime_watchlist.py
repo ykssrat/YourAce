@@ -37,6 +37,19 @@ _ACTION_LABELS = {
     "SELL": "卖出",
     "HOLD": "静默",
 }
+# A 股交易时段：上午 9:30–11:30，下午 13:00–15:00（周一至周五）
+_TRADING_AM_START = time(9, 30)
+_TRADING_AM_END = time(11, 30)
+_TRADING_PM_START = time(13, 0)
+_TRADING_PM_END = time(15, 0)
+
+
+def _is_a_share_trading_time(now: Optional[datetime] = None) -> bool:
+    """判断当前是否处于 A 股连续竞价时段。"""
+    t = (now or datetime.now()).time()
+    if (datetime.now().weekday() >= 5):
+        return False
+    return (_TRADING_AM_START <= t <= _TRADING_AM_END) or (_TRADING_PM_START <= t <= _TRADING_PM_END)
 
 
 @dataclass(frozen=True)
@@ -521,9 +534,28 @@ def evaluate_intraday_signals(
     current_time: Optional[datetime] = None,
     config: Optional[RuntimeConfig] = None,
 ) -> Dict[str, Any]:
-    """根据分钟线、时间和板块涨跌幅计算 P1-P4。"""
+    """根据分钟线、时间和板块涨跌幅计算 P1-P4。非交易时段统一返回休市。"""
     runtime_config = config or RuntimeConfig()
     now = _now_label(current_time)
+    if not _is_a_share_trading_time(now):
+        return {
+            "timestamp": now.isoformat(timespec="seconds"),
+            "clock": _format_clock_label(now),
+            "signals": [],
+            "decision": {
+                "primary_signal": "",
+                "primary_action": "HOLD",
+                "final_action": "HOLD",
+                "final_action_label": "休市",
+                "notify": False,
+                "buy_signal_count": 0,
+                "sell_signal_count": 0,
+                "reason_tags": [],
+                "reason_text": "非交易时段",
+                "signals": [],
+            },
+            "notification": "",
+        }
     p1 = _macd_signal(close_series, runtime_config.macd_fast, runtime_config.macd_slow, runtime_config.macd_signal)
     p2 = _fast_move_signal(close_series, runtime_config.p2_window_minutes, runtime_config.p2_threshold)
     p3 = _time_rule_signal(now)
@@ -823,8 +855,9 @@ class WatchlistRuntime:
         stock_quote = self._build_quote_view(code, stock_name, spot_map)
         etf_quote = self._build_quote_view(etf_code, etf_name, spot_map) if etf_code else None
         minute_frame = minute_map.get(code)
-        if minute_frame is None or minute_frame.empty:
-            minute_frame = _generate_mock_minute_history(code)
+        has_real_minute = minute_frame is not None and not minute_frame.empty
+        if not has_real_minute:
+            minute_frame = pd.DataFrame(columns=["time", "close", "volume"])
         intraday_marker = self._build_intraday_marker_view(minute_frame)
         minute_volume = self._build_minute_volume_view(minute_frame)
         signal_summary = self._build_signal_summary(
@@ -974,10 +1007,14 @@ class WatchlistRuntime:
         return f"{_normalize_code(code)}:{action}:{reason}:{clock}"
 
     def _load_spot_quotes_map(self) -> Dict[str, Dict[str, Any]]:
+        """拉取全市场行情快照。非交易时段仅使用缓存，不再请求 akshare 避免无效请求。"""
         cache_key = self._cache_spot_key()
         cached = self.backend.get_value(cache_key)
         if isinstance(cached, dict) and cached.get("items"):
             return {str(item.get("code", "")): item for item in cached["items"] if str(item.get("code", ""))}
+
+        if not _is_a_share_trading_time():
+            return {}
 
         try:
             spot_frame = _normalize_spot_frame(ak.stock_zh_a_spot_em())
@@ -1009,6 +1046,7 @@ class WatchlistRuntime:
         return {str(item.get("code", "")): item for item in items if str(item.get("code", ""))}
 
     def _load_minute_history_map(self, codes: Sequence[str]) -> Dict[str, pd.DataFrame]:
+        """拉取分钟线历史。非交易时段仅用缓存，失败不生成假数据。"""
         normalized_codes = [code for code in {_normalize_code(code) for code in codes} if code]
         if not normalized_codes:
             return {}
@@ -1024,6 +1062,9 @@ class WatchlistRuntime:
                 missing_codes.append(code)
 
         if not missing_codes:
+            return result
+
+        if not _is_a_share_trading_time():
             return result
 
         def _fetch(code: str) -> tuple[str, pd.DataFrame]:
