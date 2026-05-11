@@ -47,6 +47,7 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
   const [refreshing, setRefreshing] = useState(false);
   const [liveEnabled, setLiveEnabled] = useState(true);
   const [lastSyncLabel, setLastSyncLabel] = useState("未同步");
+  const [confirmVisible, setConfirmVisible] = useState(false);
   const refreshingRef = useRef(false);
   const streamRef = useRef<EventSource | null>(null);
   const aliveRef = useRef(true);
@@ -195,6 +196,7 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
     setSelectedAsset(item);
     setQuery(item.code);
     setError("");
+    setConfirmVisible(false);
 
     try {
       setLoadingRecommendations(true);
@@ -216,6 +218,20 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
         setLoadingRecommendations(false);
       }
     }
+  }
+
+  function handleConfirmAdd() {
+    setConfirmVisible(true);
+  }
+
+  function handleCancelAdd() {
+    setQuery("");
+    setSearchResults([]);
+    setSelectedAsset(null);
+    setRecommendations([]);
+    setSelectedRecommendation(null);
+    setConfirmVisible(false);
+    setError("");
   }
 
   async function handleSubmitWatchlist() {
@@ -316,7 +332,7 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
 
       <View style={styles.searchCard}>
         <Text style={styles.sectionTitle}>加入自选</Text>
-        <Text style={styles.sectionHint}>输入代码或名称，先选中标的，再绑定 ETF 推荐。</Text>
+        <Text style={styles.sectionHint}>输入代码或名称，选中标的后绑定 ETF，最后确认加入。</Text>
         <View style={styles.searchRow}>
           <TextInput
             value={query}
@@ -327,9 +343,11 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
             autoCorrect={false}
             style={styles.searchInput}
           />
-          <Pressable style={styles.searchBtn} onPress={() => void handleSubmitWatchlist()} disabled={submitting || loadingRecommendations}>
-            <Text style={styles.searchBtnText}>{submitting ? "处理中" : "加入"}</Text>
-          </Pressable>
+          {selectedAsset && !confirmVisible ? (
+            <Pressable style={styles.searchBtn} onPress={handleConfirmAdd} disabled={submitting || loadingRecommendations}>
+              <Text style={styles.searchBtnText}>加入</Text>
+            </Pressable>
+          ) : null}
         </View>
 
         {searchResults.length > 0 ? (
@@ -355,7 +373,7 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
 
         <View style={styles.recommendationSection}>
           <Text style={styles.sectionTitle}>ETF 推荐</Text>
-          <Text style={styles.sectionHint}>优先选择一个绑定基准，便于后续判断板块普跌/普涨。</Text>
+          <Text style={styles.sectionHint}>选择一个绑定基准，用于板块普跌/普涨判断。</Text>
           {loadingRecommendations ? (
             <View style={styles.loadingRow}>
               <ActivityIndicator color="#013E75" size="small" />
@@ -384,6 +402,16 @@ export function RealtimeWatchlistTab({ apiBaseUrl, auth, onGoToDiagnose, onAuthE
           ) : (
             <Text style={styles.emptyHint}>先选中一只股票，系统会给出可绑定的 ETF 候选。</Text>
           )}
+          {confirmVisible ? (
+            <View style={styles.confirmRow}>
+              <Pressable style={styles.confirmCancelBtn} onPress={handleCancelAdd}>
+                <Text style={styles.confirmCancelText}>取消</Text>
+              </Pressable>
+              <Pressable style={styles.confirmOkBtn} onPress={() => void handleSubmitWatchlist()} disabled={submitting}>
+                <Text style={styles.confirmOkText}>{submitting ? "处理中…" : "确认加入自选"}</Text>
+              </Pressable>
+            </View>
+          ) : null}
         </View>
       </View>
 
@@ -482,7 +510,7 @@ function WatchlistItemCard({
       </View>
 
       <View style={styles.metricRow}>
-        <Metric label="绑定 ETF" value={etfName || "未绑定"} />
+        <Metric label="绑定板块" value={etfName || "未绑定"} />
         <Metric label="板块名称" value={sectorName || "未命名"} />
         <Metric label="信号" value={isTradingHalted ? "非交易时段" : (reasonText || "无")} />
       </View>
@@ -932,6 +960,37 @@ const styles = StyleSheet.create({
   },
   recommendationChipTextActive: {
     color: "#ffffff",
+  },
+  confirmRow: {
+    marginTop: 12,
+    flexDirection: "row",
+    gap: 10,
+  },
+  confirmCancelBtn: {
+    flex: 1,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#d6c8b0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  confirmCancelText: {
+    color: "#6d4300",
+    fontWeight: "800",
+  },
+  confirmOkBtn: {
+    flex: 2,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: "#2a4a37",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  confirmOkText: {
+    color: "#ffffff",
+    fontWeight: "800",
   },
   errorBox: {
     padding: 12,

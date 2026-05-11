@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from scripts.features.bic_pruner import bic_prune_features
 from scripts.features.calc_features import compute_feature_frame
-from scripts.engine.opinion_engine import generate_opinion_matrix, VALID_OPINIONS
+from scripts.engine.opinion_engine import generate_opinion_matrix, generate_consensus_matrix, VALID_OPINIONS, get_horizon_label
 from scripts.services.realtime_watchlist import get_watchlist_runtime
 from scripts.utils.asset_loader import load_assets, get_asset_name, detect_asset_type
 from scripts.utils.news_fetcher import fetch_latest_news
@@ -37,7 +37,7 @@ _AK_HISTORY_START_DATE = "20180101"
 _VALID_HORIZONS = {"short", "mid", "long"}
 _VALID_SCORE_OPERATORS = {"gte", "lte"}
 _VALID_OPINIONS = {"BUY", "HOLD", "SELL", ""}
-_VALID_ASSET_TYPES = {"stock", "etf", "fund"}
+_VALID_ASSET_TYPES = {"stock", "etf"}
 
 # 兼容前端“不限”筛选
 _VALID_HORIZONS_WITH_ALL = _VALID_HORIZONS | {""}
@@ -460,7 +460,9 @@ def log_screen_action(payload: ScreenActionLogRequest) -> Dict[str, object]:
 
 @app.post("/diagnose")
 def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
-    """诊断指定标的，返回含 3x3 看法矩阵的详细分析结果。"""
+    """诊断指定标的，返回含看法矩阵的详细分析结果。
+    当 strategy='consensus' 时返回五大策略混合共识矩阵。
+    """
     code = payload.code.strip()
     if not code:
         raise HTTPException(status_code=400, detail="code 不能为空")
@@ -468,6 +470,22 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
     close_series = _load_close_series(code)
     if close_series.empty:
         raise HTTPException(status_code=404, detail=f"未找到标的 {code} 的行情数据")
+
+    if payload.strategy == "consensus":
+        consensus = generate_consensus_matrix(close_series)
+        selected_features = _run_bic_pruning(close_series)
+        latest_news = fetch_latest_news(code, limit=3) if payload.include_news else []
+        asset_name = get_asset_name(code)
+        return {
+            "code": code,
+            "name": asset_name,
+            "as_of_date": datetime.now().strftime("%Y-%m-%d"),
+            "consensus": consensus,
+            "horizon_labels": {"short": get_horizon_label("short"), "mid": get_horizon_label("mid"), "long": get_horizon_label("long")},
+            "selected_features": selected_features,
+            "news_enabled": payload.include_news,
+            "latest_news": latest_news,
+        }
 
     matrix = generate_opinion_matrix(close_series, strategy_name=payload.strategy)
 
@@ -482,6 +500,7 @@ def diagnose_asset(payload: DiagnoseRequest) -> Dict[str, object]:
         "label": matrix["mid"],
         "horizon_signals": matrix,
         "matrix": matrix,
+        "horizon_labels": {"short": get_horizon_label("short"), "mid": get_horizon_label("mid"), "long": get_horizon_label("long")},
         "selected_features": selected_features,
         "news_enabled": payload.include_news,
         "latest_news": latest_news,
@@ -514,21 +533,15 @@ def _match_asset_type(code: str, asset_type: str, name: str = "") -> bool:
     rules = _ASSET_CONFIG.get("asset_type_rules", {})
     
     is_etf_by_name = any(k in name_text.upper() for k in rules.get("etf_name_keywords", ["ETF"]))
-    is_fund_by_name = any(k in name_text for k in rules.get("fund_name_keywords", ["基金", "混合", "债", "LOF", "FOF", "联接"]))
-    
     is_etf_by_code = digits.startswith(tuple(rules.get("etf_code_prefixes", [])))
-    is_fund_by_code = digits.startswith(tuple(rules.get("fund_code_prefixes", [])))
     
     is_etf = is_etf_by_name or is_etf_by_code
-    is_fund = is_fund_by_name or is_fund_by_code
 
     if asset_type == "stock":
         stock_prefixes = tuple(rules.get("stock_code_prefixes", []))
-        return (not is_etf) and (not is_fund) and (digits.startswith(stock_prefixes) if stock_prefixes else True)
+        return (not is_etf) and (digits.startswith(stock_prefixes) if stock_prefixes else True)
     if asset_type == "etf":
         return is_etf
-    if asset_type == "fund":
-        return is_fund and (not is_etf)
     return True
 
 

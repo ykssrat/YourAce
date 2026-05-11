@@ -86,6 +86,78 @@ def _map_strategy_label_to_id(label: str) -> str:
     return mapping.get(label, label)
 
 
+def generate_consensus_matrix(
+    close_series: pd.Series,
+    long_fund_trend: float = 0.0,
+) -> Dict[str, Dict[str, object]]:
+    """融合动量偏离、RSI、KDJ、BOLL、MACD 五大策略，生成统一共识矩阵。
+
+    每个窗口期返回：
+    - buy: 看多策略数
+    - sell: 看空策略数
+    - hold: 静默策略数
+    - total: 总策略数
+    - consensus: 多数意见 (BUY/HOLD/SELL)
+    - signals: 各策略的具体信号
+    """
+    strategies = {
+        "动量偏离": "momentum_deviation",
+        "RSI": "rsi",
+        "KDJ": "kdj",
+        "BOLL": "boll",
+        "MACD": "macd",
+    }
+
+    horizon_votes: Dict[str, Dict[str, int]] = {"short": {"BUY": 0, "SELL": 0, "HOLD": 0},
+                                                  "mid": {"BUY": 0, "SELL": 0, "HOLD": 0},
+                                                  "long": {"BUY": 0, "SELL": 0, "HOLD": 0}}
+    horizon_signals: Dict[str, Dict[str, str]] = {"short": {}, "mid": {}, "long": {}}
+
+    for label, strategy_id in strategies.items():
+        try:
+            matrix = generate_opinion_matrix(close_series, strategy_name=strategy_id, long_fund_trend=long_fund_trend)
+            for horizon in VALID_HORIZONS:
+                opinion = matrix.get(horizon, "HOLD")
+                horizon_votes[horizon][opinion] += 1
+                horizon_signals[horizon][label] = opinion
+        except Exception:
+            for horizon in VALID_HORIZONS:
+                horizon_signals[horizon][label] = "N/A"
+
+    result: Dict[str, Dict[str, object]] = {}
+    for horizon in VALID_HORIZONS:
+        votes = horizon_votes[horizon]
+        total = sum(votes.values())
+        if votes["BUY"] > votes["SELL"] and votes["BUY"] > votes["HOLD"]:
+            consensus = "BUY"
+        elif votes["SELL"] > votes["BUY"] and votes["SELL"] > votes["HOLD"]:
+            consensus = "SELL"
+        else:
+            consensus = "HOLD"
+        result[horizon] = {
+            "buy": votes["BUY"],
+            "sell": votes["SELL"],
+            "hold": votes["HOLD"],
+            "total": total,
+            "consensus": consensus,
+            "signals": horizon_signals[horizon],
+        }
+
+    return result
+
+
+_HORIZON_DAYS: Dict[str, str] = {
+    "short": "5日",
+    "mid": "20日",
+    "long": "60日",
+}
+
+
+def get_horizon_label(horizon: str) -> str:
+    """返回窗口期对应的交易日标签。"""
+    return _HORIZON_DAYS.get(horizon, horizon)
+
+
 def _validate_close_series(close_series: pd.Series) -> None:
     """校验价格序列输入。"""
     if close_series.empty:

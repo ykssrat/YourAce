@@ -41,15 +41,12 @@ def test_local_api_news_only() -> None:
     assert len(result["latest_news"]) > 0, "未返回任何新闻内容"
 
 
-def test_screen_universe_contains_enough_etfs_and_funds() -> None:
+def test_screen_universe_contains_enough_etfs() -> None:
     assets = load_assets(keyword="", limit=10000)
     etf_assets = [item for item in assets if detect_asset_type(item["code"], item["name"]) == "etf"]
-    fund_assets = [item for item in assets if detect_asset_type(item["code"], item["name"]) == "fund"]
 
     assert len(etf_assets) >= 100
-    assert len(fund_assets) >= 100
     assert any("ETF" in item["name"].upper() for item in etf_assets[:20])
-    assert any("基金" in item["name"] or "混合" in item["name"] or "债" in item["name"] or "FOF" in item["name"].upper() for item in fund_assets[:20])
 
 
 def run_local_api_smoke(code: str = "000001", include_news: bool = False) -> dict[str, Any]:

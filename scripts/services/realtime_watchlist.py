@@ -21,8 +21,91 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence
 import akshare as ak
 import numpy as np
 import pandas as pd
+import urllib.request
+import urllib.error
 
 from scripts.utils.asset_loader import detect_asset_type, get_asset_name, load_assets
+
+# ---- 东方财富免费行情 API ----
+
+_EM_SPOT_URL = "http://push2.eastmoney.com/api/qt/clist/get"
+_EM_MINUTE_URL = "http://push2his.eastmoney.com/api/qt/stock/kline/get"
+_EM_SPOT_FIELDS = "f2,f3,f4,f5,f6,f7,f8,f12,f14"
+_EM_SPOT_PARAMS = "pn=1&pz=5000&po=1&np=1&fltt=2&invt=2&fid=f3&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23"
+_EM_REQUEST_TIMEOUT = 8
+
+
+def _em_stock_code(code: str) -> str:
+    """将 6 位代码转为东方财富 secid 格式（0=上海, 1=深圳）。"""
+    c = _normalize_code(code)
+    if c.startswith(("6", "9")):
+        return f"1.{c}"
+    return f"0.{c}"
+
+
+def _fetch_spot_from_eastmoney() -> pd.DataFrame:
+    """从东方财富拉取全 A 股实时行情快照。"""
+    url = f"{_EM_SPOT_URL}?{_EM_SPOT_PARAMS}&fields={_EM_SPOT_FIELDS}"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=_EM_REQUEST_TIMEOUT) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return pd.DataFrame()
+
+    rows = (data or {}).get("data", {}).get("diff", [])
+    if not rows:
+        return pd.DataFrame()
+
+    records = []
+    for r in rows:
+        code = str(r.get("f12", ""))
+        name = str(r.get("f14", ""))
+        if not code:
+            continue
+        records.append({
+            "code": _normalize_code(code),
+            "name": name,
+            "latest_price": _safe_float(r.get("f2")),
+            "pct_change": _safe_float(r.get("f3")),
+            "volume": _safe_float(r.get("f5")),
+            "amount": _safe_float(r.get("f6")),
+            "turnover": _safe_float(r.get("f8")),
+        })
+    return pd.DataFrame(records)
+
+
+def _fetch_minute_from_eastmoney(code: str) -> pd.DataFrame:
+    """从东方财富拉取个股 1 分钟 K 线（最近约 240 根）。"""
+    secid = _em_stock_code(code)
+    url = (
+        f"{_EM_MINUTE_URL}?secid={secid}"
+        f"&fields1=f1,f2,f3,f4,f5,f6"
+        f"&fields2=f51,f52,f53,f54,f55,f56,f57"
+        f"&klt=1&fqt=1&end=20500101&lmt=240"
+    )
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=_EM_REQUEST_TIMEOUT) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return pd.DataFrame()
+
+    klines = (data or {}).get("data", {}).get("klines", [])
+    if not klines:
+        return pd.DataFrame()
+
+    records = []
+    for line in klines:
+        parts = str(line).split(",")
+        if len(parts) < 7:
+            continue
+        records.append({
+            "time": pd.Timestamp(parts[0]),
+            "close": _safe_float(parts[3]),
+            "volume": _safe_float(parts[6]),
+        })
+    return _normalize_minute_frame(pd.DataFrame(records))
 
 try:  # pragma: no cover - 运行环境可能没有安装 redis
     import redis
@@ -46,10 +129,11 @@ _TRADING_PM_END = time(15, 0)
 
 def _is_a_share_trading_time(now: Optional[datetime] = None) -> bool:
     """判断当前是否处于 A 股连续竞价时段。"""
-    t = (now or datetime.now()).time()
-    if (datetime.now().weekday() >= 5):
+    t = (now or datetime.now())
+    if t.weekday() >= 5:
         return False
-    return (_TRADING_AM_START <= t <= _TRADING_AM_END) or (_TRADING_PM_START <= t <= _TRADING_PM_END)
+    clock = t.time()
+    return (_TRADING_AM_START <= clock <= _TRADING_AM_END) or (_TRADING_PM_START <= clock <= _TRADING_PM_END)
 
 
 @dataclass(frozen=True)
@@ -355,7 +439,7 @@ def _normalize_minute_frame(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame(columns=["time", "close", "volume"])
 
-    time_col = _find_column(df, ["时间", "日期", "datetime", "date"])
+    time_col = _find_column(df, ["时间", "日期", "datetime", "date", "time"])
     close_col = _find_column(df, ["收盘", "收盘价", "close", "最新价"])
     volume_col = _find_column(df, ["成交量", "volume"])
 
@@ -1017,7 +1101,7 @@ class WatchlistRuntime:
             return {}
 
         try:
-            spot_frame = _normalize_spot_frame(ak.stock_zh_a_spot_em())
+            spot_frame = _normalize_spot_frame(_fetch_spot_from_eastmoney())
         except Exception:  # noqa: BLE001
             spot_frame = pd.DataFrame()
 
@@ -1069,21 +1153,12 @@ class WatchlistRuntime:
 
         def _fetch(code: str) -> tuple[str, pd.DataFrame]:
             try:
-                end_time = datetime.now().replace(second=0, microsecond=0)
-                start_time = end_time - timedelta(days=3)
-                frame = ak.stock_zh_a_hist_min_em(
-                    symbol=code,
-                    start_date=start_time.strftime("%Y-%m-%d %H:%M:%S"),
-                    end_date=end_time.strftime("%Y-%m-%d %H:%M:%S"),
-                    period="1",
-                    adjust="",
-                )
-                normalized = _normalize_minute_frame(frame)
-                if normalized.empty:
-                    normalized = _generate_mock_minute_history(code)
+                frame = _fetch_minute_from_eastmoney(code)
+                if frame.empty:
+                    frame = pd.DataFrame(columns=["time", "close", "volume"])
             except Exception:  # noqa: BLE001
-                normalized = _generate_mock_minute_history(code)
-            return code, normalized
+                frame = pd.DataFrame(columns=["time", "close", "volume"])
+            return code, frame
 
         max_workers = min(8, len(missing_codes)) or 1
         with ThreadPoolExecutor(max_workers=max_workers) as executor:

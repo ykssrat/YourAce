@@ -245,6 +245,7 @@ export type AuthRequest = {
 };
 
 export const STRATEGY_OPTIONS = [
+  { value: "consensus", label: "共识矩阵(五大策略混合)" },
   { value: "momentum_deviation", label: "动量偏离策略" },
   { value: "rsi", label: "RSI策略" },
   { value: "kdj", label: "KDJ策略" },

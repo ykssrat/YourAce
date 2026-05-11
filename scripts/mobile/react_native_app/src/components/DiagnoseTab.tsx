@@ -22,7 +22,7 @@ type DiagnoseTabProps = {
 
 export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTabProps) {
   const [query, setQuery] = useState(initialCode ?? "");
-  const [strategy, setStrategy] = useState("momentum_deviation");
+  const [strategy, setStrategy] = useState("consensus");
   const [loading, setLoading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
@@ -162,7 +162,34 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
 
       <ScoreSignalCard result={result} />
 
-      {result?.matrix ? (
+      {result?.consensus ? (
+        <View style={styles.matrixCard}>
+          <Text style={styles.matrixTitle}>共识看法总览（五大策略混合）</Text>
+          {(["short", "mid", "long"] as const).map((horizon) => {
+            const h = result.consensus?.[horizon];
+            if (!h) return null;
+            const horizonLabel = result.horizon_labels?.[horizon] ?? horizon;
+            const c = h.consensus as string;
+            const color = c === "BUY" ? "#2f9e44" : c === "SELL" ? "#c92a2a" : "#868e96";
+            return (
+              <View key={horizon} style={styles.consensusRow}>
+                <Text style={styles.consensusHorizon}>{horizonLabel}</Text>
+                <Text style={[styles.consensusVote, { color }]}>{c === "BUY" ? "看多" : c === "SELL" ? "看空" : "静默"}</Text>
+                <Text style={styles.consensusCount}>
+                  {h.buy}看多 / {h.sell}看空 / {h.hold}静默（共{h.total}策略）
+                </Text>
+                <View style={styles.signalDetailRow}>
+                  {Object.entries(h.signals as Record<string,string>).map(([name, opinion]) => (
+                    <Text key={name} style={[styles.signalPill,
+                      opinion === "BUY" ? styles.signalBuy : opinion === "SELL" ? styles.signalSell : styles.signalHold
+                    ]}>{name}:{opinion === "BUY" ? "看多" : opinion === "SELL" ? "看空" : opinion === "N/A" ? "无" : "静默"}</Text>
+                  ))}
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      ) : result?.matrix ? (
         <View style={styles.matrixCard}>
           <Text style={styles.matrixTitle}>三个窗口期看法矩阵</Text>
           <OpinionMatrixCard matrix={result.matrix} />

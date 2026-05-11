@@ -36,15 +36,16 @@ def _fake_spot_em() -> pd.DataFrame:
     )
 
 
-def _fake_hist_min_em(symbol: str = "000001", **_: object) -> pd.DataFrame:
-    if symbol == "000001":
+def _fake_hist_min_em(code: str) -> pd.DataFrame:
+    """模拟东方财富分钟线返回（已归一化为 time/close/volume 列）。"""
+    if code == "000001":
         closes = np.linspace(100, 90, 40)
     else:
         closes = np.linspace(50, 49, 40)
 
     times = pd.date_range("2026-04-29 10:20:00", periods=40, freq="1min")
     volumes = np.arange(1, 41)
-    return pd.DataFrame({"时间": times, "收盘": closes, "成交量": volumes})
+    return pd.DataFrame({"time": times, "close": closes, "volume": volumes})
 
 
 def test_signal_combination_rules() -> None:
@@ -86,8 +87,8 @@ def test_signal_combination_rules() -> None:
 def test_watchlist_api_flow(monkeypatch) -> None:
     """验证注册、自选池加入、摘要刷新和通知出队的完整闭环。"""
     runtime = _install_runtime(monkeypatch)
-    monkeypatch.setattr(rw.ak, "stock_zh_a_spot_em", _fake_spot_em)
-    monkeypatch.setattr(rw.ak, "stock_zh_a_hist_min_em", _fake_hist_min_em)
+    monkeypatch.setattr(rw, "_fetch_spot_from_eastmoney", _fake_spot_em)
+    monkeypatch.setattr(rw, "_fetch_minute_from_eastmoney", _fake_hist_min_em)
     monkeypatch.setattr(rw, "datetime", _FixedDatetime)
 
     register_response = client.post("/auth/register", json={"username": "alice", "password": "password123"})

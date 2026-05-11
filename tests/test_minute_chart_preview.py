@@ -44,8 +44,9 @@ def _fake_spot_em() -> pd.DataFrame:
     )
 
 
-def _fake_hist_min_em(symbol: str = "000001", **_: object) -> pd.DataFrame:
-    if symbol == "000001":
+def _fake_hist_min_em(code: str) -> pd.DataFrame:
+    """模拟东方财富分钟线返回。"""
+    if code == "000001":
         closes = [10.00 + 0.01 * index for index in range(40)]
         volumes = [900 + int(220 * math.sin(index / 4.0)) + index * 42 for index in range(40)]
     else:
@@ -53,7 +54,7 @@ def _fake_hist_min_em(symbol: str = "000001", **_: object) -> pd.DataFrame:
         volumes = [650 + int(120 * math.cos(index / 5.0)) + index * 18 for index in range(40)]
 
     times = pd.date_range("2026-05-06 10:21:00", periods=40, freq="1min")
-    return pd.DataFrame({"时间": times, "收盘": closes, "成交量": volumes})
+    return pd.DataFrame({"time": times, "close": closes, "volume": volumes})
 
 
 def render_minute_chart_preview(points: list[dict[str, object]], limit: int = 18) -> str:
@@ -127,8 +128,8 @@ def format_preview_percent(value: object) -> str:
 def test_minute_chart_preview_smoke(monkeypatch) -> None:
     """走真实接口链路并输出分钟图文本预览。"""
     runtime = _install_runtime(monkeypatch)
-    monkeypatch.setattr(rw.ak, "stock_zh_a_spot_em", _fake_spot_em)
-    monkeypatch.setattr(rw.ak, "stock_zh_a_hist_min_em", _fake_hist_min_em)
+    monkeypatch.setattr(rw, "_fetch_spot_from_eastmoney", _fake_spot_em)
+    monkeypatch.setattr(rw, "_fetch_minute_from_eastmoney", _fake_hist_min_em)
     monkeypatch.setattr(rw, "datetime", _FixedDatetime)
 
     register_response = client.post("/auth/register", json={"username": "preview_user", "password": "preview123"})

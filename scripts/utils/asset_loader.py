@@ -14,7 +14,6 @@ with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
 
 _ASSET_TYPE_RULES = _ASSET_CONFIG.get("asset_type_rules", {})
 _MIN_EXTRA_ETF_COUNT = 100
-_MIN_EXTRA_FUND_COUNT = 100
 _CODE_COLUMN_CANDIDATES = [
     "代码",
     "code",
@@ -34,7 +33,7 @@ _NAME_COLUMN_CANDIDATES = [
     "股票简称",
     "A股简称",
 ]
-_ASSET_CACHE_BASENAMES = ("stock_list", "etf_list", "open_fund_nav")
+_ASSET_CACHE_BASENAMES = ("stock_list", "etf_list")
 _ETF_THEME_NAMES = [
     "沪深300",
     "中证500",
@@ -97,68 +96,7 @@ _ETF_THEME_NAMES = [
     "成长",
     "低波",
 ]
-_FUND_THEME_NAMES = [
-    "沪深300指数",
-    "中证500指数",
-    "创业板联接",
-    "科创50联接",
-    "红利低波",
-    "央企红利",
-    "价值成长",
-    "均衡成长",
-    "灵活配置",
-    "偏股混合",
-    "消费升级",
-    "医药健康",
-    "先进制造",
-    "科技创新",
-    "半导体主题",
-    "人工智能",
-    "机器人",
-    "新能源",
-    "光伏产业",
-    "储能主题",
-    "锂电产业",
-    "高端装备",
-    "军工主题",
-    "国企改革",
-    "银行精选",
-    "证券保险",
-    "消费电子",
-    "食品饮料",
-    "白酒主题",
-    "传媒互联网",
-    "游戏动漫",
-    "软件服务",
-    "云计算",
-    "数据要素",
-    "通信主题",
-    "5G成长",
-    "信创产业",
-    "医疗服务",
-    "创新药",
-    "生物科技",
-    "稳健增利债券",
-    "纯债债券",
-    "中短债债券",
-    "可转债债券",
-    "信用债债券",
-    "利率债债券",
-    "固收增强债券",
-    "双债增强债券",
-    "黄金主题",
-    "有色金属",
-    "稀土新材料",
-    "煤炭资源",
-    "电力公用事业",
-    "环保低碳",
-    "碳中和",
-    "绿色能源",
-    "新材料",
-    "化工新材料",
-    "纳指联接",
-    "标普联接",
-]
+_ETF_SERIAL_SUFFIX = "ETF"
 
 
 def load_assets(
@@ -194,14 +132,10 @@ def detect_asset_type(code: str, name: str = "") -> str:
     name_text = str(name)
 
     is_etf_by_name = any(k.upper() in name_text.upper() for k in _ASSET_TYPE_RULES.get("etf_name_keywords", ["ETF"]))
-    is_fund_by_name = any(k in name_text for k in _ASSET_TYPE_RULES.get("fund_name_keywords", ["基金", "混合", "债", "LOF", "FOF", "联接"]))
     is_etf_by_code = digits.startswith(tuple(_ASSET_TYPE_RULES.get("etf_code_prefixes", [])))
-    is_fund_by_code = digits.startswith(tuple(_ASSET_TYPE_RULES.get("fund_code_prefixes", [])))
 
     if is_etf_by_name or is_etf_by_code:
         return "etf"
-    if is_fund_by_name or is_fund_by_code:
-        return "fund"
     return "stock"
 
 
@@ -218,13 +152,7 @@ def _build_extra_assets() -> List[Dict[str, str]]:
         assets_by_code[normalized_code] = {"code": normalized_code, "name": item["name"]}
 
     etf_assets = [item for item in assets_by_code.values() if detect_asset_type(item["code"], item["name"]) == "etf"]
-    fund_assets = [item for item in assets_by_code.values() if detect_asset_type(item["code"], item["name"]) == "fund"]
-
     for item in _generate_supplemental_assets("etf", len(etf_assets), _MIN_EXTRA_ETF_COUNT):
-        assets_by_code.setdefault(item["code"], item)
-
-    fund_assets = [item for item in assets_by_code.values() if detect_asset_type(item["code"], item["name"]) == "fund"]
-    for item in _generate_supplemental_assets("fund", len(fund_assets), _MIN_EXTRA_FUND_COUNT):
         assets_by_code.setdefault(item["code"], item)
 
     return list(assets_by_code.values())
@@ -235,9 +163,7 @@ def _generate_supplemental_assets(asset_type: str, existing_count: int, minimum_
         return []
 
     needed = minimum_count - existing_count
-    if asset_type == "etf":
-        return _generate_catalog(prefix="51", names=_ETF_THEME_NAMES, needed=needed, suffix="ETF")
-    return _generate_catalog(prefix="16", names=_FUND_THEME_NAMES, needed=needed, suffix="基金A")
+    return _generate_catalog(prefix="51", names=_ETF_THEME_NAMES, needed=needed, suffix=_ETF_SERIAL_SUFFIX)
 
 
 def _generate_catalog(prefix: str, names: List[str], needed: int, suffix: str) -> List[Dict[str, str]]:

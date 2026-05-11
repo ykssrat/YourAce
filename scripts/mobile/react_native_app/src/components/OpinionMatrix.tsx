@@ -19,9 +19,9 @@ const OPINION_ACTIVE_COLORS: Record<Opinion, string> = {
 };
 
 const HORIZONS: { key: keyof OpinionMatrix; label: string }[] = [
-  { key: "short", label: "短期" },
-  { key: "mid", label: "中期" },
-  { key: "long", label: "长期" },
+  { key: "short", label: "短期(5日)" },
+  { key: "mid", label: "中期(20日)" },
+  { key: "long", label: "长期(60日)" },
 ];
 
 type OpinionMatrixCardProps = {
