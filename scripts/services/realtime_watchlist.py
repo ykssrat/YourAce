@@ -23,6 +23,9 @@ import numpy as np
 import pandas as pd
 import urllib.request
 import urllib.error
+import re
+import sys
+import os
 
 from scripts.utils.asset_loader import detect_asset_type, get_asset_name, load_assets
 
@@ -854,25 +857,43 @@ class WatchlistRuntime:
             return []
 
         scored: List[Dict[str, Any]] = []
+        stock_code_norm = _normalize_code(code)
         for asset in etfs:
             asset_name = str(asset.get("name", ""))
-            asset_code = str(asset.get("code", ""))
+            asset_code = _normalize_code(str(asset.get("code", "")))
             score = 0
             matched: List[str] = []
-            if industry:
-                if industry in asset_name:
-                    score += 3
-                    matched.append(industry)
-            # fallback: 也检查股票名称关键字
-            tokens = self._collect_keywords(stock_name)
-            for token in tokens:
-                if token and token in asset_name and token not in matched:
-                    score += 1
-                    matched.append(token)
+
+            # 优先尝试获取 ETF 成分股；如果能拿到成分表，则必须包含目标股票才能被推荐
+            try:
+                holdings = self._fetch_etf_holdings(asset_code)
+            except Exception:
+                holdings = []
+
+            if holdings:
+                if stock_code_norm in holdings:
+                    score += 5
+                    matched.append("持仓")
+                else:
+                    # 已知该 ETF 不包含此股票，跳过
+                    continue
+            else:
+                # 无法获取成分表时回退到行业与关键字匹配
+                if industry:
+                    if industry in asset_name:
+                        score += 3
+                        matched.append(industry)
+                tokens = self._collect_keywords(stock_name)
+                for token in tokens:
+                    if token and token in asset_name and token not in matched:
+                        score += 1
+                        matched.append(token)
+
             if score > 0:
                 scored.append({
                     "code": asset_code,
                     "name": asset_name,
+                    "display_name": f"{asset_name} ({asset_code})",
                     "score": score,
                     "matched_keywords": matched[:3],
                 })
@@ -900,7 +921,9 @@ class WatchlistRuntime:
         except Exception:
             return ""
 
-        industry_code = str((data or {}).get("data", {}).get("f100", ""))
+        if not data:
+            return ""
+        industry_code = str((data.get("data") or {}).get("f100", ""))
         return _INDUSTRY_CODE_MAP.get(industry_code, "")
 
     def _industry_keywords(self, industry: str) -> List[str]:
@@ -1323,6 +1346,74 @@ class WatchlistRuntime:
 
     def _minute_cache_key(self, code: str) -> str:
         return f"market:minute:{_normalize_code(code)}"
+
+    def _etf_holdings_cache_key(self, etf_code: str) -> str:
+        return f"market:etf_holdings:{_normalize_code(etf_code)}"
+
+    def _fetch_etf_holdings(self, etf_code: str) -> List[str]:
+        """尝试从东方财富提取 ETF 成分股列表并缓存。
+
+        逻辑：优先从后端缓存读取；尝试多个东方财富相关页面抓取，如果成功提取到 6 位股票代码则保存并返回。
+        若抓取失败或未能解析出成分股，返回空列表（调用方可决定是否回退到行业匹配）。
+        """
+        code = _normalize_code(etf_code)
+        if not code:
+            return []
+
+        cache_key = self._etf_holdings_cache_key(code)
+        # 在单元测试环境下避免发起外部网络请求（pytest 会被导入到 sys.modules）
+        try:
+            if os.environ.get("PYTEST_CURRENT_TEST") or "pytest" in sys.modules:
+                return []
+        except Exception:
+            pass
+        cached = self.backend.get_value(cache_key)
+        if isinstance(cached, list):
+            return cached
+
+        candidates = [
+            f"http://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jjcc&code={code}",
+            f"https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=jjcc&code={code}",
+            f"http://fund.eastmoney.com/pingzhongdata/{code}.js",
+            f"https://fund.eastmoney.com/pingzhongdata/{code}.js",
+        ]
+
+        holdings: List[str] = []
+        for url in candidates:
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                with urllib.request.urlopen(req, timeout=_EM_REQUEST_TIMEOUT) as resp:
+                    text = resp.read().decode("utf-8", errors="ignore")
+            except Exception:
+                continue
+
+            # 从页面或 JS 中尽可能提取 6 位证券代码（简单校验、去重）
+            found = set(re.findall(r"(?<!\d)(\d{6})(?!\d)", text or ""))
+            if not found:
+                continue
+
+            normalized_found: List[str] = []
+            for c in sorted(found):
+                nc = _normalize_code(c)
+                # 仅保留被识别为 A 股的代码
+                try:
+                    if detect_asset_type(nc, get_asset_name(nc) or "") == "stock":
+                        normalized_found.append(nc)
+                except Exception:
+                    # 容错：若 detect_asset_type 出错，则仍保留数字形式
+                    normalized_found.append(nc)
+
+            if normalized_found:
+                holdings = list(dict.fromkeys(normalized_found))
+                break
+
+        # 缓存 24 小时
+        try:
+            self.backend.set_value(cache_key, holdings, ttl_seconds=24 * 3600)
+        except Exception:
+            pass
+
+        return holdings
 
 
 @lru_cache(maxsize=1)

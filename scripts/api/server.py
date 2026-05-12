@@ -375,7 +375,9 @@ async def stream_watchlist_notifications(
 
 @app.post("/screen")
 def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
-    """批量筛选资产，返回当前分页内符合条件的标的。"""
+    """批量筛选资产，返回当前分页内符合条件的标的。
+    当 strategy 含逗号时进入多策略交集模式：只返回所有选中策略都给出目标意见的标的。
+    """
     if payload.horizon not in _VALID_HORIZONS_WITH_ALL:
         raise HTTPException(status_code=400, detail=f"horizon 非法，合法值: {_VALID_HORIZONS_WITH_ALL}")
     if payload.opinion not in _VALID_OPINIONS:
@@ -384,6 +386,10 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         raise HTTPException(status_code=400, detail=f"asset_type 非法，合法值: {_VALID_ASSET_TYPES_WITH_ALL}")
 
     strategy_name = payload.strategy
+    strategies = [s.strip() for s in strategy_name.split(",") if s.strip()] if strategy_name else []
+    if not strategies:
+        raise HTTPException(status_code=400, detail="strategy 不能为空")
+    use_multi = len(strategies) > 1
 
     all_assets = load_assets(keyword="", limit=10000)
     if payload.asset_type:
@@ -407,26 +413,57 @@ def screen_assets(payload: ScreenRequest) -> Dict[str, object]:
         name = str(asset.get("name", ""))
 
         close_series = _load_close_series(code)
-        matrix = generate_opinion_matrix(close_series, strategy_name=strategy_name)
 
-        # 看法过滤
-        if payload.opinion:
-            if payload.horizon:
-                matched = matrix[payload.horizon] == payload.opinion
-            else:
-                matched = any(v == payload.opinion for v in matrix.values())
-            
-            if not matched:
+        if use_multi:
+            # 多策略交集模式：所有选中策略都必须给出目标意见
+            all_match = True
+            combined_matrix: Dict[str, str] = {"short": "", "mid": "", "long": ""}
+            for strat in strategies:
+                matrix = generate_opinion_matrix(close_series, strategy_name=strat)
+                if payload.opinion:
+                    if payload.horizon:
+                        if matrix.get(payload.horizon) != payload.opinion:
+                            all_match = False
+                            break
+                    else:
+                        if not any(v == payload.opinion for v in matrix.values()):
+                            all_match = False
+                            break
+                # 收集第一个策略的 mid 作为展示标签
+                if not combined_matrix.get("mid"):
+                    combined_matrix = dict(matrix)
+            if not all_match:
                 signal_miss_count += 1
                 continue
+            items.append({
+                "code": code,
+                "name": name,
+                "label": combined_matrix.get("mid", "HOLD"),
+                "horizon_signals": combined_matrix,
+                "matrix": combined_matrix,
+                "strategies": strategies,
+            })
+        else:
+            matrix = generate_opinion_matrix(close_series, strategy_name=strategies[0])
 
-        items.append({
-            "code": code,
-            "name": name,
-            "label": matrix["mid"],
-            "horizon_signals": matrix,
-            "matrix": matrix,
-        })
+            # 看法过滤
+            if payload.opinion:
+                if payload.horizon:
+                    matched = matrix[payload.horizon] == payload.opinion
+                else:
+                    matched = any(v == payload.opinion for v in matrix.values())
+                
+                if not matched:
+                    signal_miss_count += 1
+                    continue
+
+            items.append({
+                "code": code,
+                "name": name,
+                "label": matrix["mid"],
+                "horizon_signals": matrix,
+                "matrix": matrix,
+            })
 
     return {
         "items": items,

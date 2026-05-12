@@ -19,6 +19,7 @@ type ScreenFilter = {
   horizon: "" | "short" | "mid" | "long";
   opinion: Opinion | "";
   strategy: string;
+  strategies: string[];
 };
 
 const ASSET_TYPE_OPTIONS: { value: ScreenFilter["asset_type"]; label: string }[] = [
@@ -64,7 +65,8 @@ const DEFAULT_FILTER: ScreenFilter = {
   asset_type: "",
   horizon: "",
   opinion: "",
-  strategy: "momentum_deviation",
+  strategy: "consensus",
+  strategies: [] as string[],
 };
 
 export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
@@ -199,22 +201,28 @@ export function ScreenTab({ apiBaseUrl, onGoToDiagnose }: ScreenTabProps) {
           <Text style={styles.filterSummaryText}>
             {ASSET_TYPE_OPTIONS.find((o) => o.value === filter.asset_type)?.label ?? filter.asset_type}
             {" · "}
-            {HORIZON_OPTIONS.find((o) => o.value === filter.horizon)?.label ?? (filter.horizon || "不限")}
-            {" · "}
-            {STRATEGY_OPTIONS.find((o) => o.value === filter.strategy)?.label ?? filter.strategy}
+            {filter.strategies.length > 0
+              ? `策略(${filter.strategies.map(s => STRATEGY_OPTIONS.find(o => o.value === s)?.label ?? s).join(",")})`
+              : "策略不限"}
             {filter.opinion ? " · " + (LABEL_MAP[filter.opinion] ?? filter.opinion) : " · 看法不限"}
           </Text>
           <Text style={styles.filterSummaryEdit}>▼ 展开修改</Text>
         </Pressable>
       ) : (
       <View style={styles.filterCard}>
-        <FilterRow label="策略算法">
-          {STRATEGY_OPTIONS.map(({ value, label }) => (
+        <FilterRow label="策略算法（可多选）">
+          {STRATEGY_OPTIONS.filter(o => o.value !== "consensus").map(({ value, label }) => (
             <OptionChip
               key={value}
               label={label}
-              active={filter.strategy === value}
-              onPress={() => setFilter({ ...filter, strategy: value })}
+              active={filter.strategies.includes(value)}
+              onPress={() => {
+                const next = filter.strategies.includes(value)
+                  ? filter.strategies.filter(s => s !== value)
+                  : [...filter.strategies, value];
+                const strategy = next.length > 0 ? next.join(",") : "consensus";
+                setFilter({ ...filter, strategies: next, strategy });
+              }}
             />
           ))}
         </FilterRow>
