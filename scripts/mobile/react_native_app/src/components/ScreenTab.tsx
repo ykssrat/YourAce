@@ -376,7 +376,7 @@ function ScreenResultCard({
       </View>
 
       <Pressable style={styles.diagnoseBtn} onPress={onDiagnose}>
-        <Text style={styles.diagnoseBtnText}>进入诊股 →</Text>
+        <Text style={styles.diagnoseBtnText}>进入荐股 →</Text>
       </Pressable>
     </View>
   );

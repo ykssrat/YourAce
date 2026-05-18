@@ -614,8 +614,8 @@ export default function App() {
           onPress={() => handleTabChange("screen")}
           onLongPress={!developerMode ? () => setDevUnlockVisible(true) : undefined}
         />
+        <TabBarItem label="荐股" icon="📊" active={activeTab === "diagnose"} onPress={() => handleTabChange("diagnose")} />
         <TabBarItem label="看盘" icon="📈" active={activeTab === "watchlist"} onPress={() => handleTabChange("watchlist")} />
-        <TabBarItem label="诊股" icon="📊" active={activeTab === "diagnose"} onPress={() => handleTabChange("diagnose")} />
       </View>
 
       <Modal transparent animationType="fade" visible={devUnlockVisible} onRequestClose={() => setDevUnlockVisible(false)}>

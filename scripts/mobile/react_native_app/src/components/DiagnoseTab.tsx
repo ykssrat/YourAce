@@ -92,7 +92,7 @@ export function DiagnoseTab({ apiBaseUrl, newsEnabled, initialCode }: DiagnoseTa
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.pageTitle}>诊股</Text>
+      <Text style={styles.pageTitle}>荐股</Text>
       <Text style={styles.pageSubtitle}>输入代码查看三个窗口期的诊断与共识看法</Text>
 
       <View style={styles.inputCard}>
